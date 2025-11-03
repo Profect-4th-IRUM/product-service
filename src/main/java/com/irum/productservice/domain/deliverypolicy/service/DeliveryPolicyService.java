@@ -38,7 +38,7 @@ public class DeliveryPolicyService {
                         request.minAmount(),
                         store);
 
-        store.setDeliveryPolicy(deliveryPolicy);
+
 
         deliveryPolicyRepository.save(deliveryPolicy);
     }
@@ -62,10 +62,7 @@ public class DeliveryPolicyService {
         DeliveryPolicy deliveryPolicy = validDeliveryPolicy(deliveryPolicyId);
         Store store = deliveryPolicy.getStore();
 
-        store.setDeliveryPolicy(null);
-        deliveryPolicy.setStore(null);
-
-        deliveryPolicyRepository.delete(deliveryPolicy);
+        deliveryPolicy.softDelete(memberUtil.getCurrentMember().getMemberId());
     }
 
     @Transactional(readOnly = true)

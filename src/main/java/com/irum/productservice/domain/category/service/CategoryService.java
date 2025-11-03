@@ -1,4 +1,5 @@
 package com.irum.come2us.domain.category.application.service;
+import com.irum.come2us.global.util.MemberUtil;
 
 import com.irum.come2us.domain.category.domain.entity.Category;
 import com.irum.come2us.domain.category.domain.repository.CategoryRepository;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final MemberUtil memberUtil;
+
 
     @Transactional(readOnly = true)
     public List<CategoryInfoResponse> findRootCategories() {
@@ -90,6 +93,6 @@ public class CategoryService {
                         .findById(id)
                         .orElseThrow(
                                 () -> new CommonException(CategoryErrorCode.CATEGORY_NOT_FOUND));
-        categoryRepository.delete(category);
+        category.softDelete(memberUtil.getCurrentMember().getMemberId());
     }
 }

@@ -15,6 +15,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Table(name = "p_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Where(clause = "deleted_at IS NULL")
 @Builder(access = AccessLevel.PRIVATE)
 public class Category extends BaseEntity {
 

@@ -253,7 +253,7 @@ public class ProductService {
 
         memberUtil.assertMemberResourceAccess(product.getStore().getMember());
 
-        productRepository.delete(product);
+        product.softDelete(memberUtil.getCurrentMember().getMemberId());
         log.info("상품 삭제 완료: productId={}", productId);
     }
 

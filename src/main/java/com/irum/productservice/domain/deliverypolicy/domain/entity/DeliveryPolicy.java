@@ -16,7 +16,6 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @Table(name = "p_delivery_policy")
-@SQLDelete(sql = "UPDATE p_delivery_policy SET deleted_at = NOW() WHERE delivery_policy_id = ?")
 @Where(clause = "deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DeliveryPolicy extends BaseEntity {
@@ -42,12 +41,6 @@ public class DeliveryPolicy extends BaseEntity {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    public void setStore(Store store) {
-        this.store = store;
-        if (store != null && store.getDeliveryPolicy() != this) {
-            store.setDeliveryPolicy(this);
-        }
-    }
 
     @Builder(access = AccessLevel.PRIVATE)
     private DeliveryPolicy(int defaultDeliveryFee, int minQuantity, int minAmount, Store store) {

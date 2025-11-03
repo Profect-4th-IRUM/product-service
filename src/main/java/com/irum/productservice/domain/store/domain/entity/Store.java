@@ -20,7 +20,6 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_store")
-@SQLDelete(sql = "UPDATE p_store SET deleted_at = NOW() WHERE store_id = ?")
 @Where(clause = "deleted_at IS NULL")
 public class Store extends BaseEntity {
 
@@ -55,12 +54,6 @@ public class Store extends BaseEntity {
     @OneToOne(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private DeliveryPolicy deliveryPolicy;
 
-    public void setDeliveryPolicy(DeliveryPolicy deliveryPolicy) {
-        this.deliveryPolicy = deliveryPolicy;
-        if (deliveryPolicy != null && deliveryPolicy.getStore() != this) {
-            deliveryPolicy.setStore(this);
-        }
-    }
 
     @Builder(access = AccessLevel.PRIVATE)
     private Store(
