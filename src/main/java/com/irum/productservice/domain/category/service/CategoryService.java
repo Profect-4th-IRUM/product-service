@@ -1,14 +1,14 @@
-package com.irum.come2us.domain.category.application.service;
-import com.irum.come2us.global.util.MemberUtil;
+package com.irum.productservice.domain.category.application.service;
+import com.irum.productservice.global.util.MemberUtil;
 
-import com.irum.come2us.domain.category.domain.entity.Category;
-import com.irum.come2us.domain.category.domain.repository.CategoryRepository;
-import com.irum.come2us.domain.category.presentation.dto.request.CategoryCreateRequest;
-import com.irum.come2us.domain.category.presentation.dto.request.CategoryUpdateRequest;
-import com.irum.come2us.domain.category.presentation.dto.response.CategoryInfoResponse;
-import com.irum.come2us.domain.category.presentation.dto.response.CategoryResponse;
-import com.irum.come2us.global.presentation.advice.exception.CommonException;
-import com.irum.come2us.global.presentation.advice.exception.errorcode.CategoryErrorCode;
+import com.irum.productservice.domain.category.domain.entity.Category;
+import com.irum.productservice.domain.category.domain.repository.CategoryRepository;
+import com.irum.productservice.domain.category.presentation.dto.request.CategoryCreateRequest;
+import com.irum.productservice.domain.category.presentation.dto.request.CategoryUpdateRequest;
+import com.irum.productservice.domain.category.presentation.dto.response.CategoryInfoResponse;
+import com.irum.productservice.domain.category.presentation.dto.response.CategoryResponse;
+import com.irum.productservice.global.presentation.advice.exception.CommonException;
+import com.irum.productservice.global.presentation.advice.exception.errorcode.CategoryErrorCode;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

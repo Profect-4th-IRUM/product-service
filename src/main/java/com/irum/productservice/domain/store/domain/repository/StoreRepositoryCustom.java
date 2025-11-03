@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.store.domain.repository;
+package com.irum.productservice.domain.store.domain.repository;
 
-import com.irum.come2us.domain.store.presentation.dto.response.StoreListResponse;
+import com.irum.productservice.domain.store.presentation.dto.response.StoreListResponse;
 import java.util.List;
 import java.util.UUID;
 

@@ -1,8 +1,8 @@
-package com.irum.come2us.domain.product.infrastructure.repository;
+package com.irum.productservice.domain.product.infrastructure.repository;
 
-import com.irum.come2us.domain.product.domain.entity.QProduct;
-import com.irum.come2us.domain.product.domain.repository.ProductRepositoryCustom;
-import com.irum.come2us.domain.product.presentation.dto.response.ProductResponse;
+import com.irum.productservice.domain.product.domain.entity.QProduct;
+import com.irum.productservice.domain.product.domain.repository.ProductRepositoryCustom;
+import com.irum.productservice.domain.product.presentation.dto.response.ProductResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;

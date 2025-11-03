@@ -1,7 +1,7 @@
-package com.irum.come2us.domain.deliverypolicy.domain.repository;
+package com.irum.productservice.domain.deliverypolicy.domain.repository;
 
-import com.irum.come2us.domain.deliverypolicy.domain.entity.DeliveryPolicy;
-import com.irum.come2us.domain.store.domain.entity.Store;
+import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
+import com.irum.productservice.domain.store.domain.entity.Store;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 

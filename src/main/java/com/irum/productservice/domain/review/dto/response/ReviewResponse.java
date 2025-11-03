@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.review.presentation.dto.response;
+package com.irum.productservice.domain.review.presentation.dto.response;
 
-import com.irum.come2us.domain.review.domain.entity.Review;
+import com.irum.productservice.domain.review.domain.entity.Review;
 import java.util.List;
 import java.util.UUID;
 

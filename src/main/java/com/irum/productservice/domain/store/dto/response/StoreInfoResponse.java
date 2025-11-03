@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.store.presentation.dto.response;
+package com.irum.productservice.domain.store.presentation.dto.response;
 
-import com.irum.come2us.domain.store.domain.entity.Store;
+import com.irum.productservice.domain.store.domain.entity.Store;
 import java.util.UUID;
 
 public record StoreInfoResponse(

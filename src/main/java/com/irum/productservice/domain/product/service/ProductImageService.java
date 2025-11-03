@@ -1,15 +1,15 @@
-package com.irum.come2us.domain.product.application.service;
+package com.irum.productservice.domain.product.application.service;
 
-import com.irum.come2us.domain.product.domain.entity.Product;
-import com.irum.come2us.domain.product.domain.entity.ProductImage;
-import com.irum.come2us.domain.product.domain.repository.ProductImageRepository;
-import com.irum.come2us.domain.product.domain.repository.ProductRepository;
-import com.irum.come2us.domain.product.presentation.dto.response.ProductImageResponse;
-import com.irum.come2us.global.constants.FileStorageConstants;
-import com.irum.come2us.global.presentation.advice.exception.CommonException;
-import com.irum.come2us.global.presentation.advice.exception.errorcode.ProductErrorCode;
-import com.irum.come2us.global.presentation.advice.exception.errorcode.ProductImageErrorCode;
-import com.irum.come2us.global.util.MemberUtil;
+import com.irum.productservice.domain.product.domain.entity.Product;
+import com.irum.productservice.domain.product.domain.entity.ProductImage;
+import com.irum.productservice.domain.product.domain.repository.ProductImageRepository;
+import com.irum.productservice.domain.product.domain.repository.ProductRepository;
+import com.irum.productservice.domain.product.presentation.dto.response.ProductImageResponse;
+import com.irum.productservice.global.constants.FileStorageConstants;
+import com.irum.productservice.global.presentation.advice.exception.CommonException;
+import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
+import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductImageErrorCode;
+import com.irum.productservice.global.util.MemberUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

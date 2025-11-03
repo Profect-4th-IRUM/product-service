@@ -1,8 +1,8 @@
-package com.irum.come2us.domain.product.domain.entity;
+package com.irum.productservice.domain.product.domain.entity;
 
 import static lombok.AccessLevel.*;
 
-import com.irum.come2us.global.domain.BaseEntity;
+import com.irum.productservice.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.AccessLevel;

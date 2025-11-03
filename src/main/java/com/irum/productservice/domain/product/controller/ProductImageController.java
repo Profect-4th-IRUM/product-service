@@ -1,8 +1,8 @@
-package com.irum.come2us.domain.product.presentation.controller;
+package com.irum.productservice.domain.product.presentation.controller;
 
-import com.irum.come2us.domain.product.application.service.ProductImageService;
-import com.irum.come2us.domain.product.presentation.dto.request.ProductImageUploadRequest;
-import com.irum.come2us.domain.product.presentation.dto.response.ProductImageResponse;
+import com.irum.productservice.domain.product.application.service.ProductImageService;
+import com.irum.productservice.domain.product.presentation.dto.request.ProductImageUploadRequest;
+import com.irum.productservice.domain.product.presentation.dto.response.ProductImageResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;

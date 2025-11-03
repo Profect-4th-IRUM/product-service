@@ -1,8 +1,8 @@
-package com.irum.come2us.domain.store.infrastructure.repository;
+package com.irum.productservice.domain.store.infrastructure.repository;
 
-import com.irum.come2us.domain.store.domain.entity.QStore;
-import com.irum.come2us.domain.store.domain.repository.StoreRepositoryCustom;
-import com.irum.come2us.domain.store.presentation.dto.response.StoreListResponse;
+import com.irum.productservice.domain.store.domain.entity.QStore;
+import com.irum.productservice.domain.store.domain.repository.StoreRepositoryCustom;
+import com.irum.productservice.domain.store.presentation.dto.response.StoreListResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.UUID;

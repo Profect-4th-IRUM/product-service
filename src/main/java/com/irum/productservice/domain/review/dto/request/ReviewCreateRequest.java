@@ -1,4 +1,4 @@
-package com.irum.come2us.domain.review.presentation.dto.request;
+package com.irum.productservice.domain.review.presentation.dto.request;
 
 import jakarta.validation.constraints.*;
 import java.util.List;

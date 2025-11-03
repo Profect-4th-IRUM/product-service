@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.product.domain.repository;
+package com.irum.productservice.domain.product.domain.repository;
 
-import com.irum.come2us.domain.product.domain.entity.ProductOptionValue;
+import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import feign.Param;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.QueryHint;

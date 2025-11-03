@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.deliverypolicy.presentation.dto.response;
+package com.irum.productservice.domain.deliverypolicy.presentation.dto.response;
 
-import com.irum.come2us.domain.deliverypolicy.domain.entity.DeliveryPolicy;
+import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import java.util.UUID;
 
 public record DeliveryPolicyInfoResponse(

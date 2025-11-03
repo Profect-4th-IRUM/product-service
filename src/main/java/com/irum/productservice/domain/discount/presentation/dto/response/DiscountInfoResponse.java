@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.discount.presentation.dto.response;
+package com.irum.productservice.domain.discount.presentation.dto.response;
 
-import com.irum.come2us.domain.discount.domain.entity.Discount;
+import com.irum.productservice.domain.discount.domain.entity.Discount;
 import java.util.UUID;
 
 public record DiscountInfoResponse(UUID discountId, String name, int amount, UUID productId) {

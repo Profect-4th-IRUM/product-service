@@ -1,8 +1,8 @@
-package com.irum.come2us.domain.cart.domain.entity;
+package com.irum.productservice.domain.cart.domain.entity;
 
-import com.irum.come2us.domain.member.domain.entity.Member;
-import com.irum.come2us.domain.product.domain.entity.ProductOptionValue;
-import com.irum.come2us.global.domain.BaseEntity;
+import com.irum.productservice.domain.member.domain.entity.Member;
+import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
+import com.irum.productservice.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.AccessLevel;

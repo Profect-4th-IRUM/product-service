@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.discount.domain.repository;
+package com.irum.productservice.domain.discount.domain.repository;
 
-import com.irum.come2us.domain.discount.domain.entity.Discount;
+import com.irum.productservice.domain.discount.domain.entity.Discount;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

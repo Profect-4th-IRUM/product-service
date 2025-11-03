@@ -1,9 +1,9 @@
-package com.irum.come2us.domain.product.application.service;
+package com.irum.productservice.domain.product.application.service;
 
-import com.irum.come2us.global.constants.FileStorageConstants;
-import com.irum.come2us.global.infrastructure.properties.FileProperties;
-import com.irum.come2us.global.presentation.advice.exception.CommonException;
-import com.irum.come2us.global.presentation.advice.exception.errorcode.ProductImageErrorCode;
+import com.irum.productservice.global.constants.FileStorageConstants;
+import com.irum.productservice.global.infrastructure.properties.FileProperties;
+import com.irum.productservice.global.presentation.advice.exception.CommonException;
+import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductImageErrorCode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

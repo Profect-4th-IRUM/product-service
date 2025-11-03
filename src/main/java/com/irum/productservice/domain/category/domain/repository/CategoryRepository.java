@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.category.domain.repository;
+package com.irum.productservice.domain.category.domain.repository;
 
-import com.irum.come2us.domain.category.domain.entity.Category;
+import com.irum.productservice.domain.category.domain.entity.Category;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

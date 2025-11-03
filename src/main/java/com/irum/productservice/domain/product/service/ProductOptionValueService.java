@@ -1,11 +1,11 @@
-package com.irum.come2us.domain.product.application.service;
+package com.irum.productservice.domain.product.application.service;
 
-import com.irum.come2us.domain.order.domain.entity.OrderDetail;
-import com.irum.come2us.domain.order.domain.repository.OrderDetailRepository;
-import com.irum.come2us.domain.product.domain.entity.ProductOptionValue;
-import com.irum.come2us.domain.product.domain.repository.ProductOptionValueRepository;
-import com.irum.come2us.global.presentation.advice.exception.CommonException;
-import com.irum.come2us.global.presentation.advice.exception.errorcode.ProductErrorCode;
+import com.irum.productservice.domain.order.domain.entity.OrderDetail;
+import com.irum.productservice.domain.order.domain.repository.OrderDetailRepository;
+import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
+import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
+import com.irum.productservice.global.presentation.advice.exception.CommonException;
+import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;

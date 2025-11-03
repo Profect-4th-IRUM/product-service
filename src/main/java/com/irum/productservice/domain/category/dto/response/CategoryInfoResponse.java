@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.category.presentation.dto.response;
+package com.irum.productservice.domain.category.presentation.dto.response;
 
-import com.irum.come2us.domain.category.domain.entity.Category;
+import com.irum.productservice.domain.category.domain.entity.Category;
 import java.util.UUID;
 
 public record CategoryInfoResponse(UUID categoryId, String name, int depth) {

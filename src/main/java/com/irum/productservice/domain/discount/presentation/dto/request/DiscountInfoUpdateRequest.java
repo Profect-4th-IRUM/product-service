@@ -1,4 +1,4 @@
-package com.irum.come2us.domain.discount.presentation.dto.request;
+package com.irum.productservice.domain.discount.presentation.dto.request;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;

@@ -1,4 +1,4 @@
-package com.irum.come2us.domain.review.presentation.dto.response;
+package com.irum.productservice.domain.review.presentation.dto.response;
 
 import java.util.List;
 import org.springframework.data.domain.Page;

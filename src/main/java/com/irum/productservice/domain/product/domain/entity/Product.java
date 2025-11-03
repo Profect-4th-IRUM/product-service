@@ -1,10 +1,10 @@
-package com.irum.come2us.domain.product.domain.entity;
+package com.irum.productservice.domain.product.domain.entity;
 
-import com.irum.come2us.domain.category.domain.entity.Category;
-import com.irum.come2us.domain.store.domain.entity.Store;
-import com.irum.come2us.global.domain.BaseEntity;
-import com.irum.come2us.global.presentation.advice.exception.CommonException;
-import com.irum.come2us.global.presentation.advice.exception.errorcode.CategoryErrorCode;
+import com.irum.productservice.domain.category.domain.entity.Category;
+import com.irum.productservice.domain.store.domain.entity.Store;
+import com.irum.productservice.global.domain.BaseEntity;
+import com.irum.productservice.global.presentation.advice.exception.CommonException;
+import com.irum.productservice.global.presentation.advice.exception.errorcode.CategoryErrorCode;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;

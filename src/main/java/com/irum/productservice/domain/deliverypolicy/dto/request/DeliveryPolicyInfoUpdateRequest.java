@@ -1,4 +1,4 @@
-package com.irum.come2us.domain.deliverypolicy.presentation.dto.request;
+package com.irum.productservice.domain.deliverypolicy.presentation.dto.request;
 
 import jakarta.validation.constraints.Min;
 

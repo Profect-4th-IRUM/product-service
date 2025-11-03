@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.product.presentation.dto.response;
+package com.irum.productservice.domain.product.presentation.dto.response;
 
-import com.irum.come2us.domain.product.domain.entity.ProductImage;
+import com.irum.productservice.domain.product.domain.entity.ProductImage;
 import java.util.UUID;
 
 public record ProductImageResponse(UUID id, String imageUrl, boolean isDefault) {

@@ -1,8 +1,8 @@
-package com.irum.come2us.domain.product.presentation.controller;
+package com.irum.productservice.domain.product.presentation.controller;
 
-import com.irum.come2us.domain.product.application.service.ProductService;
-import com.irum.come2us.domain.product.presentation.dto.request.*;
-import com.irum.come2us.domain.product.presentation.dto.response.*;
+import com.irum.productservice.domain.product.application.service.ProductService;
+import com.irum.productservice.domain.product.presentation.dto.request.*;
+import com.irum.productservice.domain.product.presentation.dto.response.*;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

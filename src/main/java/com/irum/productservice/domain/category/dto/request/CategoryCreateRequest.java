@@ -1,4 +1,4 @@
-package com.irum.come2us.domain.category.presentation.dto.request;
+package com.irum.productservice.domain.category.presentation.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;

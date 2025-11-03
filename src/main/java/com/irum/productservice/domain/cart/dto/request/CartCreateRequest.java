@@ -1,4 +1,4 @@
-package com.irum.come2us.domain.cart.presentation.dto.request;
+package com.irum.productservice.domain.cart.presentation.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

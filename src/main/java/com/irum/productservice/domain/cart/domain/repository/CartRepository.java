@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.cart.domain.repository;
+package com.irum.productservice.domain.cart.domain.repository;
 
-import com.irum.come2us.domain.cart.domain.entity.Cart;
+import com.irum.productservice.domain.cart.domain.entity.Cart;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;

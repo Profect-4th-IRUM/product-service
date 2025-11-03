@@ -1,7 +1,7 @@
-package com.irum.come2us.domain.deliverypolicy.domain.entity;
+package com.irum.productservice.domain.deliverypolicy.domain.entity;
 
-import com.irum.come2us.domain.store.domain.entity.Store;
-import com.irum.come2us.global.domain.BaseEntity;
+import com.irum.productservice.domain.store.domain.entity.Store;
+import com.irum.productservice.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.irum.come2us.domain.discount.presentation.dto.response;
+package com.irum.productservice.domain.discount.presentation.dto.response;
 
 import java.util.List;
 import java.util.UUID;

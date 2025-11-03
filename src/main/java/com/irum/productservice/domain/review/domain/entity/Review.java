@@ -1,8 +1,8 @@
-package com.irum.come2us.domain.review.domain.entity;
+package com.irum.productservice.domain.review.domain.entity;
 
-import com.irum.come2us.domain.member.domain.entity.Member;
-import com.irum.come2us.domain.product.domain.entity.Product;
-import com.irum.come2us.global.domain.BaseEntity;
+import com.irum.productservice.domain.member.domain.entity.Member;
+import com.irum.productservice.domain.product.domain.entity.Product;
+import com.irum.productservice.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.*;

@@ -1,6 +1,6 @@
-package com.irum.come2us.domain.review.domain.entity;
+package com.irum.productservice.domain.review.domain.entity;
 
-import com.irum.come2us.global.domain.BaseEntity;
+import com.irum.productservice.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.*;

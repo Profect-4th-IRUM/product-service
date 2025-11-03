@@ -1,10 +1,10 @@
-package com.irum.come2us.domain.category.presentation.controller;
+package com.irum.productservice.domain.category.presentation.controller;
 
-import com.irum.come2us.domain.category.application.service.CategoryService;
-import com.irum.come2us.domain.category.presentation.dto.request.CategoryCreateRequest;
-import com.irum.come2us.domain.category.presentation.dto.request.CategoryUpdateRequest;
-import com.irum.come2us.domain.category.presentation.dto.response.CategoryInfoResponse;
-import com.irum.come2us.domain.category.presentation.dto.response.CategoryResponse;
+import com.irum.productservice.domain.category.application.service.CategoryService;
+import com.irum.productservice.domain.category.presentation.dto.request.CategoryCreateRequest;
+import com.irum.productservice.domain.category.presentation.dto.request.CategoryUpdateRequest;
+import com.irum.productservice.domain.category.presentation.dto.response.CategoryInfoResponse;
+import com.irum.productservice.domain.category.presentation.dto.response.CategoryResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;

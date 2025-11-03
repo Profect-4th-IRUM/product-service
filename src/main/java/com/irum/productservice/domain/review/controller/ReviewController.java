@@ -1,10 +1,10 @@
-package com.irum.come2us.domain.review.presentation.controller;
+package com.irum.productservice.domain.review.presentation.controller;
 
-import com.irum.come2us.domain.review.application.service.ReviewService;
-import com.irum.come2us.domain.review.presentation.dto.request.ReviewCreateRequest;
-import com.irum.come2us.domain.review.presentation.dto.request.ReviewUpdateRequest;
-import com.irum.come2us.domain.review.presentation.dto.response.ReviewListResponse;
-import com.irum.come2us.domain.review.presentation.dto.response.ReviewResponse;
+import com.irum.productservice.domain.review.application.service.ReviewService;
+import com.irum.productservice.domain.review.presentation.dto.request.ReviewCreateRequest;
+import com.irum.productservice.domain.review.presentation.dto.request.ReviewUpdateRequest;
+import com.irum.productservice.domain.review.presentation.dto.response.ReviewListResponse;
+import com.irum.productservice.domain.review.presentation.dto.response.ReviewResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
