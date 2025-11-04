@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.deliverypolicy.presentation.dto.response;
+package com.irum.productservice.domain.deliverypolicy.dto.response;
 
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import java.util.UUID;

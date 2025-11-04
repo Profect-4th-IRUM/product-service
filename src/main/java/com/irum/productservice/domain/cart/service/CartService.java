@@ -1,16 +1,14 @@
-package com.irum.productservice.domain.cart.application.service;
+package com.irum.productservice.domain.cart.service;
 
 import com.irum.productservice.domain.cart.domain.entity.Cart;
 import com.irum.productservice.domain.cart.domain.repository.CartRepository;
-import com.irum.productservice.domain.cart.presentation.dto.request.CartCreateRequest;
-import com.irum.productservice.domain.cart.presentation.dto.request.CartUpdateRequest;
-import com.irum.productservice.domain.cart.presentation.dto.response.CartResponse;
-import com.irum.productservice.domain.member.domain.entity.Member;
+import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
+import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
+import com.irum.productservice.domain.cart.dto.response.CartResponse;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.CartErrorCode;
-import com.irum.productservice.global.util.MemberUtil;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

@@ -1,6 +1,5 @@
 package com.irum.productservice.domain.review.domain.entity;
 
-import com.irum.productservice.domain.member.domain.entity.Member;
 import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.global.domain.BaseEntity;
 import jakarta.persistence.*;

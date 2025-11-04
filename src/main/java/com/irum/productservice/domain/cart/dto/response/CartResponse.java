@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.cart.presentation.dto.response;
+package com.irum.productservice.domain.cart.dto.response;
 
 import com.irum.productservice.domain.cart.domain.entity.Cart;
 import java.util.UUID;

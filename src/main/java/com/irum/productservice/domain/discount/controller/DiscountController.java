@@ -1,10 +1,10 @@
-package com.irum.productservice.domain.discount.presentation.controller;
+package com.irum.productservice.domain.discount.controller;
 
-import com.irum.productservice.domain.discount.application.service.DiscountService;
-import com.irum.productservice.domain.discount.presentation.dto.request.DiscountInfoUpdateRequest;
-import com.irum.productservice.domain.discount.presentation.dto.request.DiscountRegisterRequest;
-import com.irum.productservice.domain.discount.presentation.dto.response.DiscountInfoListResponse;
-import com.irum.productservice.domain.discount.presentation.dto.response.DiscountInfoResponse;
+import com.irum.productservice.domain.discount.service.DiscountService;
+import com.irum.productservice.domain.discount.dto.request.DiscountInfoUpdateRequest;
+import com.irum.productservice.domain.discount.dto.request.DiscountRegisterRequest;
+import com.irum.productservice.domain.discount.dto.response.DiscountInfoListResponse;
+import com.irum.productservice.domain.discount.dto.response.DiscountInfoResponse;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

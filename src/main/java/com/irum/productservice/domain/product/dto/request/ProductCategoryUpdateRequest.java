@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.product.presentation.dto.request;
+package com.irum.productservice.domain.product.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;

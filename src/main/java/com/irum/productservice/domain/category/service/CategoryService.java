@@ -1,12 +1,11 @@
-package com.irum.productservice.domain.category.application.service;
-import com.irum.productservice.global.util.MemberUtil;
+package com.irum.productservice.domain.category.service;
 
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.category.domain.repository.CategoryRepository;
-import com.irum.productservice.domain.category.presentation.dto.request.CategoryCreateRequest;
-import com.irum.productservice.domain.category.presentation.dto.request.CategoryUpdateRequest;
-import com.irum.productservice.domain.category.presentation.dto.response.CategoryInfoResponse;
-import com.irum.productservice.domain.category.presentation.dto.response.CategoryResponse;
+import com.irum.productservice.domain.category.dto.request.CategoryCreateRequest;
+import com.irum.productservice.domain.category.dto.request.CategoryUpdateRequest;
+import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
+import com.irum.productservice.domain.category.dto.response.CategoryResponse;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.CategoryErrorCode;
 import java.util.List;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final MemberUtil memberUtil;
 
 
     @Transactional(readOnly = true)

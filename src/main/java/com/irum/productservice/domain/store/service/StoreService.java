@@ -1,17 +1,15 @@
-package com.irum.productservice.domain.store.application.service;
+package com.irum.productservice.domain.store.service;
 
-import com.irum.productservice.domain.member.application.util.MemberValidator;
-import com.irum.productservice.domain.member.domain.entity.Member;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
-import com.irum.productservice.domain.product.presentation.dto.request.ProductCursorResponse;
-import com.irum.productservice.domain.product.presentation.dto.response.ProductResponse;
+import com.irum.productservice.domain.product.dto.request.ProductCursorResponse;
+import com.irum.productservice.domain.product.dto.response.ProductResponse;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
-import com.irum.productservice.domain.store.presentation.dto.request.StoreCreateRequest;
-import com.irum.productservice.domain.store.presentation.dto.request.StoreUpdateRequest;
-import com.irum.productservice.domain.store.presentation.dto.response.StoreCreateResponse;
-import com.irum.productservice.domain.store.presentation.dto.response.StoreInfoResponse;
-import com.irum.productservice.domain.store.presentation.dto.response.StoreListResponse;
+import com.irum.productservice.domain.store.dto.request.StoreCreateRequest;
+import com.irum.productservice.domain.store.dto.request.StoreUpdateRequest;
+import com.irum.productservice.domain.store.dto.response.StoreCreateResponse;
+import com.irum.productservice.domain.store.dto.response.StoreInfoResponse;
+import com.irum.productservice.domain.store.dto.response.StoreListResponse;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
 import com.irum.productservice.global.util.MemberUtil;
@@ -28,7 +26,6 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
-    private final MemberUtil memberUtil;
 
     public StoreCreateResponse createStore(StoreCreateRequest request) {
         Member member = memberUtil.getCurrentMember();

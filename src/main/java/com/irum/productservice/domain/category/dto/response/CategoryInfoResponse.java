@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.category.presentation.dto.response;
+package com.irum.productservice.domain.category.dto.response;
 
 import com.irum.productservice.domain.category.domain.entity.Category;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.product.application.service;
+package com.irum.productservice.domain.product.service;
 
 import com.irum.productservice.global.constants.FileStorageConstants;
 import com.irum.productservice.global.infrastructure.properties.FileProperties;

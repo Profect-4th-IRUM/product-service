@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.review.application.service;
+package com.irum.productservice.domain.review.service;
 
 import com.irum.productservice.domain.member.domain.entity.Member;
 import com.irum.productservice.domain.product.domain.entity.Product;
@@ -7,9 +7,9 @@ import com.irum.productservice.domain.review.domain.entity.Review;
 import com.irum.productservice.domain.review.domain.entity.ReviewImage;
 import com.irum.productservice.domain.review.domain.repository.ReviewImageRepository;
 import com.irum.productservice.domain.review.domain.repository.ReviewRepository;
-import com.irum.productservice.domain.review.presentation.dto.request.ReviewCreateRequest;
-import com.irum.productservice.domain.review.presentation.dto.request.ReviewUpdateRequest;
-import com.irum.productservice.domain.review.presentation.dto.response.ReviewResponse;
+import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
+import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
+import com.irum.productservice.domain.review.dto.response.ReviewResponse;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.ReviewErrorCode;

@@ -1,7 +1,5 @@
-package com.irum.productservice.domain.product.application.service;
+package com.irum.productservice.domain.product.service;
 
-import com.irum.productservice.domain.order.domain.entity.OrderDetail;
-import com.irum.productservice.domain.order.domain.repository.OrderDetailRepository;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;

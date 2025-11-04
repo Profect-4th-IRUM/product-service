@@ -1,10 +1,10 @@
-package com.irum.productservice.domain.product.application.service;
+package com.irum.productservice.domain.product.service;
 
 import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.entity.ProductImage;
 import com.irum.productservice.domain.product.domain.repository.ProductImageRepository;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
-import com.irum.productservice.domain.product.presentation.dto.response.ProductImageResponse;
+import com.irum.productservice.domain.product.dto.response.ProductImageResponse;
 import com.irum.productservice.global.constants.FileStorageConstants;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;

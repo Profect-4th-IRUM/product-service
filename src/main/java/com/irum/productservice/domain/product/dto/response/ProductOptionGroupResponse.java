@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.product.presentation.dto.response;
+package com.irum.productservice.domain.product.dto.response;
 
 import com.irum.productservice.domain.product.domain.entity.ProductOptionGroup;
 import java.util.List;

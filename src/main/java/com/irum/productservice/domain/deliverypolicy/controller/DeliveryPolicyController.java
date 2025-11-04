@@ -1,9 +1,9 @@
-package com.irum.productservice.domain.deliverypolicy.presentation.controller;
+package com.irum.productservice.domain.deliverypolicy.controller;
 
-import com.irum.productservice.domain.deliverypolicy.application.service.DeliveryPolicyService;
-import com.irum.productservice.domain.deliverypolicy.presentation.dto.request.DeliveryPolicyCreateRequest;
-import com.irum.productservice.domain.deliverypolicy.presentation.dto.request.DeliveryPolicyInfoUpdateRequest;
-import com.irum.productservice.domain.deliverypolicy.presentation.dto.response.DeliveryPolicyInfoResponse;
+import com.irum.productservice.domain.deliverypolicy.service.DeliveryPolicyService;
+import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyCreateRequest;
+import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyInfoUpdateRequest;
+import com.irum.productservice.domain.deliverypolicy.dto.response.DeliveryPolicyInfoResponse;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.store.presentation.dto.response;
+package com.irum.productservice.domain.store.dto.response;
 
 import com.irum.productservice.domain.store.domain.entity.Store;
 import java.util.UUID;

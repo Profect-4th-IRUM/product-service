@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.store.presentation.dto.request;
+package com.irum.productservice.domain.store.dto.request;
 
 import jakarta.validation.constraints.*;
 
