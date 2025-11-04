@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.review.presentation.dto.response;
+package com.irum.productservice.domain.review.dto.response;
 
 import com.irum.productservice.domain.review.domain.entity.Review;
 import java.util.List;

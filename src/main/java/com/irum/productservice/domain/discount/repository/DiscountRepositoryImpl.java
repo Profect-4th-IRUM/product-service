@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.discount.infrastructure.repository;
+package com.irum.productservice.domain.discount.repository;
 
 import static com.irum.productservice.domain.discount.domain.entity.QDiscount.discount;
 import static com.irum.productservice.domain.product.domain.entity.QProduct.product;
@@ -6,7 +6,7 @@ import static com.irum.productservice.domain.store.domain.entity.QStore.store;
 
 import com.irum.productservice.domain.discount.domain.entity.QDiscount;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepositoryCustom;
-import com.irum.productservice.domain.discount.presentation.dto.response.DiscountInfoResponse;
+import com.irum.productservice.domain.discount.dto.response.DiscountInfoResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;

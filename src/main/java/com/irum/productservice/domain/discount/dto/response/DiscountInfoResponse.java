@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.discount.presentation.dto.response;
+package com.irum.productservice.domain.discount.dto.response;
 
 import com.irum.productservice.domain.discount.domain.entity.Discount;
 import java.util.UUID;

@@ -1,6 +1,6 @@
-package com.irum.productservice.domain.product.presentation.dto.request;
+package com.irum.productservice.domain.product.dto.request;
 
-import com.irum.productservice.domain.product.presentation.dto.response.ProductResponse;
+import com.irum.productservice.domain.product.dto.response.ProductResponse;
 import java.util.List;
 import java.util.UUID;
 

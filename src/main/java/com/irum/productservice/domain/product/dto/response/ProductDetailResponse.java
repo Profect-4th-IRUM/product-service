@@ -1,8 +1,8 @@
-package com.irum.productservice.domain.product.presentation.dto.response;
+package com.irum.productservice.domain.product.dto.response;
 
-import com.irum.productservice.domain.category.presentation.dto.response.CategoryInfoResponse;
+import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
 import com.irum.productservice.domain.product.domain.entity.Product;
-import com.irum.productservice.domain.store.presentation.dto.response.StoreInfoResponse;
+import com.irum.productservice.domain.store.dto.response.StoreInfoResponse;
 import java.util.List;
 import java.util.UUID;
 

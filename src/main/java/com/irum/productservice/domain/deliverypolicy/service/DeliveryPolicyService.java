@@ -1,11 +1,10 @@
-package com.irum.productservice.domain.deliverypolicy.application.service;
+package com.irum.productservice.domain.deliverypolicy.service;
 
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import com.irum.productservice.domain.deliverypolicy.domain.repository.DeliveryPolicyRepository;
-import com.irum.productservice.domain.deliverypolicy.presentation.dto.request.DeliveryPolicyCreateRequest;
-import com.irum.productservice.domain.deliverypolicy.presentation.dto.request.DeliveryPolicyInfoUpdateRequest;
-import com.irum.productservice.domain.deliverypolicy.presentation.dto.response.DeliveryPolicyInfoResponse;
-import com.irum.productservice.domain.member.domain.entity.Member;
+import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyCreateRequest;
+import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyInfoUpdateRequest;
+import com.irum.productservice.domain.deliverypolicy.dto.response.DeliveryPolicyInfoResponse;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;

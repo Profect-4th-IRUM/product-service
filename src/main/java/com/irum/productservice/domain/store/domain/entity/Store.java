@@ -1,7 +1,5 @@
 package com.irum.productservice.domain.store.domain.entity;
 
-import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
-import com.irum.productservice.domain.member.domain.entity.Member;
 import com.irum.productservice.global.constants.RegexConstants;
 import com.irum.productservice.global.domain.BaseEntity;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;
@@ -11,7 +9,6 @@ import jakarta.persistence.Entity;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.annotations.Where;
 
@@ -47,12 +44,8 @@ public class Store extends BaseEntity {
             columnDefinition = "char(10)")
     private String telemarketingRegistrationNumber;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false, unique = true)
-    private Member member;
-
-    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private DeliveryPolicy deliveryPolicy;
+    @Column(name= "member", updatable = false, nullable = false)
+    private UUID member;
 
 
     @Builder(access = AccessLevel.PRIVATE)
@@ -62,8 +55,7 @@ public class Store extends BaseEntity {
             String address,
             String businessRegistrationNumber,
             String telemarketingRegistrationNumber,
-            Member member,
-            DeliveryPolicy deliveryPolicy) {
+            UUID member) {
 
         this.name = name;
         this.contact = validContact(contact);
@@ -73,7 +65,6 @@ public class Store extends BaseEntity {
         this.telemarketingRegistrationNumber =
                 validTelemarketingRegistrationNumber(telemarketingRegistrationNumber);
         this.member = member;
-        this.deliveryPolicy = null;
     }
 
     public static Store createStore(
@@ -82,7 +73,7 @@ public class Store extends BaseEntity {
             String address,
             String businessRegistrationNumber,
             String telemarketingRegistrationNumber,
-            Member member) {
+            UUID member) {
         return Store.builder()
                 .name(name)
                 .contact(contact)

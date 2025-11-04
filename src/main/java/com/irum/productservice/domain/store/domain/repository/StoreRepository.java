@@ -1,6 +1,5 @@
 package com.irum.productservice.domain.store.domain.repository;
 
-import com.irum.productservice.domain.member.domain.entity.Member;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,14 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface StoreRepository extends JpaRepository<Store, UUID>, StoreRepositoryCustom {
 
-    boolean existsByMember(Member member);
+    boolean existsByMember(UUID member);
 
     boolean existsByBusinessRegistrationNumber(String businessRegistrationNumber);
 
     boolean existsByTelemarketingRegistrationNumber(String telemarketingRegistrationNumber);
 
-    Optional<Store> findByMember(Member member);
+    Optional<Store> findByMember(UUID member);
 
-    @Query("SELECT s FROM Store s JOIN FETCH s.deliveryPolicy WHERE s.id = :id")
-    Optional<Store> findByIdWithDeliveryPolicy(@Param("id") UUID id);
 }
