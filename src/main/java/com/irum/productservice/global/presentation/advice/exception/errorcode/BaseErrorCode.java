@@ -1,4 +1,4 @@
-package com.irum.come2us.global.presentation.advice.exception.errorcode;
+package com.irum.productservice.global.presentation.advice.exception.errorcode;
 
 import org.springframework.http.HttpStatus;
 

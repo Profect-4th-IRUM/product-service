@@ -1,4 +1,4 @@
-package com.irum.come2us.global.presentation.advice.response;
+package com.irum.productservice.global.presentation.advice.response;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;
