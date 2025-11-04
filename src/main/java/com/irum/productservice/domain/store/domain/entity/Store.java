@@ -1,5 +1,6 @@
 package com.irum.productservice.domain.store.domain.entity;
 
+import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import com.irum.productservice.global.constants.RegexConstants;
 import com.irum.productservice.global.domain.BaseEntity;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;
@@ -45,7 +46,10 @@ public class Store extends BaseEntity {
     private String telemarketingRegistrationNumber;
 
     @Column(name= "member", updatable = false, nullable = false)
-    private UUID member;
+    private Long member;
+
+    @OneToOne(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private DeliveryPolicy deliveryPolicy;
 
 
     @Builder(access = AccessLevel.PRIVATE)
@@ -55,7 +59,7 @@ public class Store extends BaseEntity {
             String address,
             String businessRegistrationNumber,
             String telemarketingRegistrationNumber,
-            UUID member) {
+            Long member) {
 
         this.name = name;
         this.contact = validContact(contact);
@@ -73,7 +77,7 @@ public class Store extends BaseEntity {
             String address,
             String businessRegistrationNumber,
             String telemarketingRegistrationNumber,
-            UUID member) {
+            Long member) {
         return Store.builder()
                 .name(name)
                 .contact(contact)
