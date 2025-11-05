@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record ReviewCreateRequest(
+        @NotNull(message = "주문상세 ID는 필수 입력값입니다.") UUID orderDetailId,
         @NotNull(message = "상품 ID는 필수 입력값입니다.") UUID productId,
         @NotBlank(message = "리뷰 내용은 필수 입력값입니다.") String content,
         @NotNull(message = "평점은 필수 입력값입니다.")
