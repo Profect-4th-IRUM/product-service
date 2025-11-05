@@ -1,5 +1,7 @@
 package com.irum.productservice.domain.review.domain.entity;
 
+import com.irum.productservice.domain.member.domain.entity.Member;
+import com.irum.productservice.domain.order.domain.entity.OrderDetail;
 import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.global.domain.BaseEntity;
 import jakarta.persistence.*;
@@ -14,6 +16,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "p_review")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE p_review SET deleted_at = NOW() WHERE review_id = ?")
 @Where(clause = "deleted_at IS NULL")
 @Check(constraints = "rate BETWEEN 1 AND 5")
 public class Review extends BaseEntity {
@@ -23,10 +26,10 @@ public class Review extends BaseEntity {
     @Column(name = "review_id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "rate", nullable = false, columnDefinition = "SMALLINT")
+    @Column(nullable = false, columnDefinition = "SMALLINT")
     private Short rate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,24 +40,33 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_detail_id", unique = true, nullable = false)
+    private OrderDetail orderDetail;
+
     @Builder
-    private Review(String content, Short rate, Member member, Product product) {
+    private Review(
+            String content, Short rate, Member member, Product product, OrderDetail orderDetail) {
         this.content = content;
         this.rate = rate;
         this.member = member;
         this.product = product;
+        this.orderDetail = orderDetail;
     }
 
-    public static Review createReview(String content, Short rate, Member member, Product product) {
-        return Review.builder().content(content).rate(rate).member(member).product(product).build();
+    public static Review createReview(
+            String content, Short rate, Member member, Product product, OrderDetail orderDetail) {
+        return Review.builder()
+                .content(content)
+                .rate(rate)
+                .member(member)
+                .product(product)
+                .orderDetail(orderDetail)
+                .build();
     }
 
     public void updateReview(String content, Short rate) {
-        if (content != null) {
-            this.content = content;
-        }
-        if (rate != null) {
-            this.rate = rate;
-        }
+        if (content != null) this.content = content;
+        if (rate != null) this.rate = rate;
     }
 }
