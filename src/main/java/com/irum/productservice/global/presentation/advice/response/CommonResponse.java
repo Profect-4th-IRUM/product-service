@@ -1,4 +1,4 @@
-package com.irum.come2us.global.presentation.advice.response;
+package com.irum.productservice.global.presentation.advice.response;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
