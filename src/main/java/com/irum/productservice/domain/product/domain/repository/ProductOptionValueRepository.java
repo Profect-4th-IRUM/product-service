@@ -1,5 +1,7 @@
 package com.irum.productservice.domain.product.domain.repository;
 
+import com.irum.productservice.domain.product.domain.entity.Product;
+import com.irum.productservice.domain.product.domain.entity.ProductOptionGroup;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import feign.Param;
 import jakarta.persistence.LockModeType;
@@ -20,4 +22,7 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "3000")})
     @Query("select pov from ProductOptionValue pov where pov.id in :ids")
     List<ProductOptionValue> findAllByIdInWithLock(@Param("id") List<UUID> ids);
+    List<ProductOptionValue> findAllByOptionGroup(ProductOptionGroup optionGroup);
+    List<ProductOptionValue> findAllByOptionGroup_Product(Product product);
+
 }
