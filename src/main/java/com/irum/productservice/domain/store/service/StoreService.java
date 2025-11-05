@@ -12,7 +12,7 @@ import com.irum.productservice.domain.store.dto.response.StoreInfoResponse;
 import com.irum.productservice.domain.store.dto.response.StoreListResponse;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
-import com.irum.productservice.global.util.MemberUtil;
+
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
