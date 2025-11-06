@@ -1,13 +1,14 @@
 package com.irum.productservice.domain.product.service;
 
+import com.irum.global.advice.exception.CommonException;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
