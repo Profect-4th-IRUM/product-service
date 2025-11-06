@@ -11,6 +11,7 @@ import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
+import com.irum.productservice.openfeign.dto.request.RollbackStockRequest;
 import com.irum.productservice.openfeign.dto.request.UpdateStockRequest;
 import com.irum.productservice.openfeign.dto.response.UpdateStockDto;
 import com.irum.productservice.openfeign.dto.response.ProductDto;
@@ -62,6 +63,7 @@ public class ProductInternalService {
     }
 
     // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
+    @Transactional
     public UpdateStockDto updateStock(UpdateStockRequest request) {
         Store store = storeRepository.findByIdWithDeliveryPolicy(request.storeId()).orElseThrow(
                 () -> new CommonException(StoreErrorCode.STORE_NOT_FOUND)
@@ -103,5 +105,37 @@ public class ProductInternalService {
 
 
         return UpdateStockDto.from(store, productOptionValueList, discountMap);
+    }
+
+    /** 주문에 포함된 모든 상품의 재고를 다시 늘립니다.*/
+    @Transactional
+    public void rollbackStock(RollbackStockRequest request) {
+
+        // 재고를 되돌릴 ProductOptionValue ID 목록 추출
+        List<UUID> optionIds =
+                request.optionValueList().stream()
+                        .map(RollbackStockRequest.OptionValueRequest::optionValueId)
+                        .distinct() // 중복 ID 제거
+                        .toList();
+
+        // 락 획득
+        List<ProductOptionValue> options =
+                productOptionValueRepository.findAllByIdInWithLock(optionIds);
+
+        // <productOptionValueId , ProductOptionValue> 형태의 Map
+        Map<UUID, ProductOptionValue> optionMap =
+                options.stream().collect(Collectors.toMap(ProductOptionValue::getId, pov -> pov));
+
+        // 재고 되돌리기
+        for (RollbackStockRequest.OptionValueRequest opr : request.optionValueList()) {
+            ProductOptionValue option = optionMap.get(opr.optionValueId());
+
+            if (option == null) {
+                throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
+            }
+
+            // 재고 되돌리기
+            option.increaseStock(opr.quantity());
+        }
     }
 }

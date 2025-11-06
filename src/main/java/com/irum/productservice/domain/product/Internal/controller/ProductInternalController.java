@@ -1,6 +1,7 @@
 package com.irum.productservice.domain.product.Internal.controller;
 
 import com.irum.productservice.domain.product.Internal.service.ProductInternalService;
+import com.irum.productservice.openfeign.dto.request.RollbackStockRequest;
 import com.irum.productservice.openfeign.dto.request.UpdateStockRequest;
 import com.irum.productservice.openfeign.dto.response.UpdateStockDto;
 import com.irum.productservice.openfeign.dto.response.ProductDto;
@@ -31,4 +32,10 @@ public class ProductInternalController {
     public UpdateStockDto updateStock(@RequestBody UpdateStockRequest request) {
         return productInternalService.updateStock(request);
     }
+
+    @PatchMapping("/rollback")
+    public void rollbackStock(@RequestBody RollbackStockRequest request) {
+        productInternalService.rollbackStock(request);
+    }
+
 }
