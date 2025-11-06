@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import openfeign.member.dto.response.MemberDto;
 import openfeign.member.enums.Role;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,26 +35,21 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductOptionGroupRepository optionGroupRepository;
     private final ProductOptionValueRepository optionValueRepository;
-    private final MemberRepository memberRepository;
     private final StoreRepository storeRepository;
     private final CategoryRepository categoryRepository;
     private final MemberUtil memberUtil;
 
     public ProductResponse createProduct(ProductCreateRequest request) {
-        Member member = memberUtil.getCurrentMember();
+        MemberDto member = memberUtil.getCurrentMember();
 
         Store store =
                 storeRepository
-                        .findByMember(member)
+                        .findByMember(member.memberId())
                         .orElseThrow(() -> new CommonException(StoreErrorCode.STORE_NOT_FOUND));
 
         // memberUtil.assertMemberResourceAccess(store.getMember());
         // Store를 현재 인증된 유저 기반으로 조회했기 때문에, 다시 한 번 검증할 필요 없다고 생각
 
-        if (!member.getRole().equals(Role.OWNER)) {
-            log.warn("상품 등록 실패: 비인가 사용자 memberId={}", member.getMemberId());
-            throw new CommonException(MemberErrorCode.UNAUTHORIZED_ACCESS);
-        }
 
         Category category =
                 categoryRepository
@@ -250,7 +246,7 @@ public class ProductService {
 
         memberUtil.assertMemberResourceAccess(product.getStore().getMember());
 
-        product.softDelete(memberUtil.getCurrentMember().getMemberId());
+        product.softDelete(memberUtil.getCurrentMember().memberId());
         log.info("상품 삭제 완료: productId={}", productId);
     }
 

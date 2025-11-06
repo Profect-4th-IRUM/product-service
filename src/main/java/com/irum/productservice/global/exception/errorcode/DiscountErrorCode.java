@@ -1,5 +1,6 @@
 package com.irum.productservice.global.exception.errorcode;
 
+import com.irum.global.advice.exception.errorcode.BaseErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

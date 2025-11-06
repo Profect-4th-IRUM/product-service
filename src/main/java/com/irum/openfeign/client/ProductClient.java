@@ -12,12 +12,15 @@ import java.util.UUID;
 @FeignClient(name = "PRODUCT-SERVICE")
 public interface ProductClient {
 
+    // (상품ID 활용)상품, 상품옵션, 카테고리
     @GetMapping("/internal/products/{productId}")
     ProductDto getProduct(@PathVariable("productId") UUID productId);
 
+    // (옵션ID 활용)상품, 상품옵션, 카테고리
     @GetMapping("/internal/products/options/{optionId}")
     ProductDto getProductByOption(@PathVariable("optionId") UUID optionId);
 
+    // 상점 + 배송비 정책
     @GetMapping("/internal/stores/{storeId}")
     StoreDto getStore(@PathVariable("storeId") String storeId);
 }

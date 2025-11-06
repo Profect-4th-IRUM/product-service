@@ -76,7 +76,7 @@ public class DiscountService {
 
     public void removeDiscount(UUID discountId) {
         Discount discount = getValidDiscount(discountId);
-        discount.softDelete(memberUtil.getCurrentMember().getMemberId());
+        discount.softDelete(memberUtil.getCurrentMember().memberId());
     }
 
     private void checkDuplicateDiscount(UUID productId) {
