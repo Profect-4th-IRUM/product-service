@@ -250,6 +250,18 @@ public class ProductService {
         log.info("상품 삭제 완료: productId={}", productId);
     }
 
+    public void deleteProductsByStoreId(UUID storeId, Long deletedBy) {
+        List<Product> products = productRepository.findByStoreId(storeId);
+
+        if (products.isEmpty()) {
+            return;
+        }
+
+        for (Product product : products) {
+            product.softDelete(deletedBy);
+        }
+    }
+
     public void createOptionGroup(UUID productId, ProductOptionGroupRequest request) {
         Product product =
                 productRepository
