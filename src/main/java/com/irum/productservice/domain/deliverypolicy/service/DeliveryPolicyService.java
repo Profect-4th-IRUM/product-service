@@ -44,7 +44,7 @@ public class DeliveryPolicyService {
     }
 
     public void changeDeliveryPolicy(
-            UUID deliveryPolicyId, DeliveryPolicyInfoUpdateRequest request) {
+        UUID deliveryPolicyId, DeliveryPolicyInfoUpdateRequest request) {
         DeliveryPolicy deliveryPolicy = validDeliveryPolicy(deliveryPolicyId);
 
         if (request.defaultDeliveryFee() != null) {
@@ -60,9 +60,10 @@ public class DeliveryPolicyService {
 
     public void withdrawDeliveryPolicy(UUID deliveryPolicyId) {
         DeliveryPolicy deliveryPolicy = validDeliveryPolicy(deliveryPolicyId);
+        MemberDto member = memberUtil.getCurrentMember();
         Store store = deliveryPolicy.getStore();
 
-        deliveryPolicy.softDelete(memberUtil.getCurrentMember().memberId());
+        deliveryPolicy.softDelete(member.memberId());
     }
 
     @Transactional(readOnly = true)

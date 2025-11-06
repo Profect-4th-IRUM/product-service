@@ -62,8 +62,9 @@ public class StoreService {
 
     public void withdrawStore(UUID storeId) {
         Store store = getStoreById(storeId);
+        MemberDto member = memberUtil.getCurrentMember();
         memberUtil.assertMemberResourceAccess(store.getMember());
-        store.softDelete(memberUtil.getCurrentMember().memberId());
+        store.softDelete(member.memberId());
     }
 
     @Transactional(readOnly = true)
@@ -118,7 +119,6 @@ public class StoreService {
             throw new CommonException(StoreErrorCode.STORE_ALREADY_EXISTS);
         }
     }
-
     // 사업자등록번호 중복 체크
     private void validateBusinessNumber(String businessRegistrationNumber) {
         if (storeRepository.existsByBusinessRegistrationNumber(businessRegistrationNumber)) {
