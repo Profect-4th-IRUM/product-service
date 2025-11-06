@@ -1,16 +1,18 @@
 package com.irum.productservice.domain.category.service;
 
+import com.irum.global.advice.exception.CommonException;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.category.domain.repository.CategoryRepository;
 import com.irum.productservice.domain.category.dto.request.CategoryCreateRequest;
 import com.irum.productservice.domain.category.dto.request.CategoryUpdateRequest;
 import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
 import com.irum.productservice.domain.category.dto.response.CategoryResponse;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.CategoryErrorCode;
+import com.irum.productservice.global.exception.errorcode.CategoryErrorCode;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.irum.productservice.global.util.MemberUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-
+    private final MemberUtil memberUtil;
 
     @Transactional(readOnly = true)
     public List<CategoryInfoResponse> findRootCategories() {
@@ -91,6 +93,6 @@ public class CategoryService {
                         .findById(id)
                         .orElseThrow(
                                 () -> new CommonException(CategoryErrorCode.CATEGORY_NOT_FOUND));
-        category.softDelete(memberUtil.getCurrentMember().getMemberId());
+        category.softDelete(memberUtil.getCurrentMember().memberId());
     }
 }

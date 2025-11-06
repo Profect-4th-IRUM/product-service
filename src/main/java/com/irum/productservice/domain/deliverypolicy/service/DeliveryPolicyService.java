@@ -1,5 +1,6 @@
 package com.irum.productservice.domain.deliverypolicy.service;
 
+import com.irum.global.advice.exception.CommonException;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import com.irum.productservice.domain.deliverypolicy.domain.repository.DeliveryPolicyRepository;
 import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyCreateRequest;
@@ -7,12 +8,12 @@ import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyI
 import com.irum.productservice.domain.deliverypolicy.dto.response.DeliveryPolicyInfoResponse;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.DeliveryPolicyErrorCode;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
+import com.irum.productservice.global.exception.errorcode.DeliveryPolicyErrorCode;
+import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
 import com.irum.productservice.global.util.MemberUtil;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import openfeign.member.dto.response.MemberDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class DeliveryPolicyService {
     private final MemberUtil memberUtil;
 
     public void createDeliveryPolicy(DeliveryPolicyCreateRequest request) {
-        Member member = memberUtil.getCurrentMember();
+        MemberDto member = memberUtil.getCurrentMember();
         Store store = validateAndGetStoreByMember(member);
 
         ensureStoreHasNoExistingPolicy(store);
@@ -43,7 +44,7 @@ public class DeliveryPolicyService {
     }
 
     public void changeDeliveryPolicy(
-            UUID deliveryPolicyId, DeliveryPolicyInfoUpdateRequest request) {
+        UUID deliveryPolicyId, DeliveryPolicyInfoUpdateRequest request) {
         DeliveryPolicy deliveryPolicy = validDeliveryPolicy(deliveryPolicyId);
 
         if (request.defaultDeliveryFee() != null) {
@@ -59,9 +60,10 @@ public class DeliveryPolicyService {
 
     public void withdrawDeliveryPolicy(UUID deliveryPolicyId) {
         DeliveryPolicy deliveryPolicy = validDeliveryPolicy(deliveryPolicyId);
+        MemberDto member = memberUtil.getCurrentMember();
         Store store = deliveryPolicy.getStore();
 
-        deliveryPolicy.softDelete(memberUtil.getCurrentMember().getMemberId());
+        deliveryPolicy.softDelete(member.memberId());
     }
 
     @Transactional(readOnly = true)
@@ -78,9 +80,9 @@ public class DeliveryPolicyService {
     }
 
     // 로그인된 멤버의 상점 조회
-    private Store validateAndGetStoreByMember(Member member) {
+    private Store validateAndGetStoreByMember(MemberDto member) {
         return storeRepository
-                .findByMember(member)
+                .findByMember(member.memberId())
                 .orElseThrow(() -> new CommonException(StoreErrorCode.STORE_NOT_FOUND));
     }
 

@@ -9,13 +9,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface StoreRepository extends JpaRepository<Store, UUID>, StoreRepositoryCustom {
 
-    boolean existsByMember(UUID member);
+    boolean existsByMember(Long member);
 
     boolean existsByBusinessRegistrationNumber(String businessRegistrationNumber);
 
     boolean existsByTelemarketingRegistrationNumber(String telemarketingRegistrationNumber);
 
-    Optional<Store> findByMember(UUID member);
+    Optional<Store> findByMember(Long member);
 
     @Query("SELECT s FROM Store s JOIN FETCH s.deliveryPolicy WHERE s.id = :storeId")
     Optional<Store> findByIdWithDeliveryPolicy(@Param("storeId") UUID storeId);}
