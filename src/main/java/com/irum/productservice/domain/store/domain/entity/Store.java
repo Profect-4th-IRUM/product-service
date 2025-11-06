@@ -1,10 +1,10 @@
 package com.irum.productservice.domain.store.domain.entity;
 
+import com.irum.global.advice.exception.CommonException;
+import com.irum.global.constants.RegexConstants;
+import com.irum.global.domain.BaseEntity;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
-import com.irum.productservice.global.constants.RegexConstants;
-import com.irum.productservice.global.domain.BaseEntity;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
+import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import java.util.UUID;

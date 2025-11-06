@@ -6,9 +6,8 @@ import com.irum.productservice.domain.product.domain.repository.ProductImageRepo
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.product.dto.response.ProductImageResponse;
 import com.irum.productservice.global.constants.FileStorageConstants;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductImageErrorCode;
+import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
+import com.irum.productservice.global.exception.errorcode.ProductImageErrorCode;
 import com.irum.productservice.global.util.MemberUtil;
 import java.util.ArrayList;
 import java.util.Collections;

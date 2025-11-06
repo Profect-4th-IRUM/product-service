@@ -7,9 +7,8 @@ import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyI
 import com.irum.productservice.domain.deliverypolicy.dto.response.DeliveryPolicyInfoResponse;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.DeliveryPolicyErrorCode;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
+import com.irum.productservice.global.exception.errorcode.DeliveryPolicyErrorCode;
+import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
 import com.irum.productservice.global.util.MemberUtil;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

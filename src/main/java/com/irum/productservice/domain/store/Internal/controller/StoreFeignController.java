@@ -1,7 +1,7 @@
 package com.irum.productservice.domain.store.Internal.controller;
 
 import com.irum.productservice.domain.store.Internal.service.StoreInternalService;
-import com.irum.productservice.openfeign.dto.response.StoreDto;
+import com.irum.openfeign.dto.response.StoreDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

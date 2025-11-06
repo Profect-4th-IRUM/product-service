@@ -1,5 +1,6 @@
-package com.irum.productservice.domain.product.application.service;
+package com.irum.productservice.domain.product.service;
 
+import com.irum.global.advice.exception.CommonException;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.category.domain.repository.CategoryRepository;
 import com.irum.productservice.domain.product.domain.entity.Product;
@@ -12,16 +13,16 @@ import com.irum.productservice.domain.product.dto.request.*;
 import com.irum.productservice.domain.product.dto.response.*;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.CategoryErrorCode;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
+import com.irum.productservice.global.exception.errorcode.CategoryErrorCode;
+import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
+import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
 import com.irum.productservice.global.util.MemberUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import openfeign.member.enums.Role;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

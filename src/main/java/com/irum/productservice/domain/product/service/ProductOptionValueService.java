@@ -2,8 +2,7 @@ package com.irum.productservice.domain.product.service;
 
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
+import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
