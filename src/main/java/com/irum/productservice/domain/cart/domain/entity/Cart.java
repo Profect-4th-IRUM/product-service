@@ -25,9 +25,8 @@ public class Cart extends BaseEntity {
     @Column(name = "cart_id", updatable = false, nullable = false)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_value_id", nullable = false)
@@ -37,14 +36,18 @@ public class Cart extends BaseEntity {
     private Integer quantity;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Cart(Member member, ProductOptionValue optionValue, int quantity) {
-        this.member = member;
+    private Cart(Long memberId, ProductOptionValue optionValue, int quantity) {
+        this.memberId = memberId;
         this.optionValue = optionValue;
         this.quantity = quantity;
     }
 
-    public static Cart createCart(Member member, ProductOptionValue optionValue, int quantity) {
-        return Cart.builder().member(member).optionValue(optionValue).quantity(quantity).build();
+    public static Cart createCart(Long memberId, ProductOptionValue optionValue, int quantity) {
+        return Cart.builder()
+                .memberId(memberId)
+                .optionValue(optionValue)
+                .quantity(quantity)
+                .build();
     }
 
     public void updateQuantity(int quantity) {
