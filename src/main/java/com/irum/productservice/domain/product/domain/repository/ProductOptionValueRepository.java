@@ -25,4 +25,8 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     List<ProductOptionValue> findAllByOptionGroup(ProductOptionGroup optionGroup);
     List<ProductOptionValue> findAllByOptionGroup_Product(Product product);
 
+    @Query("""
+    SELECT pov from ProductOptionValue pov JOIN FETCH pov.optionGroup.product p WHERE pov.id in :ids
+    """)
+    List<ProductOptionValue> findAllByIdFetchProduct(@Param() List<UUID> ids);
 }
