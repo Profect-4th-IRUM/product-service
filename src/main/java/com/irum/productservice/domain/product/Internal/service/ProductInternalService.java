@@ -8,12 +8,11 @@ import com.irum.productservice.domain.product.domain.repository.ProductOptionVal
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
-import com.irum.productservice.domain.store.service.StoreService;
 import com.irum.productservice.global.presentation.advice.exception.CommonException;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
 import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
-import com.irum.productservice.openfeign.dto.request.DeliveryPolicyWithProductRequest;
-import com.irum.productservice.openfeign.dto.response.DeliveryPolicyWithProductDto;
+import com.irum.productservice.openfeign.dto.request.UpdateStockRequest;
+import com.irum.productservice.openfeign.dto.response.UpdateStockDto;
 import com.irum.productservice.openfeign.dto.response.ProductDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,18 +61,47 @@ public class ProductInternalService {
         return ProductDto.from(product, options, discount);
     }
 
-    // storeId, optionValueIdList -> 배송 정책, 상품 정보 조회
-    public DeliveryPolicyWithProductDto getDeliveryPolicyWithProduct(DeliveryPolicyWithProductRequest request) {
+    // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
+    public UpdateStockDto updateStock(UpdateStockRequest request) {
         Store store = storeRepository.findByIdWithDeliveryPolicy(request.storeId()).orElseThrow(
                 () -> new CommonException(StoreErrorCode.STORE_NOT_FOUND)
         );
-        List<ProductOptionValue> productOptionValueList = productOptionValueRepository.findAllByIdFetchProduct(request.optionValueIdList());
+        //옵션 id 모으기
+        List<UUID> productOptionValueIdList = request.optionValueList().stream().map(UpdateStockRequest.OptionValueRequest::optionValueId).toList();
+
+        //옵션 조회. product group, product, store도 fetch join
+        List<ProductOptionValue> productOptionValueList = productOptionValueRepository.findAllByIdWithLockFetchJoin(productOptionValueIdList);
+        Map<UUID, ProductOptionValue> povMap = productOptionValueList.stream().collect(Collectors.toMap(ProductOptionValue::getId, productOptionValue -> productOptionValue));
+
+        //정합 점검 : 존재하지 않는 상품을 주문하고 있는지
+        if (productOptionValueList.size() != request.optionValueList().size()) {
+            throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
+        }
+        //재고 감소
+        for (UpdateStockRequest.OptionValueRequest optionValueRequest : request.optionValueList()) {
+            ProductOptionValue pov = povMap.get(optionValueRequest.optionValueId());
+
+            // 해당 상점의 상품을 주문하고 있는지
+            if (!pov.getOptionGroup().getProduct().getStore().getId().equals(store.getId())) {
+                throw new CommonException(ProductErrorCode.PRODUCT_NOT_IN_STORE);
+            }
+
+            // 재고보다 요청 물품 개수가 많을때
+            if (pov.getStockQuantity() < optionValueRequest.quantity()) {
+                throw new CommonException(ProductErrorCode.PRODUCT_OUT_OF_STOCK);
+            }
+
+            pov.decreaseStock(optionValueRequest.quantity());
+        }
+
+        //할인 조회
         List<UUID> productIdList = productOptionValueList.stream().map(pov -> pov.getOptionGroup().getProduct().getId()).toList();
         List<Discount> discountList = discountRepository.findAllByProductIds(productIdList);
         Map<UUID, Integer> discountMap = discountList.stream().collect(
                 Collectors.toMap(Discount::getId, Discount::getAmount)
         );
 
-        return DeliveryPolicyWithProductDto.from(store, productOptionValueList, discountMap);
+
+        return UpdateStockDto.from(store, productOptionValueList, discountMap);
     }
 }

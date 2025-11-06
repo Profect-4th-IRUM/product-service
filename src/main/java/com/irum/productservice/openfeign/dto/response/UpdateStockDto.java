@@ -1,17 +1,15 @@
 package com.irum.productservice.openfeign.dto.response;
 
-import com.irum.productservice.domain.discount.domain.entity.Discount;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import lombok.Builder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @Builder
-public record DeliveryPolicyWithProductDto(
+public record UpdateStockDto(
         int defaultDeliveryFee,
         int minAmount,
         int minQuantity,
@@ -41,12 +39,12 @@ public record DeliveryPolicyWithProductDto(
         }
     }
 
-    public static DeliveryPolicyWithProductDto from(Store store, List<ProductOptionValue> productOptionValueList, Map<UUID, Integer> discountMap) {
+    public static UpdateStockDto from(Store store, List<ProductOptionValue> productOptionValueList, Map<UUID, Integer> discountMap) {
         List<ProductDto>  productDtoList = productOptionValueList.stream()
                 .map( pov -> ProductDto.from(pov, discountMap))
                 .toList();
 
-        return DeliveryPolicyWithProductDto.builder()
+        return UpdateStockDto.builder()
                 .defaultDeliveryFee(store.getDeliveryPolicy().getDefaultDeliveryFee())
                 .minAmount(store.getDeliveryPolicy().getMinAmount())
                 .minQuantity(store.getDeliveryPolicy().getMinQuantity())
