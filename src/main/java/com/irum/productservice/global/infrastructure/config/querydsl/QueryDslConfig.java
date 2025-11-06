@@ -1,4 +1,4 @@
-package com.irum.come2us.global.infrastructure.config.querydsl;
+package com.irum.productservice.global.infrastructure.config.querydsl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

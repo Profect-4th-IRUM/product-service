@@ -1,5 +1,6 @@
 package com.irum.productservice.domain.store.service;
 
+import com.irum.global.advice.exception.CommonException;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.product.dto.request.ProductCursorResponse;
 import com.irum.productservice.domain.product.dto.response.ProductResponse;
@@ -10,12 +11,14 @@ import com.irum.productservice.domain.store.dto.request.StoreUpdateRequest;
 import com.irum.productservice.domain.store.dto.response.StoreCreateResponse;
 import com.irum.productservice.domain.store.dto.response.StoreInfoResponse;
 import com.irum.productservice.domain.store.dto.response.StoreListResponse;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
+import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
 
 import java.util.List;
 import java.util.UUID;
+
+import com.irum.productservice.global.util.MemberUtil;
 import lombok.RequiredArgsConstructor;
+import openfeign.member.dto.response.MemberDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +29,12 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
+    private final MemberUtil memberUtil;
 
     public StoreCreateResponse createStore(StoreCreateRequest request) {
-        Member member = memberUtil.getCurrentMember();
+        MemberDto member = memberUtil.getCurrentMember();
 
-        validateMemberHasNoStore(member);
+        validateMemberHasNoStore(member.memberId());
         validateBusinessNumber(request.businessRegistrationNumber());
         validateTelemarketingNumber(request.telemarketingRegistrationNumber());
 
@@ -41,7 +45,7 @@ public class StoreService {
                         request.address(),
                         request.businessRegistrationNumber(),
                         request.telemarketingRegistrationNumber(),
-                        member);
+                        member.memberId());
 
         storeRepository.save(store);
 
@@ -58,8 +62,9 @@ public class StoreService {
 
     public void withdrawStore(UUID storeId) {
         Store store = getStoreById(storeId);
+        MemberDto member = memberUtil.getCurrentMember();
         memberUtil.assertMemberResourceAccess(store.getMember());
-        store.softDelete(memberUtil.getCurrentMember().getMemberId());
+        store.softDelete(member.memberId());
     }
 
     @Transactional(readOnly = true)
@@ -77,10 +82,10 @@ public class StoreService {
     }
 
     public ProductCursorResponse getMyStoreProducts(UUID cursor, Integer size) {
-        Member member = memberUtil.getCurrentMember();
+        MemberDto member = memberUtil.getCurrentMember();
         Store store =
                 storeRepository
-                        .findByMember(member)
+                        .findByMember(member.memberId())
                         .orElseThrow(() -> new CommonException(StoreErrorCode.STORE_NOT_FOUND));
 
         return getProductsByStore(store.getId(), cursor, size);
@@ -102,19 +107,18 @@ public class StoreService {
     }
 
     // 본인 소유 상점 검증
-    private void validateStoreOwner(Store store, Member currentMember) {
-        if (!store.getMember().getMemberId().equals(currentMember.getMemberId())) {
+    private void validateStoreOwner(Store store, MemberDto member) {
+        if (!store.getMember().equals(member.memberId())) {
             throw new CommonException(StoreErrorCode.UNAUTHORIZED_STORE_ACCESS);
         }
     }
 
     // 1인 1상점 제한
-    private void validateMemberHasNoStore(Member member) {
+    private void validateMemberHasNoStore(Long member) {
         if (storeRepository.existsByMember(member)) {
             throw new CommonException(StoreErrorCode.STORE_ALREADY_EXISTS);
         }
     }
-
     // 사업자등록번호 중복 체크
     private void validateBusinessNumber(String businessRegistrationNumber) {
         if (storeRepository.existsByBusinessRegistrationNumber(businessRegistrationNumber)) {

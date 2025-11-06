@@ -1,7 +1,7 @@
 package com.irum.productservice.domain.discount.domain.entity;
 
+import com.irum.global.domain.BaseEntity;
 import com.irum.productservice.domain.product.domain.entity.Product;
-import com.irum.productservice.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import java.util.UUID;
