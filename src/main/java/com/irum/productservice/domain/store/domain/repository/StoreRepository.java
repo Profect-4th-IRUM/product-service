@@ -18,4 +18,5 @@ public interface StoreRepository extends JpaRepository<Store, UUID>, StoreReposi
     Optional<Store> findByMember(Long member);
 
     @Query("SELECT s FROM Store s JOIN FETCH s.deliveryPolicy WHERE s.id = :storeId")
-    Optional<Store> findByIdWithDeliveryPolicy(@Param("storeId") UUID storeId);}
+    Optional<Store> findByIdWithDeliveryPolicy(@Param("storeId") UUID storeId);
+}

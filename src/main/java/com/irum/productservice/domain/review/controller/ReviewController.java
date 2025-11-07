@@ -1,10 +1,10 @@
 package com.irum.productservice.domain.review.controller;
 
-import com.irum.productservice.domain.review.service.ReviewService;
 import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
 import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
 import com.irum.productservice.domain.review.dto.response.ReviewListResponse;
 import com.irum.productservice.domain.review.dto.response.ReviewResponse;
+import com.irum.productservice.domain.review.service.ReviewService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

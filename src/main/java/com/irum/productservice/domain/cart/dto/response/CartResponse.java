@@ -13,12 +13,12 @@ public record CartResponse(
         String optionValueName,
         String imageUrl,
         int quantity,
-        int basePrice,     // 상품 기본가
-        int extraPrice,    // 옵션 추가금
+        int basePrice, // 상품 기본가
+        int extraPrice, // 옵션 추가금
         int discountAmount, // 할인 금액
-        int unitPrice,     // 단가 (base + extra - discount)
-        int lineTotal      // 총액 (unitPrice * quantity)
-) {
+        int unitPrice, // 단가 (base + extra - discount)
+        int lineTotal // 총액 (unitPrice * quantity)
+        ) {
     public static CartResponse from(Cart cart) {
         var optionValue = cart.getOptionValue();
         var product = optionValue.getOptionGroup().getProduct();
@@ -31,10 +31,11 @@ public record CartResponse(
         int unit = Math.max(base + extra - discountAmount, 0); // 음수 방지
         int total = unit * cart.getQuantity();
 
-        String imageUrl = product.getProductImages().stream()
-                .findFirst()
-                .map(ProductImage::getImageUrl)
-                .orElse(null);
+        String imageUrl =
+                product.getProductImages().stream()
+                        .findFirst()
+                        .map(ProductImage::getImageUrl)
+                        .orElse(null);
 
         return CartResponse.builder()
                 .cartId(cart.getId())

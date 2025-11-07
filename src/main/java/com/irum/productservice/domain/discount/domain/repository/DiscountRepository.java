@@ -1,7 +1,6 @@
 package com.irum.productservice.domain.discount.domain.repository;
 
 import com.irum.productservice.domain.discount.domain.entity.Discount;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

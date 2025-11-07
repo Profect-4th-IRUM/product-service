@@ -1,6 +1,8 @@
 package com.irum.productservice.domain.product.Internal.service;
 
 import com.irum.global.advice.exception.CommonException;
+import com.irum.openfeign.dto.request.RollbackStockRequest;
+import com.irum.openfeign.dto.request.UpdateStockRequest;
 import com.irum.openfeign.dto.response.ProductDto;
 import com.irum.openfeign.dto.response.UpdateStockDto;
 import com.irum.productservice.domain.discount.domain.entity.Discount;
@@ -13,17 +15,14 @@ import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
-import com.irum.openfeign.dto.request.RollbackStockRequest;
-import com.irum.openfeign.dto.request.UpdateStockRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,10 +36,12 @@ public class ProductInternalService {
     private final StoreRepository storeRepository;
     private final ProductOptionValueRepository optionValueRepository;
 
-    //상품 ID를 가지고 상품, 옵션(전체), 할인 조회
+    // 상품 ID를 가지고 상품, 옵션(전체), 할인 조회
     public ProductDto getProduct(UUID id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        Product product =
+                productRepository
+                        .findById(id)
+                        .orElseThrow(() -> new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         Discount discount = discountRepository.findByProductId(product.getId()).orElse(null);
         List<ProductOptionValue> optionValues =
@@ -49,10 +50,15 @@ public class ProductInternalService {
         return ProductDto.from(product, optionValues, discount);
     }
 
-    //옵션 ID를 가지고 상품, 옵션(전체), 할인 조회
+    // 옵션 ID를 가지고 상품, 옵션(전체), 할인 조회
     public ProductDto getProductByOption(UUID optionId) {
-        ProductOptionValue optionValue = productOptionValueRepository.findById(optionId)
-                .orElseThrow(() -> new CommonException(ProductErrorCode.PRODUCT_OPTION_VALUE_NOT_FOUND));
+        ProductOptionValue optionValue =
+                productOptionValueRepository
+                        .findById(optionId)
+                        .orElseThrow(
+                                () ->
+                                        new CommonException(
+                                                ProductErrorCode.PRODUCT_OPTION_VALUE_NOT_FOUND));
 
         Product product = optionValue.getOptionGroup().getProduct();
         Discount discount = discountRepository.findByProductId(product.getId()).orElse(null);
@@ -65,21 +71,31 @@ public class ProductInternalService {
     // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
     @Transactional
     public UpdateStockDto updateStock(UpdateStockRequest request) {
-        Store store = storeRepository.findByIdWithDeliveryPolicy(request.storeId()).orElseThrow(
-                () -> new CommonException(StoreErrorCode.STORE_NOT_FOUND)
-        );
-        //옵션 id 모으기
-        List<UUID> productOptionValueIdList = request.optionValueList().stream().map(UpdateStockRequest.OptionValueRequest::optionValueId).toList();
+        Store store =
+                storeRepository
+                        .findByIdWithDeliveryPolicy(request.storeId())
+                        .orElseThrow(() -> new CommonException(StoreErrorCode.STORE_NOT_FOUND));
+        // 옵션 id 모으기
+        List<UUID> productOptionValueIdList =
+                request.optionValueList().stream()
+                        .map(UpdateStockRequest.OptionValueRequest::optionValueId)
+                        .toList();
 
-        //옵션 조회. product group, product, store도 fetch join
-        List<ProductOptionValue> productOptionValueList = productOptionValueRepository.findAllByIdWithLockFetchJoin(productOptionValueIdList);
-        Map<UUID, ProductOptionValue> povMap = productOptionValueList.stream().collect(Collectors.toMap(ProductOptionValue::getId, productOptionValue -> productOptionValue));
+        // 옵션 조회. product group, product, store도 fetch join
+        List<ProductOptionValue> productOptionValueList =
+                productOptionValueRepository.findAllByIdWithLockFetchJoin(productOptionValueIdList);
+        Map<UUID, ProductOptionValue> povMap =
+                productOptionValueList.stream()
+                        .collect(
+                                Collectors.toMap(
+                                        ProductOptionValue::getId,
+                                        productOptionValue -> productOptionValue));
 
-        //정합 점검 : 존재하지 않는 상품을 주문하고 있는지
+        // 정합 점검 : 존재하지 않는 상품을 주문하고 있는지
         if (productOptionValueList.size() != request.optionValueList().size()) {
             throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
         }
-        //재고 감소
+        // 재고 감소
         for (UpdateStockRequest.OptionValueRequest optionValueRequest : request.optionValueList()) {
             ProductOptionValue pov = povMap.get(optionValueRequest.optionValueId());
 
@@ -96,18 +112,20 @@ public class ProductInternalService {
             pov.decreaseStock(optionValueRequest.quantity());
         }
 
-        //할인 조회
-        List<UUID> productIdList = productOptionValueList.stream().map(pov -> pov.getOptionGroup().getProduct().getId()).toList();
+        // 할인 조회
+        List<UUID> productIdList =
+                productOptionValueList.stream()
+                        .map(pov -> pov.getOptionGroup().getProduct().getId())
+                        .toList();
         List<Discount> discountList = discountRepository.findAllByProductIds(productIdList);
-        Map<UUID, Integer> discountMap = discountList.stream().collect(
-                Collectors.toMap(Discount::getId, Discount::getAmount)
-        );
-
+        Map<UUID, Integer> discountMap =
+                discountList.stream()
+                        .collect(Collectors.toMap(Discount::getId, Discount::getAmount));
 
         return UpdateStockDto.from(store, productOptionValueList, discountMap);
     }
 
-    /** 주문에 포함된 모든 상품의 재고를 다시 늘립니다.*/
+    /** 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
     @Transactional
     public void rollbackStock(RollbackStockRequest request) {
 

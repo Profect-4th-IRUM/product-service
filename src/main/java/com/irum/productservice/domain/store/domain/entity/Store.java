@@ -45,12 +45,15 @@ public class Store extends BaseEntity {
             columnDefinition = "char(10)")
     private String telemarketingRegistrationNumber;
 
-    @Column(name= "member", updatable = false, nullable = false)
+    @Column(name = "member", updatable = false, nullable = false)
     private Long member;
 
-    @OneToOne(mappedBy = "store", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(
+            mappedBy = "store",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private DeliveryPolicy deliveryPolicy;
-
 
     @Builder(access = AccessLevel.PRIVATE)
     private Store(

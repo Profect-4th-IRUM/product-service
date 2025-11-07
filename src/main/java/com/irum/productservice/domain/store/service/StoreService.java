@@ -12,11 +12,9 @@ import com.irum.productservice.domain.store.dto.response.StoreCreateResponse;
 import com.irum.productservice.domain.store.dto.response.StoreInfoResponse;
 import com.irum.productservice.domain.store.dto.response.StoreListResponse;
 import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
-
+import com.irum.productservice.global.util.MemberUtil;
 import java.util.List;
 import java.util.UUID;
-
-import com.irum.productservice.global.util.MemberUtil;
 import lombok.RequiredArgsConstructor;
 import openfeign.member.dto.response.MemberDto;
 import org.springframework.stereotype.Service;
@@ -119,6 +117,7 @@ public class StoreService {
             throw new CommonException(StoreErrorCode.STORE_ALREADY_EXISTS);
         }
     }
+
     // 사업자등록번호 중복 체크
     private void validateBusinessNumber(String businessRegistrationNumber) {
         if (storeRepository.existsByBusinessRegistrationNumber(businessRegistrationNumber)) {

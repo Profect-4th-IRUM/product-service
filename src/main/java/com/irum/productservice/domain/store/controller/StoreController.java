@@ -1,12 +1,12 @@
 package com.irum.productservice.domain.store.controller;
 
 import com.irum.productservice.domain.product.dto.request.ProductCursorResponse;
-import com.irum.productservice.domain.store.service.StoreService;
 import com.irum.productservice.domain.store.dto.request.StoreCreateRequest;
 import com.irum.productservice.domain.store.dto.request.StoreUpdateRequest;
 import com.irum.productservice.domain.store.dto.response.StoreCreateResponse;
 import com.irum.productservice.domain.store.dto.response.StoreInfoResponse;
 import com.irum.productservice.domain.store.dto.response.StoreListResponse;
+import com.irum.productservice.domain.store.service.StoreService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;

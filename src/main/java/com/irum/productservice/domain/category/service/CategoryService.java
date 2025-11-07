@@ -8,11 +8,10 @@ import com.irum.productservice.domain.category.dto.request.CategoryUpdateRequest
 import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
 import com.irum.productservice.domain.category.dto.response.CategoryResponse;
 import com.irum.productservice.global.exception.errorcode.CategoryErrorCode;
+import com.irum.productservice.global.util.MemberUtil;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import com.irum.productservice.global.util.MemberUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
