@@ -1,5 +1,8 @@
 package com.irum.productservice.domain.product.Internal.service;
 
+import com.irum.global.advice.exception.CommonException;
+import com.irum.openfeign.dto.response.ProductDto;
+import com.irum.openfeign.dto.response.UpdateStockDto;
 import com.irum.productservice.domain.discount.domain.entity.Discount;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
 import com.irum.productservice.domain.product.domain.entity.Product;
@@ -8,13 +11,10 @@ import com.irum.productservice.domain.product.domain.repository.ProductOptionVal
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
+import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
+import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
 import com.irum.productservice.openfeign.dto.request.RollbackStockRequest;
 import com.irum.productservice.openfeign.dto.request.UpdateStockRequest;
-import com.irum.productservice.openfeign.dto.response.UpdateStockDto;
-import com.irum.productservice.openfeign.dto.response.ProductDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

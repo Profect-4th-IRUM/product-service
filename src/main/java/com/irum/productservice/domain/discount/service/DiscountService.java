@@ -1,5 +1,6 @@
 package com.irum.productservice.domain.discount.service;
 
+import com.irum.global.advice.exception.CommonException;
 import com.irum.productservice.domain.discount.domain.entity.Discount;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
 import com.irum.productservice.domain.discount.dto.request.DiscountInfoUpdateRequest;
@@ -10,12 +11,13 @@ import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
-import com.irum.productservice.global.presentation.advice.exception.CommonException;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.DiscountErrorCode;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.ProductErrorCode;
-import com.irum.productservice.global.presentation.advice.exception.errorcode.StoreErrorCode;
+import com.irum.productservice.global.exception.errorcode.DiscountErrorCode;
+import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
+import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
 import java.util.List;
 import java.util.UUID;
+
+import com.irum.productservice.global.util.MemberUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,6 @@ public class DiscountService {
     private final DiscountRepository discountRepository;
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
-    private final MemberValidator memberValidator;
     private final MemberUtil memberUtil;
 
 
@@ -75,7 +76,7 @@ public class DiscountService {
 
     public void removeDiscount(UUID discountId) {
         Discount discount = getValidDiscount(discountId);
-        discount.softDelete(memberUtil.getCurrentMember().getMemberId());
+        discount.softDelete(memberUtil.getCurrentMember().memberId());
     }
 
     private void checkDuplicateDiscount(UUID productId) {
