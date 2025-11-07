@@ -1,6 +1,7 @@
 package com.irum.productservice.domain.discount.domain.repository;
 
 import com.irum.productservice.domain.discount.domain.entity.Discount;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,7 @@ public interface DiscountRepository
 
     @Query("SELECT d FROM Discount d JOIN FETCH d.product p WHERE d.product.id = :productId")
     Optional<Discount> findByProductId(@Param("productId") UUID productId);
+
+    @Query("SELECT d FROM Discount d WHERE d.product.id in :productIds")
+    List<Discount> findAllByProductIds(List<UUID> productIds);
 }

@@ -1,9 +1,7 @@
 package com.irum.productservice.domain.review.domain.entity;
 
-import com.irum.productservice.domain.member.domain.entity.Member;
-import com.irum.productservice.domain.order.domain.entity.OrderDetail;
 import com.irum.productservice.domain.product.domain.entity.Product;
-import com.irum.productservice.global.domain.BaseEntity;
+import com.irum.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.*;
@@ -32,36 +30,32 @@ public class Review extends BaseEntity {
     @Column(nullable = false, columnDefinition = "SMALLINT")
     private Short rate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
+
+    @Column(name = "order_detail_id", nullable = false, unique = true)
+    private UUID orderDetailId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_detail_id", unique = true, nullable = false)
-    private OrderDetail orderDetail;
-
     @Builder
-    private Review(
-            String content, Short rate, Member member, Product product, OrderDetail orderDetail) {
+    private Review(String content, Short rate, Long memberId, Product product, UUID orderDetailId) {
         this.content = content;
         this.rate = rate;
-        this.member = member;
+        this.memberId = memberId;
         this.product = product;
-        this.orderDetail = orderDetail;
+        this.orderDetailId = orderDetailId;
     }
 
-    public static Review createReview(
-            String content, Short rate, Member member, Product product, OrderDetail orderDetail) {
+    public static Review createReview(String content, Short rate, Long memberId, Product product, UUID orderDetailId) {
         return Review.builder()
                 .content(content)
                 .rate(rate)
-                .member(member)
+                .memberId(memberId)
                 .product(product)
-                .orderDetail(orderDetail)
+                .orderDetailId(orderDetailId)
                 .build();
     }
 

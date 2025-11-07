@@ -1,7 +1,7 @@
 package com.irum.openfeign.dto.response;
 
-import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
+import com.irum.productservice.domain.store.domain.entity.Store;
 import java.util.UUID;
 
 public record StoreDto(
@@ -13,8 +13,7 @@ public record StoreDto(
         String telemarketingRegistrationNumber,
         int defaultDeliveryFee,
         int minAmount,
-        int minQuantity
-) {
+        int minQuantity) {
     public static StoreDto from(Store store) {
         DeliveryPolicy policy = store.getDeliveryPolicy();
         return new StoreDto(
@@ -26,7 +25,6 @@ public record StoreDto(
                 store.getTelemarketingRegistrationNumber(),
                 policy.getDefaultDeliveryFee(),
                 policy.getMinAmount(),
-                policy.getMinQuantity()
-        );
+                policy.getMinQuantity());
     }
 }

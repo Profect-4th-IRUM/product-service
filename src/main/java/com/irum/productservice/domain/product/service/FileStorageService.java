@@ -2,8 +2,8 @@ package com.irum.productservice.domain.product.service;
 
 import com.irum.global.advice.exception.CommonException;
 import com.irum.global.constants.FileStorageConstants;
-import com.irum.productservice.global.infrastructure.properties.FileProperties;
 import com.irum.productservice.global.exception.errorcode.ProductImageErrorCode;
+import com.irum.productservice.global.infrastructure.properties.FileProperties;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

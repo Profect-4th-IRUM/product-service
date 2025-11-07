@@ -1,13 +1,11 @@
 package com.irum.openfeign.client;
 
-
 import com.irum.openfeign.dto.response.ProductDto;
 import com.irum.openfeign.dto.response.StoreDto;
+import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.UUID;
 
 @FeignClient(name = "PRODUCT-SERVICE")
 public interface ProductClient {

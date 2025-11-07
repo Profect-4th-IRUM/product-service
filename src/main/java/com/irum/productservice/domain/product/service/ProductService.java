@@ -56,7 +56,6 @@ public class ProductService {
         // memberUtil.assertMemberResourceAccess(store.getMember());
         // Store를 현재 인증된 유저 기반으로 조회했기 때문에, 다시 한 번 검증할 필요 없다고 생각
 
-
         Category category =
                 categoryRepository
                         .findById(request.categoryId())

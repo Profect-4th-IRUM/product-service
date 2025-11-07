@@ -40,7 +40,6 @@ public class DeliveryPolicy extends BaseEntity {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-
     @Builder(access = AccessLevel.PRIVATE)
     private DeliveryPolicy(int defaultDeliveryFee, int minQuantity, int minAmount, Store store) {
         this.defaultDeliveryFee = defaultDeliveryFee;

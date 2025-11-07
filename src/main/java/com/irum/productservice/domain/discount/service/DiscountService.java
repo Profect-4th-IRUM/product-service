@@ -14,10 +14,9 @@ import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.DiscountErrorCode;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
+import com.irum.productservice.global.util.MemberUtil;
 import java.util.List;
 import java.util.UUID;
-
-import com.irum.productservice.global.util.MemberUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,6 @@ public class DiscountService {
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
     private final MemberUtil memberUtil;
-
 
     public void createDiscount(DiscountRegisterRequest request) {
         Product product = assertOwnerProduct(request.productId());
@@ -127,5 +125,4 @@ public class DiscountService {
         memberUtil.assertMemberResourceAccess(store.getMember());
         return store;
     }
-
 }

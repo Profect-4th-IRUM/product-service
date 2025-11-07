@@ -1,6 +1,5 @@
 package com.irum.productservice.global.exception.errorcode;
 
-
 import com.irum.global.advice.exception.errorcode.BaseErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +12,7 @@ public enum ProductErrorCode implements BaseErrorCode {
     PRODUCT_NOT_MODIFIED(HttpStatus.BAD_REQUEST, "상품 수정에 대한 변경된 내용이 없습니다."),
     PRODUCT_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 상품입니다."),
     PRODUCT_OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다"),
+    PRODUCT_NOT_IN_STORE(HttpStatus.BAD_REQUEST, "해당 상점의 상품이 아닙니다."),
 
     PRODUCT_OPTION_VALUE_NOT_FOUND(HttpStatus.NOT_FOUND, "상품 옵션 정보를 찾을 수 없습니다."),
 

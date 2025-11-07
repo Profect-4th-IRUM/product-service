@@ -43,13 +43,11 @@ public class DeliveryPolicyService {
                         request.minAmount(),
                         store);
 
-
-
         deliveryPolicyRepository.save(deliveryPolicy);
     }
 
     public void changeDeliveryPolicy(
-        UUID deliveryPolicyId, DeliveryPolicyInfoUpdateRequest request) {
+            UUID deliveryPolicyId, DeliveryPolicyInfoUpdateRequest request) {
         DeliveryPolicy deliveryPolicy = validDeliveryPolicy(deliveryPolicyId);
 
         if (request.defaultDeliveryFee() != null) {
