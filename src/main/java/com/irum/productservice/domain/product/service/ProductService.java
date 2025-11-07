@@ -11,6 +11,7 @@ import com.irum.productservice.domain.product.domain.repository.ProductOptionVal
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.product.dto.request.*;
 import com.irum.productservice.domain.product.dto.response.*;
+import com.irum.productservice.domain.product.event.ProductDeletedEvent;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.CategoryErrorCode;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import openfeign.member.dto.response.MemberDto;
 import openfeign.member.enums.Role;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,8 @@ public class ProductService {
     private final StoreRepository storeRepository;
     private final CategoryRepository categoryRepository;
     private final MemberUtil memberUtil;
+    private final ApplicationEventPublisher eventPublisher;
+
 
     public ProductResponse createProduct(ProductCreateRequest request) {
         MemberDto member = memberUtil.getCurrentMember();
@@ -239,6 +243,7 @@ public class ProductService {
     }
 
     public void deleteProduct(UUID productId) {
+        MemberDto member = memberUtil.getCurrentMember();
         Product product =
                 productRepository
                         .findById(productId)
@@ -246,7 +251,10 @@ public class ProductService {
 
         memberUtil.assertMemberResourceAccess(product.getStore().getMember());
 
-        product.softDelete(memberUtil.getCurrentMember().memberId());
+        product.softDelete(member.memberId());
+
+        eventPublisher.publishEvent(new ProductDeletedEvent(product.getId(), member.memberId()));
+
         log.info("상품 삭제 완료: productId={}", productId);
     }
 
@@ -259,6 +267,7 @@ public class ProductService {
 
         for (Product product : products) {
             product.softDelete(deletedBy);
+            eventPublisher.publishEvent(new ProductDeletedEvent(product.getId(), deletedBy));
         }
     }
 
@@ -368,6 +377,11 @@ public class ProductService {
 
         optionGroupRepository.delete(optionGroup);
         log.info("상품 옵션 그룹 삭제 완료: groupId={}", optionGroupId);
+    }
+
+    public void deleteProductOptionGroupByProductId(UUID productId, Long deletedBy) {
+        optionGroupRepository.findByProductId(productId)
+                .ifPresent(optionGroup -> optionGroup.softDelete(deletedBy));
     }
 
     public void deleteProductOptionValue(UUID optionValueId) {

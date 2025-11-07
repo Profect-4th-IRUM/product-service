@@ -127,6 +127,17 @@ public class ProductImageService {
         log.info("상품 이미지 삭제 완료: imageId={}, productId={}", imageId, productId);
     }
 
+    public void deleteProductImagesByProductId(UUID productId, Long deletedBy) {
+        List<ProductImage> images = productImageRepository.findByProductId(productId);
+
+        if (images.isEmpty()) {
+            return;
+        }
+        for (ProductImage productImage : images) {
+            productImage.softDelete(deletedBy);
+        }
+    }
+
     @Transactional(readOnly = true)
     public List<ProductImageResponse> getProductImages(UUID productId) {
         List<ProductImage> images = productImageRepository.findByProductId(productId);
