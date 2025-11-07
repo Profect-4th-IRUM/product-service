@@ -13,18 +13,19 @@ import org.springframework.stereotype.Repository;
 public interface CartRepository extends JpaRepository<Cart, UUID> {
 
     /** 특정 회원이 같은 옵션 상품을 장바구니에 담은 내역 찾기 */
-    @Query("""
+    @Query(
+            """
         SELECT c
         FROM Cart c
         WHERE c.memberId = :memberId
         AND c.optionValue.id = :optionValueId
     """)
     Cart findByMemberIdAndOptionValueId(
-            @Param("memberId") @NotNull Long memberId,
-            @Param("optionValueId") UUID optionValueId);
+            @Param("memberId") @NotNull Long memberId, @Param("optionValueId") UUID optionValueId);
 
     /** 특정 회원의 장바구니 + 상품/옵션/이미지 통합 조회 (대표 이미지 미리 로딩) */
-    @Query("""
+    @Query(
+            """
         SELECT DISTINCT c
         FROM Cart c
         JOIN FETCH c.optionValue ov

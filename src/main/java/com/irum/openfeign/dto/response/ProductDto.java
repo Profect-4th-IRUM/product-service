@@ -19,9 +19,9 @@ public record ProductDto(
         String categoryName,
         UUID storeId,
         List<ProductOptionDto> options,
-        DiscountDto discount
-) {
-    public static ProductDto from(Product product, List<ProductOptionValue> optionValues,Discount discount) {
+        DiscountDto discount) {
+    public static ProductDto from(
+            Product product, List<ProductOptionValue> optionValues, Discount discount) {
         return new ProductDto(
                 product.getId(),
                 product.getName(),
@@ -34,44 +34,27 @@ public record ProductDto(
                 product.getCategory().getCategoryId(),
                 product.getCategory().getName(),
                 product.getStore().getId(),
-                optionValues.stream()
-                        .map(ProductOptionDto::from)
-                        .toList(),
-                DiscountDto.from(discount)
-        );
+                optionValues.stream().map(ProductOptionDto::from).toList(),
+                DiscountDto.from(discount));
     }
 
     public record ProductOptionDto(
-            UUID optionValueId,
-            String optionName,
-            int extraPrice,
-            int stockQuantity
-    ) {
+            UUID optionValueId, String optionName, int extraPrice, int stockQuantity) {
         public static ProductOptionDto from(ProductOptionValue optionValue) {
             return new ProductOptionDto(
                     optionValue.getId(),
                     optionValue.getName(),
                     optionValue.getExtraPrice(),
-                    optionValue.getStockQuantity()
-            );
+                    optionValue.getStockQuantity());
         }
     }
-    public record DiscountDto (
-            UUID discountId,
-            String name,
-            int amount
-    ){
-        public static DiscountDto from(Discount discount){
+
+    public record DiscountDto(UUID discountId, String name, int amount) {
+        public static DiscountDto from(Discount discount) {
             if (discount == null) {
                 return null;
             }
-            return new DiscountDto(
-                    discount.getId(),
-                    discount.getName(),
-                    discount.getAmount()
-            );
+            return new DiscountDto(discount.getId(), discount.getName(), discount.getAmount());
         }
-
     }
-
 }

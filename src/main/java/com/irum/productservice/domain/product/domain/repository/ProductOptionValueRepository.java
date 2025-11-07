@@ -21,8 +21,21 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "3000")})
     @Query("select pov from ProductOptionValue pov where pov.id in :ids")
-    List<ProductOptionValue> findAllByIdInWithLock(@Param("id") List<UUID> ids);
+    List<ProductOptionValue> findAllByIdInWithLock(@Param("ids") List<UUID> ids);
+
     List<ProductOptionValue> findAllByOptionGroup(ProductOptionGroup optionGroup);
+
     List<ProductOptionValue> findAllByOptionGroup_Product(Product product);
 
+    /** 기본적으로 fetch join은 락에 안잡힘 */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "3000")})
+    @Query(
+            """
+    SELECT pov
+    FROM ProductOptionValue pov
+    JOIN FETCH pov.optionGroup.product.store ps
+    WHERE pov.id IN :ids
+    """)
+    List<ProductOptionValue> findAllByIdWithLockFetchJoin(@Param("ids") List<UUID> ids);
 }

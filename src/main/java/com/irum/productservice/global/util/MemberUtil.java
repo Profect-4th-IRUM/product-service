@@ -29,4 +29,3 @@ public class MemberUtil {
         return MemberAuthContext.getMemberId();
     } // 로그인 된 아이디 반환
 }
-

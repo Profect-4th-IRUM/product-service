@@ -117,7 +117,6 @@ public class ProductImageService {
         image.unmarkAsDefault();
         image.softDelete(memberUtil.getCurrentMember().memberId());
 
-
         if (wasDefault) {
             productImageRepository
                     .findTopByProductIdOrderByCreatedAtDesc(productId)

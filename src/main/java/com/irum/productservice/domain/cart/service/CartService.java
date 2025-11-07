@@ -1,5 +1,6 @@
 package com.irum.productservice.domain.cart.service;
 
+import com.irum.global.advice.exception.CommonException;
 import com.irum.productservice.domain.cart.domain.entity.Cart;
 import com.irum.productservice.domain.cart.domain.repository.CartRepository;
 import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
@@ -7,15 +8,13 @@ import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
 import com.irum.productservice.domain.cart.dto.response.CartResponse;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
-import com.irum.global.advice.exception.CommonException;
 import com.irum.productservice.global.exception.errorcode.CartErrorCode;
 import com.irum.productservice.global.util.MemberUtil;
-import com.irum.global.context.MemberAuthContext;
-import openfeign.member.dto.response.MemberDto;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import openfeign.member.dto.response.MemberDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,12 +31,15 @@ public class CartService {
     public CartResponse createCart(CartCreateRequest request) {
         MemberDto currentMember = memberUtil.getCurrentMember();
 
-        ProductOptionValue optionValue = productOptionValueRepository
-                .findById(request.optionValueId())
-                .orElseThrow(() -> new CommonException(CartErrorCode.OPTION_VALUE_NOT_FOUND));
+        ProductOptionValue optionValue =
+                productOptionValueRepository
+                        .findById(request.optionValueId())
+                        .orElseThrow(
+                                () -> new CommonException(CartErrorCode.OPTION_VALUE_NOT_FOUND));
 
-        Cart existing = cartRepository.findByMemberIdAndOptionValueId(
-                currentMember.memberId(), request.optionValueId());
+        Cart existing =
+                cartRepository.findByMemberIdAndOptionValueId(
+                        currentMember.memberId(), request.optionValueId());
 
         Cart target;
         if (existing != null) {
@@ -53,8 +55,10 @@ public class CartService {
 
     /** 장바구니 수정 */
     public void updateCart(UUID cartId, CartUpdateRequest request) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new CommonException(CartErrorCode.CART_NOT_FOUND));
+        Cart cart =
+                cartRepository
+                        .findById(cartId)
+                        .orElseThrow(() -> new CommonException(CartErrorCode.CART_NOT_FOUND));
 
         memberUtil.assertMemberResourceAccess(cart.getMemberId());
 
@@ -66,15 +70,15 @@ public class CartService {
     public List<CartResponse> getCartListByMember() {
         MemberDto currentMember = memberUtil.getCurrentMember();
         List<Cart> carts = cartRepository.findAllWithProductByMemberId(currentMember.memberId());
-        return carts.stream()
-                .map(CartResponse::from)
-                .collect(Collectors.toList());
+        return carts.stream().map(CartResponse::from).collect(Collectors.toList());
     }
 
     /** 장바구니 삭제 */
     public void deleteCart(UUID cartId) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new CommonException(CartErrorCode.CART_NOT_FOUND));
+        Cart cart =
+                cartRepository
+                        .findById(cartId)
+                        .orElseThrow(() -> new CommonException(CartErrorCode.CART_NOT_FOUND));
 
         MemberDto currentMember = memberUtil.getCurrentMember();
         memberUtil.assertMemberResourceAccess(cart.getMemberId());
