@@ -24,5 +24,9 @@ public class ProductEventListener {
         discountService.deleteDiscountByProductId(event.getProductId(),event.getDeletedBy());
     }
 
+    @EventListener
+    public void handleOptionGroupDeleted(OptionGroupDeletedEvent event) {
+        productService.deleteOptionValueByOptionGroupId(event.getOptionGroupId(),event.getDeletedBy());
+    }
 
 }

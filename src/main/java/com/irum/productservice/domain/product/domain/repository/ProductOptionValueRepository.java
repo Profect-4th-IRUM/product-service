@@ -24,5 +24,6 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     List<ProductOptionValue> findAllByIdInWithLock(@Param("id") List<UUID> ids);
     List<ProductOptionValue> findAllByOptionGroup(ProductOptionGroup optionGroup);
     List<ProductOptionValue> findAllByOptionGroup_Product(Product product);
+    List<ProductOptionValue> findAllByOptionGroup_Id(UUID optionGroupId);
 
 }
