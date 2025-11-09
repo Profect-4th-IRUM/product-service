@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableFeignClients(basePackages = "openfeign")
-@EnableScheduling
 public class ProductServiceApplication {
 
     public static void main(String[] args) {

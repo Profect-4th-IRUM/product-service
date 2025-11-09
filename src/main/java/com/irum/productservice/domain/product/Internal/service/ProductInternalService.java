@@ -19,8 +19,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.OptimisticLockException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.hibernate.StaleObjectStateException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +41,6 @@ public class ProductInternalService {
     private final ProductOptionValueRepository productOptionValueRepository;
     private final DiscountRepository discountRepository;
     private final StoreRepository storeRepository;
-    private final ProductOptionValueRepository optionValueRepository;
 
     // 상품 ID를 가지고 상품, 옵션(전체), 할인 조회
     public ProductDto getProduct(UUID id) {
@@ -69,6 +75,11 @@ public class ProductInternalService {
     }
 
     // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
+    @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
+        value = {OptimisticLockException.class, StaleObjectStateException.class},
+        maxAttempts = 3, //최대 3번 재시도
+        backoff = @Backoff(delay = 100) // 100ms간격
+    )
     @Transactional
     public UpdateStockDto updateStock(UpdateStockRequest request) {
         Store store =
@@ -83,7 +94,7 @@ public class ProductInternalService {
 
         // 옵션 조회. product group, product, store도 fetch join
         List<ProductOptionValue> productOptionValueList =
-                productOptionValueRepository.findAllByIdWithLockFetchJoin(productOptionValueIdList);
+                productOptionValueRepository.findAllByIdWithFetchJoin(productOptionValueIdList);
         Map<UUID, ProductOptionValue> povMap =
                 productOptionValueList.stream()
                         .collect(
@@ -126,6 +137,11 @@ public class ProductInternalService {
     }
 
     /** 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
+    @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
+        value = {OptimisticLockException.class, StaleObjectStateException.class},
+        maxAttempts = 5,
+        backoff = @Backoff(delay = 200)
+    )
     @Transactional
     public void rollbackStock(RollbackStockRequest request) {
 
@@ -138,7 +154,7 @@ public class ProductInternalService {
 
         // 락 획득
         List<ProductOptionValue> options =
-                productOptionValueRepository.findAllByIdInWithLock(optionIds);
+                productOptionValueRepository.findAllByIds(optionIds);
 
         // <productOptionValueId , ProductOptionValue> 형태의 Map
         Map<UUID, ProductOptionValue> optionMap =

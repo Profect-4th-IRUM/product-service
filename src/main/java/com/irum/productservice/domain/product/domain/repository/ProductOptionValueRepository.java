@@ -23,6 +23,8 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     @Query("select pov from ProductOptionValue pov where pov.id in :ids")
     List<ProductOptionValue> findAllByIdInWithLock(@Param("ids") List<UUID> ids);
 
+    @Query("select pov from ProductOptionValue pov where pov.id in :ids")
+    List<ProductOptionValue> findAllByIds(@Param("ids") List<UUID> ids);
     List<ProductOptionValue> findAllByOptionGroup(ProductOptionGroup optionGroup);
 
     List<ProductOptionValue> findAllByOptionGroup_Product(Product product);
@@ -38,4 +40,14 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     WHERE pov.id IN :ids
     """)
     List<ProductOptionValue> findAllByIdWithLockFetchJoin(@Param("ids") List<UUID> ids);
+
+    @Query(
+        """
+    SELECT pov
+    FROM ProductOptionValue pov
+    JOIN FETCH pov.optionGroup.product.store ps
+    WHERE pov.id IN :ids
+    """)
+    List<ProductOptionValue> findAllByIdWithFetchJoin(@Param("ids") List<UUID> ids);
+
 }
