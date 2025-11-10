@@ -152,7 +152,7 @@ public class ProductInternalService {
             backoff = @Backoff(
                     delay = 100,
                     maxDelay = 1000,
-                    multiplier = 2,
+                    multiplier = 1.5,
                     random = true
             ),
             recover = "recoverRollbackStock"
@@ -167,7 +167,6 @@ public class ProductInternalService {
                         .distinct() // 중복 ID 제거
                         .toList();
 
-        // 락 획득
         List<ProductOptionValue> options =
                 productOptionValueRepository.findAllByIds(optionIds);
 

@@ -1,6 +1,7 @@
 package com.irum.productservice.product;
 
 import com.irum.global.advice.exception.CommonException;
+import com.irum.openfeign.dto.request.RollbackStockRequest;
 import com.irum.openfeign.dto.request.UpdateStockRequest;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.category.domain.repository.CategoryRepository;
@@ -36,6 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @SpringBootTest
 public class ProductInternalIntegrationTest {
@@ -61,7 +63,8 @@ public class ProductInternalIntegrationTest {
     private UUID storeId;
     private UUID optionValueId;
     private final int INITIAL_STOCK = 20; // 초기 재고
-    private final int USER_COUNT  = 100; // 사용자
+    private final int USER_COUNT  = 100; // 주문을 요청하는 사용자 수
+    private final int ROLLBACK_COUNT = 3; // 롤백을 요청하는 클라이언트 수
 
     @BeforeEach
     void setUp() {
@@ -105,7 +108,7 @@ public class ProductInternalIntegrationTest {
 
 
     @Test
-    @DisplayName("순차 주문(1개씩)")
+    @DisplayName("주문 - 순차 주문(1개씩)")
     void updateStock_SequentialTest() throws InterruptedException {
         // given
         AtomicInteger successCount = new AtomicInteger();
@@ -161,7 +164,7 @@ public class ProductInternalIntegrationTest {
     }
 
     @Test
-    @DisplayName("동시에 주문(1개씩) - Optimistic Lock 테스트")
+    @DisplayName("주문 - 동시에 주문 - Optimistic Lock 테스트")
     void updateStock_ConcurrencyTest() throws InterruptedException {
         // given
         ExecutorService executorService = Executors.newFixedThreadPool(USER_COUNT); // 스레드 만들기
@@ -218,13 +221,114 @@ public class ProductInternalIntegrationTest {
         // [최종 검증]
         // 초기 재고만큼만 성공해야 함
         assertThat(successCount.get()).isEqualTo(INITIAL_STOCK);
-        // 나머지 요청은 모두 '재고 부족'이거나 재시도 횟수 초과 이어야 함
+        // 나머지 요청은 모두 재고 부족이거나 재시도 횟수 초과 이어야 함
         assertThat(outOfStockCount.get() + recoverCount.get()).isEqualTo(USER_COUNT - INITIAL_STOCK);
         // DB에서 실제 재고를 다시 조회하여 0인지 확인
         ProductOptionValue finalPov = productOptionValueRepository.findById(optionValueId)
                 .orElseThrow(() -> new RuntimeException("테스트용 옵션 조회 실패"));
 
         assertThat(finalPov.getStockQuantity()).isZero();
+    }
+
+
+
+    @Test
+    @DisplayName("롤백 순차 테스트")
+    void rollback_SequentialTest() throws InterruptedException {
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger recoverCount = new AtomicInteger();
+
+        RollbackStockRequest.OptionValueRequest optionValueRequest = new RollbackStockRequest.OptionValueRequest(optionValueId, 1);
+        RollbackStockRequest request = new RollbackStockRequest(List.of(optionValueRequest));
+
+        for (int i = 0; i < ROLLBACK_COUNT; i++) {
+            try {
+                productInternalService.rollbackStock(request);
+                successCount.incrementAndGet();
+            } catch (CommonException e) {
+                if (e.getErrorCode() == ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED) {
+                    recoverCount.incrementAndGet();
+                } else {
+                    System.err.println("예상치 못한 예외: " + e.getMessage());
+                }
+            } catch (Exception e) {
+                System.err.println("테스트 중 감지된 예외: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            }
+        }
+
+
+        System.out.println("======================================");
+        System.out.println("성공 건수: " + successCount.get());
+        System.out.println("재시도 횟수 초과 건수: " + recoverCount.get());
+        System.out.println("======================================");
+
+        // Then: 최종 재고 확인
+        ProductOptionValue finalOption = productOptionValueRepository.findById(optionValueId)
+                .orElseThrow(() -> new AssertionError("Test setup failed: Option not found"));
+
+        int expectedStock = INITIAL_STOCK + ROLLBACK_COUNT;
+
+        System.out.println("Initial Stock: " + INITIAL_STOCK);
+        System.out.println("Final Stock (Actual): " + finalOption.getStockQuantity());
+        System.out.println("Final Stock (Expected): " + expectedStock);
+
+        assertThat(expectedStock).isEqualTo(finalOption.getStockQuantity());
+
+    }
+
+
+    @Test
+    @DisplayName("롤백 동시성 테스트")
+    void rollback_ConcurrencyTest() throws InterruptedException {
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger recoverCount = new AtomicInteger();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(ROLLBACK_COUNT);
+        CountDownLatch latch = new CountDownLatch(ROLLBACK_COUNT);
+
+        RollbackStockRequest.OptionValueRequest optionValueRequest = new RollbackStockRequest.OptionValueRequest(optionValueId, 1);
+        RollbackStockRequest request = new RollbackStockRequest(List.of(optionValueRequest));
+
+        for (int i = 0; i < ROLLBACK_COUNT; i++) {
+            executorService.submit(() -> {
+                try {
+                    productInternalService.rollbackStock(request);
+                    successCount.incrementAndGet();
+                } catch (CommonException e) {
+                    if (e.getErrorCode() == ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED) {
+                        recoverCount.incrementAndGet();
+                    }
+                    else {
+                        System.err.println("예상치 못한 예외: " + e.getMessage());
+                    }
+                } catch (Exception e) {
+                    System.err.println("테스트 중 감지된 예외: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                } finally {
+                    latch.countDown();
+                }
+            });
+
+            latch.await(15, TimeUnit.SECONDS);
+            executorService.shutdown();
+
+            System.out.println("======================================");
+            System.out.println("성공 건수: " + successCount.get());
+            System.out.println("재시도 횟수 초과 건수: " + recoverCount.get());
+            System.out.println("======================================");
+
+            // Then: 최종 재고 확인
+            ProductOptionValue finalOption = productOptionValueRepository.findById(optionValueId)
+                    .orElseThrow(() -> new AssertionError("Test setup failed: Option not found"));
+
+            int expectedStock = INITIAL_STOCK + ROLLBACK_COUNT;
+
+            System.out.println("Initial Stock: " + INITIAL_STOCK);
+            System.out.println("Final Stock (Actual): " + finalOption.getStockQuantity());
+            System.out.println("Final Stock (Expected): " + expectedStock);
+
+            assertThat(expectedStock).isEqualTo(finalOption.getStockQuantity());
+
+        }
     }
 
 }
