@@ -4,8 +4,11 @@ import com.irum.openfeign.dto.request.RollbackStockRequest;
 import com.irum.openfeign.dto.request.UpdateStockRequest;
 import com.irum.openfeign.dto.response.ProductDto;
 import com.irum.openfeign.dto.response.UpdateStockDto;
+import com.irum.productservice.domain.product.Internal.service.ProductInternalFacade;
 import com.irum.productservice.domain.product.Internal.service.ProductInternalService;
 import java.util.UUID;
+
+import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProductInternalController {
 
     private final ProductInternalService productInternalService;
+    private final ProductInternalFacade productInternalFacade;
 
     @GetMapping("/{productId}")
     public ProductDto getProduct(@PathVariable UUID productId) {
@@ -29,7 +33,7 @@ public class ProductInternalController {
     // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
     @PatchMapping("/stock")
     public UpdateStockDto updateStock(@RequestBody UpdateStockRequest request) {
-        return productInternalService.updateStock(request);
+        return productInternalFacade.updateStockWithRetry(request);
     }
 
     @PatchMapping("/rollback")

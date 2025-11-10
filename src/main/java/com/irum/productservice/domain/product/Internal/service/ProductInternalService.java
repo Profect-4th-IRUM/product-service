@@ -77,12 +77,6 @@ public class ProductInternalService {
     }
 
     // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
-    @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
-        retryFor = {OptimisticLockException.class, StaleObjectStateException.class, ObjectOptimisticLockingFailureException.class},
-        maxAttempts = 3, //최대 3번 재시도
-        backoff = @Backoff(delay = 100), // 100ms간격
-            recover = "recoverUpdateStock"
-    )
     @Transactional
     public UpdateStockDto updateStock(UpdateStockRequest request) {
         Store store =
@@ -174,12 +168,5 @@ public class ProductInternalService {
             // 재고 되돌리기
             option.increaseStock(opr.quantity());
         }
-    }
-
-
-    @Recover
-    public UpdateStockDto recoverUpdateStock(Throwable e, UpdateStockRequest request) {
-        log.error("재고 차감 최종 실패, 3번의 재시도 모두 실패. 발생한 예외 {},  Request : {}",  e.getClass().getSimpleName(), request);
-        throw new CommonException(ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED);
     }
 }
