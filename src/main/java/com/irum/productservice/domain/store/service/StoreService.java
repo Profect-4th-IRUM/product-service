@@ -1,6 +1,7 @@
 package com.irum.productservice.domain.store.service;
 
 import com.irum.global.advice.exception.CommonException;
+import com.irum.openfeign.member.dto.response.MemberDto;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.product.dto.request.ProductCursorResponse;
 import com.irum.productservice.domain.product.dto.response.ProductResponse;
@@ -17,7 +18,6 @@ import com.irum.productservice.global.util.MemberUtil;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import openfeign.member.dto.response.MemberDto;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

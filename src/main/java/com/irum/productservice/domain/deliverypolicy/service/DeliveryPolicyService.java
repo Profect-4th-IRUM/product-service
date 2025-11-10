@@ -1,6 +1,7 @@
 package com.irum.productservice.domain.deliverypolicy.service;
 
 import com.irum.global.advice.exception.CommonException;
+import com.irum.openfeign.member.dto.response.MemberDto;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import com.irum.productservice.domain.deliverypolicy.domain.repository.DeliveryPolicyRepository;
 import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyCreateRequest;
@@ -17,7 +18,6 @@ import com.irum.productservice.global.util.MemberUtil;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import openfeign.member.dto.response.MemberDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

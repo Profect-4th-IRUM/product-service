@@ -31,12 +31,14 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     /** 기본적으로 fetch join은 락에 안잡힘 */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "3000")})
-    @Query(
-            """
-    SELECT pov
-    FROM ProductOptionValue pov
-    JOIN FETCH pov.optionGroup.product.store ps
-    WHERE pov.id IN :ids
+    @Query("""
+    select distinct pov
+    from ProductOptionValue pov
+    join fetch pov.optionGroup og
+    join fetch og.product p
+    join fetch p.store s
+    where pov.id in :ids
     """)
     List<ProductOptionValue> findAllByIdWithLockFetchJoin(@Param("ids") List<UUID> ids);
+
 }
