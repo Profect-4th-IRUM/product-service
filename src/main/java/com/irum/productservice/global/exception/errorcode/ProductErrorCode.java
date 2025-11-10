@@ -13,6 +13,7 @@ public enum ProductErrorCode implements BaseErrorCode {
     PRODUCT_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 상품입니다."),
     PRODUCT_OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다"),
     PRODUCT_NOT_IN_STORE(HttpStatus.BAD_REQUEST, "해당 상점의 상품이 아닙니다."),
+    PRODUCT_RETRY_LIMIT_EXCEEDED(HttpStatus.CONFLICT, "요청이 많아 처리에 실패했습니다. 잠시 후 다시 시도해주세요"),
 
     PRODUCT_OPTION_VALUE_NOT_FOUND(HttpStatus.NOT_FOUND, "상품 옵션 정보를 찾을 수 없습니다."),
 

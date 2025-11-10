@@ -26,7 +26,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.hibernate.StaleObjectStateException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,9 +78,10 @@ public class ProductInternalService {
 
     // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
-        value = {OptimisticLockException.class, StaleObjectStateException.class},
+        retryFor = {OptimisticLockException.class, StaleObjectStateException.class, ObjectOptimisticLockingFailureException.class},
         maxAttempts = 3, //최대 3번 재시도
-        backoff = @Backoff(delay = 100) // 100ms간격
+        backoff = @Backoff(delay = 100), // 100ms간격
+            recover = "recoverUpdateStock"
     )
     @Transactional
     public UpdateStockDto updateStock(UpdateStockRequest request) {
@@ -138,7 +141,7 @@ public class ProductInternalService {
 
     /** 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
-        value = {OptimisticLockException.class, StaleObjectStateException.class},
+        retryFor = {OptimisticLockException.class, StaleObjectStateException.class, ObjectOptimisticLockingFailureException.class},
         maxAttempts = 5,
         backoff = @Backoff(delay = 200)
     )
@@ -171,5 +174,12 @@ public class ProductInternalService {
             // 재고 되돌리기
             option.increaseStock(opr.quantity());
         }
+    }
+
+
+    @Recover
+    public UpdateStockDto recoverUpdateStock(Throwable e, UpdateStockRequest request) {
+        log.error("재고 차감 최종 실패, 3번의 재시도 모두 실패. 발생한 예외 {},  Request : {}",  e.getClass().getSimpleName(), request);
+        throw new CommonException(ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED);
     }
 }
