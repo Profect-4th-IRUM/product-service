@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import com.irum.productservice.domain.product.domain.repository.ProductOptionVal
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductInternalServiceTest {
@@ -76,6 +78,10 @@ public class ProductInternalServiceTest {
 		Category testCategory = mock(Category.class);
 		given(testCategory.getDepth()).willReturn(3);
 
+        DeliveryPolicy mockPolicy = mock(DeliveryPolicy.class);
+        given(mockPolicy.getDefaultDeliveryFee()).willReturn(3000);
+        ReflectionTestUtils.setField(mockStore, "deliveryPolicy", mockPolicy);
+
 		Product mockProduct = Product.createProduct(
 			mockStore,
 			testCategory,
@@ -98,6 +104,9 @@ public class ProductInternalServiceTest {
 			50,
 			0
 		); // 재고 50개
+        ReflectionTestUtils.setField(mockStore, "id", storeId);
+        ReflectionTestUtils.setField(pov1, "id", optionValueId1);
+        ReflectionTestUtils.setField(pov2, "id", optionValueId2);
 
 		// 3. Repository Mock 객체의 행동 정의 (Stubbing)
 		given(storeRepository.findByIdWithDeliveryPolicy(storeId))
