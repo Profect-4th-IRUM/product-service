@@ -17,6 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class ProductController {
     private final ProductService productService;
+//
+//    @GetMapping("/test")
+//    public ResponseEntity<Void> test(){
+//        log.info("test");
+//        return ResponseEntity.noContent().build();
+//    }
+//
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
