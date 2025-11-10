@@ -26,6 +26,7 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     List<ProductOptionValue> findAllByOptionGroup(ProductOptionGroup optionGroup);
 
     List<ProductOptionValue> findAllByOptionGroup_Product(Product product);
+    List<ProductOptionValue> findAllByOptionGroup_Id(UUID optionGroupId);
 
     /** 기본적으로 fetch join은 락에 안잡힘 */
     @Lock(LockModeType.PESSIMISTIC_WRITE)

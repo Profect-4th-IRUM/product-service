@@ -1,7 +1,11 @@
 package com.irum.productservice.domain.product.domain.repository;
 
 import com.irum.productservice.domain.product.domain.entity.ProductOptionGroup;
+
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProductOptionGroupRepository extends JpaRepository<ProductOptionGroup, UUID> {}
+public interface ProductOptionGroupRepository extends JpaRepository<ProductOptionGroup, UUID> {
+    Optional<ProductOptionGroup> findByProductId(UUID productId);
+}
