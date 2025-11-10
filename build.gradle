@@ -107,8 +107,8 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     // common module
-    implementation 'com.irum:open-feign-client:0.0.3-SNAPSHOT'
-    implementation 'com.irum:global-module:0.0.1-SNAPSHOT'
+    implementation 'com.irum:open-feign-client:0.0.4-SNAPSHOT'
+    implementation 'com.irum:global-module:0.1.2-SNAPSHOT'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
