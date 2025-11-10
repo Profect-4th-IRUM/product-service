@@ -1,5 +1,6 @@
  package com.irum.productservice.global.config;
 
+ import com.irum.global.infrastructure.config.GlobalAutoConfiguration;
  import com.irum.productservice.domain.cart.service.CartService;
  import com.irum.productservice.domain.category.service.CategoryService;
  import com.irum.productservice.domain.discount.service.DiscountService;

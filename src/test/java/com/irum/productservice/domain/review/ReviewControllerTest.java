@@ -45,7 +45,6 @@ class ReviewControllerTest {
 
     private final UUID mockReviewId = UUID.randomUUID();
     private final UUID mockProductId = UUID.randomUUID();
-
     /** 리뷰 생성 */
     @Test
     @DisplayName("리뷰 생성 API (고객 권한)")
