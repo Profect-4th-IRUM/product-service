@@ -7,4 +7,4 @@ spring:
 
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
-    include: ${SPRING_PROFILES_INCLUDE:datasource, eureka, openfeign}
+    include: ${SPRING_PROFILES_INCLUDE:datasource, eureka, openfeign, redis}
