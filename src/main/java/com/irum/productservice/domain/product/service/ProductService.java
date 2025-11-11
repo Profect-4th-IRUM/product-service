@@ -12,6 +12,8 @@ import com.irum.productservice.domain.product.domain.repository.ProductOptionVal
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.product.dto.request.*;
 import com.irum.productservice.domain.product.dto.response.*;
+import com.irum.productservice.domain.product.event.OptionGroupDeletedEvent;
+import com.irum.productservice.domain.product.event.ProductDeletedEvent;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.CategoryErrorCode;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +40,7 @@ public class ProductService {
     private final StoreRepository storeRepository;
     private final CategoryRepository categoryRepository;
     private final MemberUtil memberUtil;
+    private final ApplicationEventPublisher eventPublisher;
 
     public ProductResponse createProduct(ProductCreateRequest request) {
         MemberDto member = memberUtil.getCurrentMember();
@@ -237,6 +241,7 @@ public class ProductService {
     }
 
     public void deleteProduct(UUID productId) {
+        MemberDto member = memberUtil.getCurrentMember();
         Product product =
                 productRepository
                         .findById(productId)
@@ -244,8 +249,24 @@ public class ProductService {
 
         memberUtil.assertMemberResourceAccess(product.getStore().getMember());
 
-        product.softDelete(memberUtil.getCurrentMember().memberId());
+        product.softDelete(member.memberId());
+
+        eventPublisher.publishEvent(new ProductDeletedEvent(product.getId(), member.memberId()));
+
         log.info("상품 삭제 완료: productId={}", productId);
+    }
+
+    public void deleteProductsByStoreId(UUID storeId, Long deletedBy) {
+        List<Product> products = productRepository.findByStoreId(storeId);
+
+        if (products.isEmpty()) {
+            return;
+        }
+
+        for (Product product : products) {
+            product.softDelete(deletedBy);
+            eventPublisher.publishEvent(new ProductDeletedEvent(product.getId(), deletedBy));
+        }
     }
 
     public void createOptionGroup(UUID productId, ProductOptionGroupRequest request) {
@@ -344,6 +365,7 @@ public class ProductService {
     }
 
     public void deleteProductOptionGroup(UUID optionGroupId) {
+        MemberDto member = memberUtil.getCurrentMember();
         ProductOptionGroup optionGroup =
                 optionGroupRepository
                         .findById(optionGroupId)
@@ -354,6 +376,19 @@ public class ProductService {
 
         optionGroupRepository.delete(optionGroup);
         log.info("상품 옵션 그룹 삭제 완료: groupId={}", optionGroupId);
+        eventPublisher.publishEvent(
+                new OptionGroupDeletedEvent(optionGroup.getId(), member.memberId()));
+    }
+
+    public void deleteProductOptionGroupByProductId(UUID productId, Long deletedBy) {
+        optionGroupRepository
+                .findByProductId(productId)
+                .ifPresent(
+                        optionGroup -> {
+                            optionGroup.softDelete(deletedBy);
+                            eventPublisher.publishEvent(
+                                    new OptionGroupDeletedEvent(optionGroup.getId(), deletedBy));
+                        });
     }
 
     public void deleteProductOptionValue(UUID optionValueId) {
@@ -368,6 +403,18 @@ public class ProductService {
 
         optionValueRepository.delete(optionValue);
         log.info("상품 옵션 값 삭제 완료: valueId={}", optionValueId);
+    }
+
+    public void deleteOptionValueByOptionGroupId(UUID optionGroupId, Long deletedBy) {
+        List<ProductOptionValue> optionValues =
+                optionValueRepository.findAllByOptionGroup_Id(optionGroupId);
+
+        if (optionValues.isEmpty()) {
+            return; // 값이 없으면 그냥 통과
+        }
+        for (ProductOptionValue optionValue : optionValues) {
+            optionValue.softDelete(deletedBy);
+        }
     }
 
     private List<UUID> getAllDescendantCategoryIds(UUID categoryId) {

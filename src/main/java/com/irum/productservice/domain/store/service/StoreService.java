@@ -12,11 +12,13 @@ import com.irum.productservice.domain.store.dto.request.StoreUpdateRequest;
 import com.irum.productservice.domain.store.dto.response.StoreCreateResponse;
 import com.irum.productservice.domain.store.dto.response.StoreInfoResponse;
 import com.irum.productservice.domain.store.dto.response.StoreListResponse;
+import com.irum.productservice.domain.store.event.StoreDeletedEvent;
 import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
 import com.irum.productservice.global.util.MemberUtil;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
     private final MemberUtil memberUtil;
+    private final ApplicationEventPublisher eventPublisher;
 
     public StoreCreateResponse createStore(StoreCreateRequest request) {
         MemberDto member = memberUtil.getCurrentMember();
@@ -63,6 +66,8 @@ public class StoreService {
         MemberDto member = memberUtil.getCurrentMember();
         memberUtil.assertMemberResourceAccess(store.getMember());
         store.softDelete(member.memberId());
+
+        eventPublisher.publishEvent(new StoreDeletedEvent(storeId, member.memberId()));
     }
 
     @Transactional(readOnly = true)
