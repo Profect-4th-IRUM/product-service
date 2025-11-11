@@ -15,16 +15,13 @@ import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
+import jakarta.persistence.OptimisticLockException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import jakarta.persistence.OptimisticLockException;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.hibernate.StaleObjectStateException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
@@ -78,17 +75,15 @@ public class ProductInternalService {
 
     // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
-            retryFor = {OptimisticLockException.class, StaleObjectStateException.class, ObjectOptimisticLockingFailureException.class},
+            retryFor = {
+                OptimisticLockException.class,
+                StaleObjectStateException.class,
+                ObjectOptimisticLockingFailureException.class
+            },
             noRetryFor = {CommonException.class},
-            maxAttempts = 3, //최대 3번 재시도
-            backoff = @Backoff(
-                delay = 50,
-                maxDelay = 500,
-                multiplier = 1.5,
-                random = true
-            ),
-            recover = "recoverUpdateStock"
-    )
+            maxAttempts = 3, // 최대 3번 재시도
+            backoff = @Backoff(delay = 50, maxDelay = 500, multiplier = 1.5, random = true),
+            recover = "recoverUpdateStock")
     @Transactional
     public UpdateStockDto updateStock(UpdateStockRequest request) {
         Store store =
@@ -147,16 +142,14 @@ public class ProductInternalService {
 
     /** 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
-            retryFor = {OptimisticLockException.class, StaleObjectStateException.class, ObjectOptimisticLockingFailureException.class},
+            retryFor = {
+                OptimisticLockException.class,
+                StaleObjectStateException.class,
+                ObjectOptimisticLockingFailureException.class
+            },
             maxAttempts = 10,
-            backoff = @Backoff(
-                    delay = 100,
-                    maxDelay = 1000,
-                    multiplier = 1.5,
-                    random = true
-            ),
-            recover = "recoverRollbackStock"
-    )
+            backoff = @Backoff(delay = 100, maxDelay = 1000, multiplier = 1.5, random = true),
+            recover = "recoverRollbackStock")
     @Transactional
     public void rollbackStock(RollbackStockRequest request) {
 
@@ -167,8 +160,7 @@ public class ProductInternalService {
                         .distinct() // 중복 ID 제거
                         .toList();
 
-        List<ProductOptionValue> options =
-                productOptionValueRepository.findAllByIds(optionIds);
+        List<ProductOptionValue> options = productOptionValueRepository.findAllByIds(optionIds);
 
         // <productOptionValueId , ProductOptionValue> 형태의 Map
         Map<UUID, ProductOptionValue> optionMap =
@@ -187,10 +179,12 @@ public class ProductInternalService {
         }
     }
 
-
     @Recover
     public UpdateStockDto recoverUpdateStock(Throwable e, UpdateStockRequest request) {
-        log.error("재고 차감 최종 실패, 3번의 재시도 모두 실패. 발생한 예외 {},  Request : {}",  e.getClass().getSimpleName(), request);
+        log.error(
+                "재고 차감 최종 실패, 3번의 재시도 모두 실패. 발생한 예외 {},  Request : {}",
+                e.getClass().getSimpleName(),
+                request);
         if (e instanceof CommonException ce) {
             throw ce;
         }
@@ -199,7 +193,10 @@ public class ProductInternalService {
 
     @Recover
     public void recoverRollbackStock(Throwable e, RollbackStockRequest request) {
-        log.error("재고 롤백 최종 실패, 설정한 재시도 모두 실패. 발생한 예외 {}, Request : {}",  e.getClass().getSimpleName(), request);
+        log.error(
+                "재고 롤백 최종 실패, 설정한 재시도 모두 실패. 발생한 예외 {}, Request : {}",
+                e.getClass().getSimpleName(),
+                request);
         if (e instanceof CommonException ce) {
             throw ce;
         }

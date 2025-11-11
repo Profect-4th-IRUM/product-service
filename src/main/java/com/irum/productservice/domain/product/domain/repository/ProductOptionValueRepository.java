@@ -45,7 +45,7 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     List<ProductOptionValue> findAllByIdWithLockFetchJoin(@Param("ids") List<UUID> ids);
 
     @Query(
-        """
+            """
     SELECT pov
     FROM ProductOptionValue pov
     JOIN FETCH pov.optionGroup og
@@ -54,5 +54,4 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     WHERE pov.id IN :ids
     """)
     List<ProductOptionValue> findAllByIdWithFetchJoin(@Param("ids") List<UUID> ids);
-
 }

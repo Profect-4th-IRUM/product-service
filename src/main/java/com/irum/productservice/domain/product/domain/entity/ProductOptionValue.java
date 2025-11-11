@@ -37,8 +37,7 @@ public class ProductOptionValue extends BaseEntity {
     private Integer extraPrice;
 
     // 낙관적 락 버전 관리 필드
-    @Version
-    private Long version;
+    @Version private Long version;
 
     @Builder(access = AccessLevel.PRIVATE)
     private ProductOptionValue(
