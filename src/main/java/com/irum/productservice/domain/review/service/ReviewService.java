@@ -1,35 +1,35 @@
-//package com.irum.productservice.domain.review.service;
+// package com.irum.productservice.domain.review.service;
 //
-//import com.irum.global.advice.exception.CommonException;
-//import com.irum.global.context.MemberAuthContext;
-//import com.irum.productservice.domain.product.domain.entity.Product;
-//import com.irum.productservice.domain.product.domain.repository.ProductRepository;
-//import com.irum.productservice.domain.review.domain.entity.Review;
-//import com.irum.productservice.domain.review.domain.entity.ReviewImage;
-//import com.irum.productservice.domain.review.domain.repository.ReviewImageRepository;
-//import com.irum.productservice.domain.review.domain.repository.ReviewRepository;
-//import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
-//import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
-//import com.irum.productservice.domain.review.dto.response.ReviewResponse;
-//import com.irum.productservice.openfeign.client.OrderClient;
-//import com.irum.productservice.openfeign.dto.response.OrderDetailDto;
-//import com.irum.productservice.global.exception.errorcode.OrderErrorCode;
-//import com.irum.productservice.global.exception.errorcode.ReviewErrorCode;
-//import com.irum.productservice.global.util.MemberUtil;
-//import java.util.List;
-//import java.util.UUID;
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
+// import com.irum.global.advice.exception.CommonException;
+// import com.irum.global.context.MemberAuthContext;
+// import com.irum.productservice.domain.product.domain.entity.Product;
+// import com.irum.productservice.domain.product.domain.repository.ProductRepository;
+// import com.irum.productservice.domain.review.domain.entity.Review;
+// import com.irum.productservice.domain.review.domain.entity.ReviewImage;
+// import com.irum.productservice.domain.review.domain.repository.ReviewImageRepository;
+// import com.irum.productservice.domain.review.domain.repository.ReviewRepository;
+// import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
+// import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
+// import com.irum.productservice.domain.review.dto.response.ReviewResponse;
+// import com.irum.productservice.openfeign.client.OrderClient;
+// import com.irum.productservice.openfeign.dto.response.OrderDetailDto;
+// import com.irum.productservice.global.exception.errorcode.OrderErrorCode;
+// import com.irum.productservice.global.exception.errorcode.ReviewErrorCode;
+// import com.irum.productservice.global.util.MemberUtil;
+// import java.util.List;
+// import java.util.UUID;
+// import lombok.RequiredArgsConstructor;
+// import lombok.extern.slf4j.Slf4j;
+// import org.springframework.data.domain.Page;
+// import org.springframework.data.domain.Pageable;
+// import org.springframework.stereotype.Service;
+// import org.springframework.transaction.annotation.Transactional;
 //
-//@Service
-//@RequiredArgsConstructor
-//@Transactional
-//@Slf4j
-//public class ReviewService {
+// @Service
+// @RequiredArgsConstructor
+// @Transactional
+// @Slf4j
+// public class ReviewService {
 //
 //    private final ReviewRepository reviewRepository;
 //    private final ReviewImageRepository reviewImageRepository;
@@ -165,4 +165,4 @@
 //        log.info("상품 평점 갱신 완료: productId={}, avgRate={}, reviewCount={}",
 //                product.getId(), avg, count);
 //    }
-//}
+// }

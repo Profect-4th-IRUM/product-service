@@ -5,7 +5,6 @@ import com.irum.openfeign.member.dto.response.MemberDto;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.category.domain.repository.CategoryRepository;
 import com.irum.productservice.domain.product.domain.entity.Product;
-import com.irum.productservice.domain.product.domain.entity.ProductImage;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionGroup;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionGroupRepository;
@@ -42,7 +41,6 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final MemberUtil memberUtil;
     private final ApplicationEventPublisher eventPublisher;
-
 
     public ProductResponse createProduct(ProductCreateRequest request) {
         MemberDto member = memberUtil.getCurrentMember();
@@ -378,15 +376,19 @@ public class ProductService {
 
         optionGroupRepository.delete(optionGroup);
         log.info("상품 옵션 그룹 삭제 완료: groupId={}", optionGroupId);
-        eventPublisher.publishEvent(new OptionGroupDeletedEvent(optionGroup.getId(), member.memberId()));
+        eventPublisher.publishEvent(
+                new OptionGroupDeletedEvent(optionGroup.getId(), member.memberId()));
     }
 
     public void deleteProductOptionGroupByProductId(UUID productId, Long deletedBy) {
-        optionGroupRepository.findByProductId(productId)
-                .ifPresent(optionGroup -> {
-                    optionGroup.softDelete(deletedBy);
-                    eventPublisher.publishEvent(new OptionGroupDeletedEvent(optionGroup.getId(), deletedBy));
-                });
+        optionGroupRepository
+                .findByProductId(productId)
+                .ifPresent(
+                        optionGroup -> {
+                            optionGroup.softDelete(deletedBy);
+                            eventPublisher.publishEvent(
+                                    new OptionGroupDeletedEvent(optionGroup.getId(), deletedBy));
+                        });
     }
 
     public void deleteProductOptionValue(UUID optionValueId) {
@@ -404,7 +406,8 @@ public class ProductService {
     }
 
     public void deleteOptionValueByOptionGroupId(UUID optionGroupId, Long deletedBy) {
-        List<ProductOptionValue> optionValues =  optionValueRepository.findAllByOptionGroup_Id(optionGroupId);
+        List<ProductOptionValue> optionValues =
+                optionValueRepository.findAllByOptionGroup_Id(optionGroupId);
 
         if (optionValues.isEmpty()) {
             return; // 값이 없으면 그냥 통과

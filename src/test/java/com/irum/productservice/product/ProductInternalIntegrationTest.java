@@ -188,7 +188,8 @@ public class ProductInternalIntegrationTest {
                                 System.err.println("예상치 못한 예외: " + e.getMessage());
                             }
                         } catch (Exception e) {
-                            // OptimisticLockException이 @Retryable이나 @Recover에 의해 처리되지 않고 테스트까지 올라오는지 확인
+                            // OptimisticLockException이 @Retryable이나 @Recover에 의해 처리되지 않고 테스트까지
+                            // 올라오는지 확인
                             System.err.println(
                                     "테스트 중 감지된 예외: "
                                             + e.getClass().getSimpleName()

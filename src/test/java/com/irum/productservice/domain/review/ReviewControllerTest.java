@@ -13,13 +13,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.productservice.domain.review.service.ReviewService;
 import com.irum.productservice.domain.review.controller.ReviewController;
 import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
 import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
 import com.irum.productservice.domain.review.dto.response.ReviewListResponse;
 import com.irum.productservice.domain.review.dto.response.ReviewResponse;
-import com.irum.productservice.global.config.TestConfig;
+import com.irum.productservice.domain.review.service.ReviewService;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -36,7 +34,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ReviewController.class)
 @AutoConfigureRestDocs
-//@Import({SecurityTestConfig.class, TestConfig.class})
+// @Import({SecurityTestConfig.class, TestConfig.class})
 class ReviewControllerTest {
 
     @Autowired private MockMvc mockMvc;
@@ -45,6 +43,7 @@ class ReviewControllerTest {
 
     private final UUID mockReviewId = UUID.randomUUID();
     private final UUID mockProductId = UUID.randomUUID();
+
     /** 리뷰 생성 */
     @Test
     @DisplayName("리뷰 생성 API (고객 권한)")

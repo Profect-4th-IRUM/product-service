@@ -1,6 +1,5 @@
 package com.irum.productservice.domain.store.event;
 
-
 import com.irum.productservice.domain.deliverypolicy.service.DeliveryPolicyService;
 import com.irum.productservice.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +15,8 @@ public class StoreEventListener {
 
     @EventListener
     public void handleStoreDeleted(StoreDeletedEvent event) {
-        productService.deleteProductsByStoreId(event.getStoreId(),event.getDeletedBy());
-        deliveryPolicyService.deleteDeliveryPolicyByStoreId(event.getStoreId(),event.getDeletedBy());
+        productService.deleteProductsByStoreId(event.getStoreId(), event.getDeletedBy());
+        deliveryPolicyService.deleteDeliveryPolicyByStoreId(
+                event.getStoreId(), event.getDeletedBy());
     }
-
 }

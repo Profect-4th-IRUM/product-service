@@ -1,25 +1,25 @@
-//package com.irum.productservice.domain.review.controller;
+// package com.irum.productservice.domain.review.controller;
 //
-//import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
-//import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
-//import com.irum.productservice.domain.review.dto.response.ReviewListResponse;
-//import com.irum.productservice.domain.review.dto.response.ReviewResponse;
-//import com.irum.productservice.domain.review.service.ReviewService;
-//import java.util.UUID;
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.validation.annotation.Validated;
-//import org.springframework.web.bind.annotation.*;
+// import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
+// import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
+// import com.irum.productservice.domain.review.dto.response.ReviewListResponse;
+// import com.irum.productservice.domain.review.dto.response.ReviewResponse;
+// import com.irum.productservice.domain.review.service.ReviewService;
+// import java.util.UUID;
+// import lombok.RequiredArgsConstructor;
+// import lombok.extern.slf4j.Slf4j;
+// import org.springframework.data.domain.Pageable;
+// import org.springframework.http.HttpStatus;
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.validation.annotation.Validated;
+// import org.springframework.web.bind.annotation.*;
 //
-//@RestController
-//@RequestMapping("/reviews")
-//@RequiredArgsConstructor
-//@Slf4j
-//@Validated
-//public class ReviewController {
+// @RestController
+// @RequestMapping("/reviews")
+// @RequiredArgsConstructor
+// @Slf4j
+// @Validated
+// public class ReviewController {
 //
 //    private final ReviewService reviewService;
 //
@@ -62,4 +62,4 @@
 //        reviewService.deleteReview(reviewId);
 //        return ResponseEntity.noContent().build();
 //    }
-//}
+// }

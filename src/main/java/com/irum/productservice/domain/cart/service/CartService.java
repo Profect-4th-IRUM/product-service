@@ -1,27 +1,27 @@
-//package com.irum.productservice.domain.cart.service;
+// package com.irum.productservice.domain.cart.service;
 //
-//import com.irum.global.advice.exception.CommonException;
-//import com.irum.productservice.domain.cart.domain.entity.Cart;
-//import com.irum.productservice.domain.cart.domain.repository.CartRepository;
-//import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
-//import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
-//import com.irum.productservice.domain.cart.dto.response.CartResponse;
-//import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
-//import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
-//import com.irum.productservice.global.exception.errorcode.CartErrorCode;
-//import com.irum.productservice.global.util.MemberUtil;
-//import java.util.List;
-//import java.util.UUID;
-//import java.util.stream.Collectors;
-//import lombok.RequiredArgsConstructor;
-//import openfeign.member.dto.response.MemberDto;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
+// import com.irum.global.advice.exception.CommonException;
+// import com.irum.productservice.domain.cart.domain.entity.Cart;
+// import com.irum.productservice.domain.cart.domain.repository.CartRepository;
+// import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
+// import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
+// import com.irum.productservice.domain.cart.dto.response.CartResponse;
+// import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
+// import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
+// import com.irum.productservice.global.exception.errorcode.CartErrorCode;
+// import com.irum.productservice.global.util.MemberUtil;
+// import java.util.List;
+// import java.util.UUID;
+// import java.util.stream.Collectors;
+// import lombok.RequiredArgsConstructor;
+// import openfeign.member.dto.response.MemberDto;
+// import org.springframework.stereotype.Service;
+// import org.springframework.transaction.annotation.Transactional;
 //
-//@Service
-//@RequiredArgsConstructor
-//@Transactional
-//public class CartService {
+// @Service
+// @RequiredArgsConstructor
+// @Transactional
+// public class CartService {
 //
 //    private final CartRepository cartRepository;
 //    private final ProductOptionValueRepository productOptionValueRepository;
@@ -84,4 +84,4 @@
 //        memberUtil.assertMemberResourceAccess(cart.getMemberId());
 //        cart.softDelete(currentMember.memberId());
 //    }
-//}
+// }

@@ -4,14 +4,10 @@ import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionGroup;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import feign.Param;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.QueryHint;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -23,8 +19,8 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     List<ProductOptionValue> findAllByOptionGroup(ProductOptionGroup optionGroup);
 
     List<ProductOptionValue> findAllByOptionGroup_Product(Product product);
-    List<ProductOptionValue> findAllByOptionGroup_Id(UUID optionGroupId);
 
+    List<ProductOptionValue> findAllByOptionGroup_Id(UUID optionGroupId);
 
     @Query(
             """
@@ -36,5 +32,4 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     WHERE pov.id IN :ids
     """)
     List<ProductOptionValue> findAllByIdWithFetchJoin(@Param("ids") List<UUID> ids);
-
 }

@@ -1,28 +1,29 @@
-//package com.irum.productservice.domain.cart.controller;
+// package com.irum.productservice.domain.cart.controller;
 //
-//import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
-//import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
-//import com.irum.productservice.domain.cart.dto.response.CartResponse;
-//import com.irum.productservice.domain.cart.service.CartService;
-//import jakarta.validation.Valid;
-//import java.util.List;
-//import java.util.UUID;
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.*;
+// import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
+// import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
+// import com.irum.productservice.domain.cart.dto.response.CartResponse;
+// import com.irum.productservice.domain.cart.service.CartService;
+// import jakarta.validation.Valid;
+// import java.util.List;
+// import java.util.UUID;
+// import lombok.RequiredArgsConstructor;
+// import lombok.extern.slf4j.Slf4j;
+// import org.springframework.http.HttpStatus;
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.web.bind.annotation.*;
 //
-//@RestController
-//@RequestMapping("/carts")
-//@RequiredArgsConstructor
-//@Slf4j
-//public class CartController {
+// @RestController
+// @RequestMapping("/carts")
+// @RequiredArgsConstructor
+// @Slf4j
+// public class CartController {
 //
 //    private final CartService cartService;
 //
 //    @PostMapping
-//    public ResponseEntity<CartResponse> createCart(@Valid @RequestBody CartCreateRequest request) {
+//    public ResponseEntity<CartResponse> createCart(@Valid @RequestBody CartCreateRequest request)
+// {
 //        log.info(
 //                "장바구니 추가 요청: optionValueId={}, quantity={}",
 //                request.optionValueId(),
@@ -53,4 +54,4 @@
 //        cartService.deleteCart(cartId);
 //        return ResponseEntity.noContent().build();
 //    }
-//}
+// }

@@ -1,12 +1,12 @@
-//package com.irum.productservice.domain.cart.dto.response;
+// package com.irum.productservice.domain.cart.dto.response;
 //
-//import com.irum.productservice.domain.cart.domain.entity.Cart;
-//import com.irum.productservice.domain.product.domain.entity.ProductImage;
-//import java.util.UUID;
-//import lombok.Builder;
+// import com.irum.productservice.domain.cart.domain.entity.Cart;
+// import com.irum.productservice.domain.product.domain.entity.ProductImage;
+// import java.util.UUID;
+// import lombok.Builder;
 //
-//@Builder
-//public record CartResponse(
+// @Builder
+// public record CartResponse(
 //        UUID cartId,
 //        UUID optionValueId,
 //        String productName,
@@ -51,4 +51,4 @@
 //                .lineTotal(total)
 //                .build();
 //    }
-//}
+// }

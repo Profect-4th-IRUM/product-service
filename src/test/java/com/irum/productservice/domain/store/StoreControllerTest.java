@@ -13,13 +13,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.irum.productservice.domain.product.dto.request.ProductCursorResponse;
 import com.irum.productservice.domain.product.dto.response.ProductResponse;
-import com.irum.productservice.domain.store.service.StoreService;
 import com.irum.productservice.domain.store.controller.StoreController;
 import com.irum.productservice.domain.store.dto.request.StoreCreateRequest;
 import com.irum.productservice.domain.store.dto.request.StoreUpdateRequest;
 import com.irum.productservice.domain.store.dto.response.StoreCreateResponse;
 import com.irum.productservice.domain.store.dto.response.StoreInfoResponse;
 import com.irum.productservice.domain.store.dto.response.StoreListResponse;
+import com.irum.productservice.domain.store.service.StoreService;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +30,6 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
