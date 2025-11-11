@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.category;
+package com.irum.productservice.domain.category.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.productservice.domain.category.controller.CategoryController;
 import com.irum.productservice.domain.category.dto.request.CategoryCreateRequest;
 import com.irum.productservice.domain.category.dto.request.CategoryUpdateRequest;
 import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;

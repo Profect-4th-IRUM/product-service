@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.store;
+package com.irum.productservice.domain.store.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.irum.productservice.domain.product.dto.request.ProductCursorResponse;
 import com.irum.productservice.domain.product.dto.response.ProductResponse;
-import com.irum.productservice.domain.store.controller.StoreController;
 import com.irum.productservice.domain.store.dto.request.StoreCreateRequest;
 import com.irum.productservice.domain.store.dto.request.StoreUpdateRequest;
 import com.irum.productservice.domain.store.dto.response.StoreCreateResponse;

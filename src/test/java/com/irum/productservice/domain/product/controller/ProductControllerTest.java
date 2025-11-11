@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.product;
+package com.irum.productservice.domain.product.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
-import com.irum.productservice.domain.product.controller.ProductController;
 import com.irum.productservice.domain.product.dto.request.*;
 import com.irum.productservice.domain.product.dto.response.ProductDetailResponse;
 import com.irum.productservice.domain.product.dto.response.ProductOptionGroupResponse;

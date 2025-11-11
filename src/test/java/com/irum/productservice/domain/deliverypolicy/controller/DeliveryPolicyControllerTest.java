@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.deliverypolicy;
+package com.irum.productservice.domain.deliverypolicy.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.productservice.domain.deliverypolicy.controller.DeliveryPolicyController;
 import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyCreateRequest;
 import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyInfoUpdateRequest;
 import com.irum.productservice.domain.deliverypolicy.dto.response.DeliveryPolicyInfoResponse;

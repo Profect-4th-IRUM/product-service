@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.product;
+package com.irum.productservice.domain.product.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.productservice.domain.product.controller.ProductImageController;
 import com.irum.productservice.domain.product.dto.response.ProductImageResponse;
 import com.irum.productservice.domain.product.service.ProductImageService;
 import java.util.List;

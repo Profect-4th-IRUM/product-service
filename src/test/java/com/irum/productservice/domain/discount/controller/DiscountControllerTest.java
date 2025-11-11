@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.discount;
+package com.irum.productservice.domain.discount.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.productservice.domain.discount.controller.DiscountController;
 import com.irum.productservice.domain.discount.dto.request.DiscountInfoUpdateRequest;
 import com.irum.productservice.domain.discount.dto.request.DiscountRegisterRequest;
 import com.irum.productservice.domain.discount.dto.response.DiscountInfoListResponse;
