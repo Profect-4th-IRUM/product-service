@@ -1,32 +1,16 @@
-package com.irum.productservice.domain.cart.dto.response;
+package com.irum.productservice.domain.cart.mapper;
 
 import com.irum.productservice.domain.cart.domain.model.CartRedis;
+import com.irum.productservice.domain.cart.dto.response.CartResponse;
 import com.irum.productservice.domain.product.domain.entity.ProductImage;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
-import java.util.UUID;
-import lombok.Builder;
+import org.springframework.stereotype.Component;
 
-/**
- * 장바구니 응답 DTO - Redis의 장바구니 데이터 + 상품 옵션 + 할인 금액 등을 포함 - Product ↔ Discount 단방향 구조이므로 할인 금액은 외부에서
- * 주입받음
- */
-@Builder
-public record CartResponse(
-        UUID cartId,
-        UUID optionValueId,
-        String productName,
-        String optionValueName,
-        String imageUrl,
-        int quantity,
-        int basePrice, // 상품 기본가
-        int extraPrice, // 옵션 추가금
-        int discountAmount, // 할인 금액
-        int unitPrice, // 단가 (base + extra - discount)
-        int lineTotal // 총액 (unitPrice * quantity)
-        ) {
+@Component
+public class CartMapper {
 
-    /** Redis 장바구니 데이터 + 상품 옵션 + 할인 금액을 기반으로 CartResponse 생성 */
-    public static CartResponse from(
+    /** Redis 장바구니 데이터 + 상품 옵션 + 할인 금액 결합 */
+    public CartResponse toResponse(
             CartRedis cart, ProductOptionValue optionValue, int discountAmount) {
         var product = optionValue.getOptionGroup().getProduct();
 
@@ -37,7 +21,6 @@ public record CartResponse(
         int unit = Math.max(base + extra - discount, 0);
         int total = unit * cart.getQuantity();
 
-        // 대표 이미지 (기본이미지 우선)
         String imageUrl =
                 product.getProductImages().stream()
                         .filter(ProductImage::isDefault)
