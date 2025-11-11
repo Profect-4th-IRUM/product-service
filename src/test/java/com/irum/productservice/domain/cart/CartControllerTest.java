@@ -12,13 +12,11 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.productservice.domain.cart.service.CartService;
 import com.irum.productservice.domain.cart.controller.CartController;
 import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
 import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
 import com.irum.productservice.domain.cart.dto.response.CartResponse;
-//import com.irum.productservice.global.config.SecurityTestConfig;
-import com.irum.productservice.global.config.TestConfig;
+import com.irum.productservice.domain.cart.service.CartService;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -29,14 +27,13 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(CartController.class)
 @AutoConfigureRestDocs
-//@Import({SecurityTestConfig.class, TestConfig.class})
+// @Import({SecurityTestConfig.class, TestConfig.class})
 class CartControllerTest {
 
     @Autowired private MockMvc mockMvc;

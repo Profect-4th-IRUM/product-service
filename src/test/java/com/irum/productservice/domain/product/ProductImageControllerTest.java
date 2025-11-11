@@ -14,11 +14,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.productservice.domain.product.service.ProductImageService;
 import com.irum.productservice.domain.product.controller.ProductImageController;
 import com.irum.productservice.domain.product.dto.response.ProductImageResponse;
-//import com.irum.productservice.global.config.SecurityTestConfig;
-import com.irum.productservice.global.config.TestConfig;
+import com.irum.productservice.domain.product.service.ProductImageService;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -34,7 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ProductImageController.class)
 @AutoConfigureRestDocs
-//@Import({SecurityTestConfig.class, TestConfig.class})
+// @Import({SecurityTestConfig.class, TestConfig.class})
 public class ProductImageControllerTest {
 
     @Autowired private MockMvc mockMvc;
@@ -78,9 +75,9 @@ public class ProductImageControllerTest {
 
         mockMvc.perform(
                         patch(
-                                "/products/{productId}/images/{imageId}/default",
-                                mockProductId,
-                                mockImageId)
+                                        "/products/{productId}/images/{imageId}/default",
+                                        mockProductId,
+                                        mockImageId)
                                 .with(csrf())
                                 .with(user("100").roles("OWNER")))
                 .andExpect(status().isNoContent())

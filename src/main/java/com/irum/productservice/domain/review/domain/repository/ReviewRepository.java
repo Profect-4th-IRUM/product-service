@@ -16,14 +16,16 @@ public interface ReviewRepository extends JpaRepository<Review, UUID> {
 
     boolean existsByOrderDetailId(UUID orderDetailId);
 
-    @Query("""
+    @Query(
+            """
         SELECT COALESCE(AVG(r.rate), 0)
         FROM Review r
         WHERE r.product.id = :productId
     """)
     Double findAverageByProductId(@Param("productId") UUID productId);
 
-    @Query("""
+    @Query(
+            """
         SELECT COUNT(r)
         FROM Review r
         WHERE r.product.id = :productId

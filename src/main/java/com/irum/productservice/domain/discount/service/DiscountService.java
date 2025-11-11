@@ -78,7 +78,8 @@ public class DiscountService {
     }
 
     public void deleteDiscountByProductId(UUID productId, Long deletedBy) {
-        discountRepository.findByProductId(productId)
+        discountRepository
+                .findByProductId(productId)
                 .ifPresent(discount -> discount.softDelete(deletedBy));
     }
 

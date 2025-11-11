@@ -1,7 +1,7 @@
 package com.irum.productservice.domain.review.domain.entity;
 
-import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.global.domain.BaseEntity;
+import com.irum.productservice.domain.product.domain.entity.Product;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.*;
@@ -49,7 +49,8 @@ public class Review extends BaseEntity {
         this.orderDetailId = orderDetailId;
     }
 
-    public static Review createReview(String content, Short rate, Long memberId, Product product, UUID orderDetailId) {
+    public static Review createReview(
+            String content, Short rate, Long memberId, Product product, UUID orderDetailId) {
         return Review.builder()
                 .content(content)
                 .rate(rate)

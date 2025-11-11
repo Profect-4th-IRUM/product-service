@@ -10,8 +10,7 @@ public record ReviewResponse(
         Long memberId,
         String content,
         Short rate,
-        List<String> imageUrls
-) {
+        List<String> imageUrls) {
     public static ReviewResponse from(Review review, List<String> imageUrls) {
         return new ReviewResponse(
                 review.getId(),
@@ -19,7 +18,6 @@ public record ReviewResponse(
                 review.getMemberId(),
                 review.getContent(),
                 review.getRate(),
-                imageUrls
-        );
+                imageUrls);
     }
 }
