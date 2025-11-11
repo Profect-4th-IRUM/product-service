@@ -12,12 +12,13 @@ public interface DiscountRepository
         extends JpaRepository<Discount, UUID>, DiscountRepositoryCustom {
 
     @Query(
-            "SELECT CASE WHEN COUNT(d) > 0 THEN TRUE ELSE FALSE END FROM Discount d WHERE d.product.id = :productId")
+            "SELECT CASE WHEN COUNT(d) > 0 THEN TRUE ELSE FALSE END "
+                    + "FROM Discount d WHERE d.product.id = :productId")
     boolean existsByProductId(@Param("productId") UUID productId);
 
-    @Query("SELECT d FROM Discount d JOIN FETCH d.product p WHERE d.product.id = :productId")
+    @Query("SELECT d FROM Discount d WHERE d.product.id = :productId")
     Optional<Discount> findByProductId(@Param("productId") UUID productId);
 
-    @Query("SELECT d FROM Discount d WHERE d.product.id in :productIds")
-    List<Discount> findAllByProductIds(List<UUID> productIds);
+    @Query("SELECT d FROM Discount d WHERE d.product.id IN :productIds")
+    List<Discount> findAllByProductIds(@Param("productIds") List<UUID> productIds);
 }

@@ -13,14 +13,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.productservice.domain.category.service.CategoryService;
 import com.irum.productservice.domain.category.controller.CategoryController;
 import com.irum.productservice.domain.category.dto.request.CategoryCreateRequest;
 import com.irum.productservice.domain.category.dto.request.CategoryUpdateRequest;
 import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
 import com.irum.productservice.domain.category.dto.response.CategoryResponse;
-//import com.irum.productservice.global.config.SecurityTestConfig;
-import com.irum.productservice.global.config.TestConfig;
+import com.irum.productservice.domain.category.service.CategoryService;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -28,13 +26,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(CategoryController.class)
 @AutoConfigureRestDocs
-//@Import({SecurityTestConfig.class, TestConfig.class})
+// @Import({SecurityTestConfig.class, TestConfig.class})
 public class CategoryControllerTest {
     //
     //    private static final Logger log = LoggerFactory.getLogger(CategoryControllerTest.class);

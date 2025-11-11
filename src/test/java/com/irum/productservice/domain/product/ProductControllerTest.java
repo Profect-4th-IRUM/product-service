@@ -14,15 +14,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
-import com.irum.productservice.domain.product.service.ProductService;
 import com.irum.productservice.domain.product.controller.ProductController;
 import com.irum.productservice.domain.product.dto.request.*;
 import com.irum.productservice.domain.product.dto.response.ProductDetailResponse;
 import com.irum.productservice.domain.product.dto.response.ProductOptionGroupResponse;
 import com.irum.productservice.domain.product.dto.response.ProductOptionValueResponse;
 import com.irum.productservice.domain.product.dto.response.ProductResponse;
+import com.irum.productservice.domain.product.service.ProductService;
 import com.irum.productservice.domain.store.dto.response.*;
-//import com.irum.productservice.global.config.SecurityTestConfig;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -33,13 +32,12 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ProductController.class)
 @AutoConfigureRestDocs
-//@Import(SecurityTestConfig.class)
+// @Import(SecurityTestConfig.class)
 public class ProductControllerTest {
 
     @Autowired private MockMvc mockMvc;
@@ -548,10 +546,10 @@ public class ProductControllerTest {
                                         fieldWithPath("data.optionGroups[].optionValues[].name")
                                                 .description("옵션명"),
                                         fieldWithPath(
-                                                "data.optionGroups[].optionValues[].stockQuantity")
+                                                        "data.optionGroups[].optionValues[].stockQuantity")
                                                 .description("재고 수량"),
                                         fieldWithPath(
-                                                "data.optionGroups[].optionValues[].extraPrice")
+                                                        "data.optionGroups[].optionValues[].extraPrice")
                                                 .description("추가 금액"))));
     }
 

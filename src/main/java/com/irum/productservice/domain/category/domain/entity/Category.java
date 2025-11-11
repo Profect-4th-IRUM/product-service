@@ -35,6 +35,7 @@ public class Category extends BaseEntity {
     private Category parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Category> children = new ArrayList<>();
 
     @Column(name = "depth", nullable = false)
