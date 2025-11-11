@@ -103,9 +103,9 @@ public class ProductInternalIntegrationTest {
     @DisplayName("주문 - 순차 주문(1개씩)")
     void updateStock_SequentialTest() throws InterruptedException {
         // given
-        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger successCount = new AtomicInteger(); // 성공 카운트
         AtomicInteger outOfStockCount = new AtomicInteger(); // 재고 부족 실패 카운트
-        AtomicInteger recoverCount = new AtomicInteger();
+        AtomicInteger recoverCount = new AtomicInteger(); // 재시도 횟수 초과 카운트
 
         // 요청
         UpdateStockRequest.OptionValueRequest optionRequest =
@@ -119,18 +119,17 @@ public class ProductInternalIntegrationTest {
                 productInternalService.updateStock(request);
                 successCount.incrementAndGet();
             } catch (CommonException e) {
-                // 재고 부족 예외인지 확인
+                // 재고 부족 예외, 재시도 횟수 초과 예외인지 체크
                 if (e.getErrorCode() == ProductErrorCode.PRODUCT_OUT_OF_STOCK) {
                     outOfStockCount.incrementAndGet();
                 } else if (e.getErrorCode() == ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED) {
                     recoverCount.incrementAndGet();
                 } else {
-                    // 그 외 다른 예외 (디버깅 필요)
+                    // 그 외 다른 예외
                     System.err.println("예상치 못한 예외: " + e.getMessage());
                 }
             } catch (Exception e) {
-                // OptimisticLockException이 @Retryable에 의해 처리되지 않고
-                // 테스트까지 올라오는지 확인 (디버깅용)
+                // OptimisticLockException이 @Retryable과 @Recover에 의해 처리되지 않고 테스트까지 올라오는지 확인
                 System.err.println(
                         "테스트 중 감지된 예외: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             }
@@ -165,9 +164,9 @@ public class ProductInternalIntegrationTest {
         ExecutorService executorService = Executors.newFixedThreadPool(USER_COUNT); // 스레드 만들기
         CountDownLatch latch = new CountDownLatch(USER_COUNT); // 스레드 종료 확인
 
-        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger successCount = new AtomicInteger(); // 성공 카운트
         AtomicInteger outOfStockCount = new AtomicInteger(); // 재고 부족 실패 카운트
-        AtomicInteger recoverCount = new AtomicInteger();
+        AtomicInteger recoverCount = new AtomicInteger(); // 재시도 횟수 초과 카운트
 
         // 요청
         UpdateStockRequest.OptionValueRequest optionRequest =
@@ -183,19 +182,18 @@ public class ProductInternalIntegrationTest {
                             productInternalService.updateStock(request);
                             successCount.incrementAndGet();
                         } catch (CommonException e) {
-                            // 재고 부족 예외인지 확인
+                            // 재고 부족 예외인지, 재시도 횟수 초과 예외인지 확인
                             if (e.getErrorCode() == ProductErrorCode.PRODUCT_OUT_OF_STOCK) {
                                 outOfStockCount.incrementAndGet();
                             } else if (e.getErrorCode()
                                     == ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED) {
                                 recoverCount.incrementAndGet();
                             } else {
-                                // 그 외 다른 예외 (디버깅 필요)
+                                // 그 외 다른 예외
                                 System.err.println("예상치 못한 예외: " + e.getMessage());
                             }
                         } catch (Exception e) {
-                            // OptimisticLockException이 @Retryable에 의해 처리되지 않고
-                            // 테스트까지 올라오는지 확인 (디버깅용)
+                            // OptimisticLockException이 @Retryable이나 @Recover에 의해 처리되지 않고 테스트까지 올라오는지 확인
                             System.err.println(
                                     "테스트 중 감지된 예외: "
                                             + e.getClass().getSimpleName()

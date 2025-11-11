@@ -64,14 +64,16 @@ public class ProductInternalServiceTest {
         Store mockStore =
                 Store.createStore(
                         "테스트 상점", "010-1234-5678", "서울시 강남구", "1234567890", "2025123456", 1L);
-        // 1. Category 클래스의 Mock(가짜) 객체를 생성합니다.
+        // 카테고리
         Category testCategory = mock(Category.class);
         given(testCategory.getDepth()).willReturn(3);
 
+        // 배송비정책
         DeliveryPolicy mockPolicy = mock(DeliveryPolicy.class);
         given(mockPolicy.getDefaultDeliveryFee()).willReturn(3000);
         ReflectionTestUtils.setField(mockStore, "deliveryPolicy", mockPolicy);
 
+        // 제품, 제품 옵션 그룹, 제품 옵션
         Product mockProduct =
                 Product.createProduct(
                         mockStore, testCategory, "테스트 상품", "상품 설명", "상품 상세 설명", 10000, true);
@@ -95,14 +97,14 @@ public class ProductInternalServiceTest {
         given(discountRepository.findAllByProductIds(anyList()))
                 .willReturn(List.of()); // 할인은 이 테스트의 핵심이 아니므로 빈 리스트 반환
 
-        // when (실행)
+        // when
         UpdateStockDto resultDto = productInternalService.updateStock(request);
 
-        // then (검증)
+        // then
         // 1. 반환된 DTO 검증
         assertThat(resultDto).isNotNull();
 
-        // 2. 핵심 검증: 재고가 요청한 수량만큼 정확히 감소했는지 확인
+        // 2. 재고가 요청한 수량만큼 정확히 감소했는지 확인
         assertThat(pov1.getStockQuantity()).isEqualTo(95); // 100 - 5
         assertThat(pov2.getStockQuantity()).isEqualTo(40); // 50 - 10
     }
