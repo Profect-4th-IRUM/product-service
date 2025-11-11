@@ -57,12 +57,7 @@ public class ProductInternalIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // [Given] 테스트 데이터 미리 세팅 (실제로는 @DataJpaTest처럼 @Sql을 쓰거나,
-        // 테스트용 DB를 매번 초기화하는 것이 더 좋습니다.)
-
-        // 이 부분은 기존 테스트 데이터를 재활용하거나,
-        // 테스트의 독립성을 위해 매번 생성해야 합니다.
-        // 여기서는 간단히 생성 과정을 보여드립니다.
+        // 테스트 데이터 미리 세팅
 
         // Auditing이 동작할 때 반환할 가짜 사용자 ID 설정
         Long testAuditorId = 1L;
