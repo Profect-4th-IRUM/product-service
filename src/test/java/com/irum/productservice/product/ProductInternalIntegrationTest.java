@@ -64,7 +64,7 @@ public class ProductInternalIntegrationTest {
     private UUID optionValueId;
     private final int INITIAL_STOCK = 20; // 초기 재고
     private final int USER_COUNT  = 100; // 주문을 요청하는 사용자 수
-    private final int ROLLBACK_COUNT = 3; // 롤백을 요청하는 클라이언트 수
+    private final int ROLLBACK_COUNT = 100; // 롤백을 요청하는 클라이언트 수
 
     @BeforeEach
     void setUp() {
@@ -256,21 +256,19 @@ public class ProductInternalIntegrationTest {
             }
         }
 
-
-        System.out.println("======================================");
-        System.out.println("성공 건수: " + successCount.get());
-        System.out.println("재시도 횟수 초과 건수: " + recoverCount.get());
-        System.out.println("======================================");
-
         // Then: 최종 재고 확인
         ProductOptionValue finalOption = productOptionValueRepository.findById(optionValueId)
                 .orElseThrow(() -> new AssertionError("Test setup failed: Option not found"));
 
         int expectedStock = INITIAL_STOCK + ROLLBACK_COUNT;
 
+        System.out.println("======================================");
+        System.out.println("성공 건수: " + successCount.get());
+        System.out.println("재시도 횟수 초과 건수: " + recoverCount.get());
         System.out.println("Initial Stock: " + INITIAL_STOCK);
         System.out.println("Final Stock (Actual): " + finalOption.getStockQuantity());
         System.out.println("Final Stock (Expected): " + expectedStock);
+        System.out.println("======================================");
 
         assertThat(expectedStock).isEqualTo(finalOption.getStockQuantity());
 
@@ -297,8 +295,7 @@ public class ProductInternalIntegrationTest {
                 } catch (CommonException e) {
                     if (e.getErrorCode() == ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED) {
                         recoverCount.incrementAndGet();
-                    }
-                    else {
+                    } else {
                         System.err.println("예상치 못한 예외: " + e.getMessage());
                     }
                 } catch (Exception e) {
@@ -307,28 +304,28 @@ public class ProductInternalIntegrationTest {
                     latch.countDown();
                 }
             });
-
-            latch.await(15, TimeUnit.SECONDS);
-            executorService.shutdown();
-
-            System.out.println("======================================");
-            System.out.println("성공 건수: " + successCount.get());
-            System.out.println("재시도 횟수 초과 건수: " + recoverCount.get());
-            System.out.println("======================================");
-
-            // Then: 최종 재고 확인
-            ProductOptionValue finalOption = productOptionValueRepository.findById(optionValueId)
-                    .orElseThrow(() -> new AssertionError("Test setup failed: Option not found"));
-
-            int expectedStock = INITIAL_STOCK + ROLLBACK_COUNT;
-
-            System.out.println("Initial Stock: " + INITIAL_STOCK);
-            System.out.println("Final Stock (Actual): " + finalOption.getStockQuantity());
-            System.out.println("Final Stock (Expected): " + expectedStock);
-
-            assertThat(expectedStock).isEqualTo(finalOption.getStockQuantity());
-
         }
+
+        latch.await(15, TimeUnit.SECONDS);
+        executorService.shutdown();
+
+
+        // Then: 최종 재고 확인
+        ProductOptionValue finalOption = productOptionValueRepository.findById(optionValueId)
+                .orElseThrow(() -> new AssertionError("Test setup failed: Option not found"));
+
+        int expectedStock = INITIAL_STOCK + ROLLBACK_COUNT;
+
+        System.out.println("======================================");
+        System.out.println("성공 건수: " + successCount.get());
+        System.out.println("재시도 횟수 초과 건수: " + recoverCount.get());
+        System.out.println("Initial Stock: " + INITIAL_STOCK);
+        System.out.println("Final Stock (Actual): " + finalOption.getStockQuantity());
+        System.out.println("Final Stock (Expected): " + expectedStock);
+        System.out.println("======================================");
+
+        // 무조건 성공해야함
+        assertThat(expectedStock).isEqualTo(finalOption.getStockQuantity());
     }
 
 }

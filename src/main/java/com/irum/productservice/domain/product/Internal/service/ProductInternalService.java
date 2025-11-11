@@ -148,7 +148,7 @@ public class ProductInternalService {
     /** 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
             retryFor = {OptimisticLockException.class, StaleObjectStateException.class, ObjectOptimisticLockingFailureException.class},
-            maxAttempts = 5,
+            maxAttempts = 10,
             backoff = @Backoff(
                     delay = 100,
                     maxDelay = 1000,
