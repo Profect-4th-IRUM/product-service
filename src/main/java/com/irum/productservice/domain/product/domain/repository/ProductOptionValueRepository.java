@@ -23,6 +23,7 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     List<ProductOptionValue> findAllByOptionGroup(ProductOptionGroup optionGroup);
 
     List<ProductOptionValue> findAllByOptionGroup_Product(Product product);
+    List<ProductOptionValue> findAllByOptionGroup_Id(UUID optionGroupId);
 
 
     @Query(
@@ -35,4 +36,5 @@ public interface ProductOptionValueRepository extends JpaRepository<ProductOptio
     WHERE pov.id IN :ids
     """)
     List<ProductOptionValue> findAllByIdWithFetchJoin(@Param("ids") List<UUID> ids);
+
 }

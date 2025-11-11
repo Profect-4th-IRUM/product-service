@@ -77,6 +77,11 @@ public class DiscountService {
         discount.softDelete(memberUtil.getCurrentMember().memberId());
     }
 
+    public void deleteDiscountByProductId(UUID productId, Long deletedBy) {
+        discountRepository.findByProductId(productId)
+                .ifPresent(discount -> discount.softDelete(deletedBy));
+    }
+
     private void checkDuplicateDiscount(UUID productId) {
         if (discountRepository.existsByProductId(productId)) {
             throw new CommonException(DiscountErrorCode.DUPLICATE_DISCOUNT);

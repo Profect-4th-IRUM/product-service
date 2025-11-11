@@ -103,6 +103,9 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'io.github.openfeign:feign-gson:11.0'
 
+    // Config Server
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+
     // Service-Discovery
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
