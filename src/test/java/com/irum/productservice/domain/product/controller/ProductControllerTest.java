@@ -13,6 +13,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.irum.global.advice.exception.GlobalExceptionHandler;
+import com.irum.global.advice.response.CommonResponseAdvice;
 import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
 import com.irum.productservice.domain.product.dto.request.*;
 import com.irum.productservice.domain.product.dto.response.ProductDetailResponse;
@@ -31,12 +33,13 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ProductController.class)
 @AutoConfigureRestDocs
-// @Import(SecurityTestConfig.class)
+@Import({CommonResponseAdvice.class, GlobalExceptionHandler.class})
 public class ProductControllerTest {
 
     @Autowired private MockMvc mockMvc;

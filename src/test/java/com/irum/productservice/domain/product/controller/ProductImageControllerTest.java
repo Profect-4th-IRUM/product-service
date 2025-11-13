@@ -14,15 +14,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.irum.global.advice.exception.GlobalExceptionHandler;
+import com.irum.global.advice.response.CommonResponseAdvice;
 import com.irum.productservice.domain.product.dto.response.ProductImageResponse;
 import com.irum.productservice.domain.product.service.ProductImageService;
 import java.util.List;
 import java.util.UUID;
+
+import com.irum.productservice.global.config.TestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -30,7 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ProductImageController.class)
 @AutoConfigureRestDocs
-// @Import({SecurityTestConfig.class, TestConfig.class})
+@Import({CommonResponseAdvice.class, GlobalExceptionHandler.class, TestConfig.class})
 public class ProductImageControllerTest {
 
     @Autowired private MockMvc mockMvc;
