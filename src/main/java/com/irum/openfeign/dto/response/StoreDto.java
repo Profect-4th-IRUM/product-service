@@ -1,4 +1,4 @@
-package com.irum.productservice.domain.openfeign.dto.response;
+package com.irum.openfeign.dto.response;
 
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import com.irum.productservice.domain.store.domain.entity.Store;
