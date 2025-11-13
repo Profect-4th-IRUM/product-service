@@ -65,7 +65,7 @@ class StoreServiceTest {
 
     @DisplayName("상점 생성 성공 테스트")
     @Test
-    void StoreCreateTest() {
+    void createStore_SuccessTest() {
         when(memberUtil.getCurrentMember()).thenReturn(member);
         when(storeRepository.existsByMember(member.memberId())).thenReturn(false);
         when(storeRepository.existsByBusinessRegistrationNumber(anyString())).thenReturn(false);
@@ -99,7 +99,7 @@ class StoreServiceTest {
 
     @DisplayName("상점 정보 수정 성공 테스트")
     @Test
-    void StoreUpdateTest() {
+    void updateStore_SuccessTest() {
         // given
         when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
 
@@ -113,8 +113,6 @@ class StoreServiceTest {
         storeService.changeStore(storeId, updateRequest);
 
         // then
-        System.out.printf("상점 수정 정보: %s (%s, %s)%n",
-                store.getName(), store.getContact(), store.getAddress());
         assertThat(store.getName()).isEqualTo("수정상점");
         assertThat(store.getContact()).isEqualTo("010-9999-8888");
         assertThat(store.getAddress()).isEqualTo("서울시 강남구");
@@ -123,7 +121,7 @@ class StoreServiceTest {
 
     @DisplayName("상점 삭제 성공 테스트")
     @Test
-    void StoreDeleteTest() {
+    void deleteStore_SuccessTest() {
         when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
         when(memberUtil.getCurrentMember()).thenReturn(member);
         //when
@@ -137,7 +135,7 @@ class StoreServiceTest {
 
     @DisplayName("상점 조회 성공 테스트")
     @Test
-    void findStoreInfoTest() {
+    void findStoreInfo_SuccessTest() {
         //given
         when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
         //
@@ -151,7 +149,7 @@ class StoreServiceTest {
 
     @DisplayName("내 상점 상품 조회 성공 테스트")
     @Test
-    void getMyStoreProducts_SuccessTest() {
+    void findMyStoreProducts_SuccessTest() {
         // given
         UUID cursor = UUID.randomUUID();
         when(storeRepository.findByMember(member.memberId())).thenReturn(Optional.of(store));
