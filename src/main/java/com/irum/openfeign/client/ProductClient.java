@@ -2,6 +2,7 @@ package com.irum.openfeign.client;
 
 import com.irum.openfeign.dto.response.ProductDto;
 import com.irum.openfeign.dto.response.StoreDto;
+import com.irum.openfeign.dto.response.StoreResponse;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,4 +22,7 @@ public interface ProductClient {
     // 상점 + 배송비 정책
     @GetMapping("/internal/stores/{storeId}")
     StoreDto getStore(@PathVariable("storeId") String storeId);
+
+    @GetMapping("/internal/stores/{storeId}/owner")
+    StoreResponse getStoreId(@PathVariable UUID storeId);
 }
