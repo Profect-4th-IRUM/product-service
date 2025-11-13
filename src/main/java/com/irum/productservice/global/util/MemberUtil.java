@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -37,4 +36,3 @@ public class MemberUtil {
         return MemberAuthContext.getMemberId();
     } // 로그인 된 아이디 반환
 }
-
