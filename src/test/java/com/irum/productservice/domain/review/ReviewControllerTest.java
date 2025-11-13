@@ -1,41 +1,43 @@
-//package com.irum.productservice.domain.review;
+// package com.irum.productservice.domain.review;
 //
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.ArgumentMatchers.eq;
-//import static org.mockito.Mockito.doNothing;
-//import static org.mockito.Mockito.when;
-//import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-//import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-//import static org.springframework.restdocs.request.RequestDocumentation.*;
-//import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-//import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+// import static org.mockito.ArgumentMatchers.any;
+// import static org.mockito.ArgumentMatchers.eq;
+// import static org.mockito.Mockito.doNothing;
+// import static org.mockito.Mockito.when;
+// import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+// import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+// import static org.springframework.restdocs.request.RequestDocumentation.*;
+// import static
+// org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+// import static
+// org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 //
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.irum.productservice.domain.review.controller.ReviewController;
-//import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
-//import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
-//import com.irum.productservice.domain.review.dto.response.ReviewListResponse;
-//import com.irum.productservice.domain.review.dto.response.ReviewResponse;
-//import com.irum.productservice.domain.review.service.ReviewService;
-//import java.util.List;
-//import java.util.UUID;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.data.domain.PageImpl;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.MediaType;
-//import org.springframework.test.web.servlet.MockMvc;
+// import com.fasterxml.jackson.databind.ObjectMapper;
+// import com.irum.productservice.domain.review.controller.ReviewController;
+// import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
+// import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
+// import com.irum.productservice.domain.review.dto.response.ReviewListResponse;
+// import com.irum.productservice.domain.review.dto.response.ReviewResponse;
+// import com.irum.productservice.domain.review.service.ReviewService;
+// import java.util.List;
+// import java.util.UUID;
+// import org.junit.jupiter.api.DisplayName;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+// import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+// import org.springframework.data.domain.PageImpl;
+// import org.springframework.data.domain.Pageable;
+// import org.springframework.http.HttpStatus;
+// import org.springframework.http.MediaType;
+// import org.springframework.test.web.servlet.MockMvc;
 //
-//@WebMvcTest(ReviewController.class)
-//@AutoConfigureRestDocs
+// @WebMvcTest(ReviewController.class)
+// @AutoConfigureRestDocs
 //// @Import({SecurityTestConfig.class, TestConfig.class})
-//class ReviewControllerTest {
+// class ReviewControllerTest {
 //
 //    @Autowired private MockMvc mockMvc;
 //    @Autowired private ObjectMapper objectMapper;
@@ -149,9 +151,11 @@
 //
 //        mockMvc.perform(get("/reviews/me").with(csrf()).with(user("1").roles("CUSTOMER")))
 //                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.data.reviewList[0].reviewId").value(mockReviewId.toString()))
+//
+// .andExpect(jsonPath("$.data.reviewList[0].reviewId").value(mockReviewId.toString()))
 //                .andExpect(
-//                        jsonPath("$.data.reviewList[0].productId").value(mockProductId.toString()))
+//
+// jsonPath("$.data.reviewList[0].productId").value(mockProductId.toString()))
 //                .andDo(
 //                        document(
 //                                "review-list-me",
@@ -203,14 +207,17 @@
 //                                .with(csrf())
 //                                .with(user("1").roles("CUSTOMER")))
 //                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.data.reviewList[0].reviewId").value(mockReviewId.toString()))
+//
+// .andExpect(jsonPath("$.data.reviewList[0].reviewId").value(mockReviewId.toString()))
 //                .andExpect(
-//                        jsonPath("$.data.reviewList[0].productId").value(mockProductId.toString()))
+//
+// jsonPath("$.data.reviewList[0].productId").value(mockProductId.toString()))
 //                .andDo(
 //                        document(
 //                                "review-list-product",
 //                                pathParameters(
-//                                        parameterWithName("productId").description("리뷰 조회할 상품 ID")),
+//                                        parameterWithName("productId").description("리뷰 조회할 상품
+// ID")),
 //                                responseFields(
 //                                        fieldWithPath("success").description("true"),
 //                                        fieldWithPath("status").description("200"),
@@ -256,4 +263,4 @@
 //                                pathParameters(
 //                                        parameterWithName("reviewId").description("삭제할 리뷰 ID"))));
 //    }
-//}
+// }

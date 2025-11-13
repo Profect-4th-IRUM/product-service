@@ -1,40 +1,42 @@
-//package com.irum.productservice.domain.cart;
+// package com.irum.productservice.domain.cart;
 //
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.ArgumentMatchers.eq;
-//import static org.mockito.Mockito.doNothing;
-//import static org.mockito.Mockito.when;
-//import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-//import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-//import static org.springframework.restdocs.request.RequestDocumentation.*;
-//import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-//import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+// import static org.mockito.ArgumentMatchers.any;
+// import static org.mockito.ArgumentMatchers.eq;
+// import static org.mockito.Mockito.doNothing;
+// import static org.mockito.Mockito.when;
+// import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+// import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+// import static org.springframework.restdocs.request.RequestDocumentation.*;
+// import static
+// org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+// import static
+// org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 //
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.irum.productservice.domain.cart.controller.CartController;
-//import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
-//import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
-//import com.irum.productservice.domain.cart.dto.response.CartResponse;
-//import com.irum.productservice.domain.cart.service.CartService;
-//import java.util.List;
-//import java.util.UUID;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.Mockito;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.boot.test.context.TestConfiguration;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.http.MediaType;
-//import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-//import org.springframework.test.web.servlet.MockMvc;
+// import com.fasterxml.jackson.databind.ObjectMapper;
+// import com.irum.productservice.domain.cart.controller.CartController;
+// import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
+// import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
+// import com.irum.productservice.domain.cart.dto.response.CartResponse;
+// import com.irum.productservice.domain.cart.service.CartService;
+// import java.util.List;
+// import java.util.UUID;
+// import org.junit.jupiter.api.DisplayName;
+// import org.junit.jupiter.api.Test;
+// import org.mockito.Mockito;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+// import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+// import org.springframework.boot.test.context.TestConfiguration;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.http.MediaType;
+// import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+// import org.springframework.test.web.servlet.MockMvc;
 //
-//@WebMvcTest(CartController.class)
-//@AutoConfigureRestDocs
+// @WebMvcTest(CartController.class)
+// @AutoConfigureRestDocs
 //// @Import({SecurityTestConfig.class, TestConfig.class})
-//class CartControllerTest {
+// class CartControllerTest {
 //
 //    @Autowired private MockMvc mockMvc;
 //    @Autowired private CartService cartService;
@@ -90,9 +92,11 @@
 //                                        fieldWithPath("status").description("201"),
 //                                        fieldWithPath("timestamp").description("응답 시간"),
 //                                        fieldWithPath("data.cartId").description("장바구니 ID"),
-//                                        fieldWithPath("data.optionValueId").description("옵션 값 ID"),
+//                                        fieldWithPath("data.optionValueId").description("옵션 값
+// ID"),
 //                                        fieldWithPath("data.productName").description("상품 이름"),
-//                                        fieldWithPath("data.optionValueName").description("옵션 이름"),
+//                                        fieldWithPath("data.optionValueName").description("옵션
+// 이름"),
 //                                        fieldWithPath("data.imageUrl").description("대표 이미지 URL"),
 //                                        fieldWithPath("data.quantity").description("수량"),
 //                                        fieldWithPath("data.basePrice").description("상품 기본가"),
@@ -137,7 +141,8 @@
 //                                        fieldWithPath("data[].productName").description("상품 이름"),
 //                                        fieldWithPath("data[].optionValueName")
 //                                                .description("옵션 이름"),
-//                                        fieldWithPath("data[].imageUrl").description("대표 이미지 URL"),
+//                                        fieldWithPath("data[].imageUrl").description("대표 이미지
+// URL"),
 //                                        fieldWithPath("data[].quantity").description("수량"),
 //                                        fieldWithPath("data[].basePrice").description("상품 기본가"),
 //                                        fieldWithPath("data[].extraPrice").description("옵션 추가금"),
@@ -184,4 +189,4 @@
 //                                pathParameters(
 //                                        parameterWithName("cartId").description("삭제할 장바구니 ID"))));
 //    }
-//}
+// }

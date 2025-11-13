@@ -1,5 +1,9 @@
 package com.irum.productservice.domain.discount.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
 import com.irum.global.advice.exception.CommonException;
 import com.irum.openfeign.member.dto.response.MemberDto;
 import com.irum.openfeign.member.enums.Role;
@@ -15,8 +19,11 @@ import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
-import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import com.irum.productservice.global.util.MemberUtil;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,17 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import com.irum.productservice.domain.category.domain.entity.Category;
-
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DiscountServiceTest {
@@ -61,9 +57,14 @@ class DiscountServiceTest {
 
         // Store Mock
         storeId = UUID.randomUUID();
-        store = Store.createStore(
-                "상점1", "010-1111-2222", "서울 강남구", "1234567890", "0987654321", member.memberId()
-        );
+        store =
+                Store.createStore(
+                        "상점1",
+                        "010-1111-2222",
+                        "서울 강남구",
+                        "1234567890",
+                        "0987654321",
+                        member.memberId());
         Field storeIdField = Store.class.getDeclaredField("id");
         storeIdField.setAccessible(true);
         storeIdField.set(store, storeId);
@@ -86,28 +87,21 @@ class DiscountServiceTest {
 
         // Product Mock
         productId = UUID.randomUUID();
-        product = Product.createProduct(
-                store, //leaf category (최하위)
-                category,
-                "상품1",
-                "설명1",
-                "상품 설명2",
-                1000,
-                true
-        );
+        product =
+                Product.createProduct(
+                        store, // leaf category (최하위)
+                        category, "상품1", "설명1", "상품 설명2", 1000, true);
 
         Field productIdField = Product.class.getDeclaredField("id");
         productIdField.setAccessible(true);
         productIdField.set(product, productId);
     }
 
-
     @DisplayName("할인 생성 성공 테스트")
     @Test
     void createDiscount_SuccessTest() {
         // given
-        DiscountRegisterRequest request =
-                new DiscountRegisterRequest("여름할인", 20, productId);
+        DiscountRegisterRequest request = new DiscountRegisterRequest("여름할인", 20, productId);
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(discountRepository.existsByProductId(productId)).thenReturn(false);
@@ -125,8 +119,7 @@ class DiscountServiceTest {
     @Test
     void createDiscount_Fail_DuplicateDiscount() {
         // given
-        DiscountRegisterRequest request =
-                new DiscountRegisterRequest("겨울할인", 30, productId);
+        DiscountRegisterRequest request = new DiscountRegisterRequest("겨울할인", 30, productId);
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(discountRepository.existsByProductId(productId)).thenReturn(true);
@@ -186,8 +179,6 @@ class DiscountServiceTest {
         verify(discountRepository, times(1)).findByProductId(productId);
     }
 
-
-
     @DisplayName("상점별 할인 목록 조회 성공 테스트")
     @Test
     void findDiscountInfoListByStore_SuccessTest() {
@@ -201,10 +192,10 @@ class DiscountServiceTest {
         lenient().doNothing().when(memberUtil).assertMemberResourceAccess(anyLong());
 
         // Mock 할인 리스트 (2개)
-        List<DiscountInfoResponse> discountList = List.of(
-                new DiscountInfoResponse(discountId1, "여름할인", 10, UUID.randomUUID()),
-                new DiscountInfoResponse(discountId2, "겨울할인", 20, UUID.randomUUID())
-        );
+        List<DiscountInfoResponse> discountList =
+                List.of(
+                        new DiscountInfoResponse(discountId1, "여름할인", 10, UUID.randomUUID()),
+                        new DiscountInfoResponse(discountId2, "겨울할인", 20, UUID.randomUUID()));
         when(discountRepository.findDiscountListByCursor(storeId, cursor, 11))
                 .thenReturn(discountList);
 
@@ -219,9 +210,7 @@ class DiscountServiceTest {
         assertThat(response.nextCursor()).isEqualTo(discountId2);
 
         verify(storeRepository, times(1)).findById(storeId);
-        verify(discountRepository, times(1))
-                .findDiscountListByCursor(storeId, cursor, 11);
-
+        verify(discountRepository, times(1)).findDiscountListByCursor(storeId, cursor, 11);
     }
 
     @DisplayName("할인 정보 수정 성공 테스트")
@@ -252,7 +241,6 @@ class DiscountServiceTest {
         assertThat(discount.getName()).isEqualTo("여름맞이 세일");
         assertThat(discount.getAmount()).isEqualTo(25);
         verify(discountRepository, times(1)).findById(discountId);
-
     }
 
     @DisplayName("할인 직접 삭제 성공 테스트")
@@ -282,7 +270,6 @@ class DiscountServiceTest {
 
         verify(discountRepository, times(1)).findById(discountId);
         verify(memberUtil, times(1)).getCurrentMember();
-
     }
 
     @DisplayName("상품 기준 할인 삭제 성공 테스트")
@@ -303,7 +290,6 @@ class DiscountServiceTest {
         assertThat(discount.getDeletedAt()).isNotNull();
         assertThat(discount.getDeletedBy()).isEqualTo(deletedBy);
         verify(discountRepository, times(1)).findByProductId(productId);
-
     }
 
     @DisplayName("상품 기준 할인 삭제 실패 테스트 - 할인 없음")
@@ -320,6 +306,4 @@ class DiscountServiceTest {
         // then
         verify(discountRepository, times(1)).findByProductId(productId);
     }
-
-
 }
