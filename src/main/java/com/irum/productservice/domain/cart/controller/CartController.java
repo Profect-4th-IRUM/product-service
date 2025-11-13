@@ -4,6 +4,7 @@ import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
 import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
 import com.irum.productservice.domain.cart.dto.response.CartResponse;
 import com.irum.productservice.domain.cart.service.CartService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -13,16 +14,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/carts")
+@RequestMapping(value = "/carts", produces = "application/json")
 @RequiredArgsConstructor
 @Validated
 public class CartController {
 
     private final CartService cartService;
 
-    @PostMapping
-    public ResponseEntity<CartResponse> createCart(
-            @RequestBody @Validated CartCreateRequest request) {
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<CartResponse> createCart(@RequestBody @Valid CartCreateRequest request) {
         CartResponse response = cartService.createCartWithResponse(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -33,9 +33,9 @@ public class CartController {
         return ResponseEntity.ok(responses);
     }
 
-    @PatchMapping("/{cartId}")
+    @PatchMapping(value = "/{cartId}", consumes = "application/json")
     public ResponseEntity<Void> updateCart(
-            @PathVariable UUID cartId, @RequestBody @Validated CartUpdateRequest request) {
+            @PathVariable UUID cartId, @RequestBody @Valid CartUpdateRequest request) {
         cartService.updateCart(cartId, request);
         return ResponseEntity.noContent().build();
     }

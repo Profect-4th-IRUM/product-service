@@ -1,15 +1,11 @@
 package com.irum.productservice.domain.cart.dto.response;
 
-import com.irum.productservice.domain.cart.domain.model.CartRedis;
+import com.irum.productservice.domain.cart.domain.entity.CartRedis;
 import com.irum.productservice.domain.product.domain.entity.ProductImage;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import java.util.UUID;
 import lombok.Builder;
 
-/**
- * 장바구니 응답 DTO - Redis의 장바구니 데이터 + 상품 옵션 + 할인 금액 등을 포함 - Product ↔ Discount 단방향 구조이므로 할인 금액은 외부에서
- * 주입받음
- */
 @Builder
 public record CartResponse(
         UUID cartId,

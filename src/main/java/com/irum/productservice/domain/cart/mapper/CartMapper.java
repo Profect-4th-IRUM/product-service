@@ -1,6 +1,6 @@
 package com.irum.productservice.domain.cart.mapper;
 
-import com.irum.productservice.domain.cart.domain.model.CartRedis;
+import com.irum.productservice.domain.cart.domain.entity.CartRedis;
 import com.irum.productservice.domain.cart.dto.response.CartResponse;
 import com.irum.productservice.domain.product.domain.entity.ProductImage;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
