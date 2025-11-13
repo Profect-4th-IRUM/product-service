@@ -50,7 +50,7 @@ class CategoryServiceTest {
 
     @DisplayName("루트 카테고리 생성 성공 테스트")
     @Test
-    void createRootCategory_Success() throws Exception {
+    void createRootCategory_SuccessTest() throws Exception {
         CategoryCreateRequest request = new CategoryCreateRequest("음식", null);
         when(categoryRepository.save(any(Category.class))).thenAnswer((Answer<Category>) invocation -> {
             Category c = invocation.getArgument(0);
@@ -62,7 +62,6 @@ class CategoryServiceTest {
 
         CategoryResponse response = categoryService.createCategory(request);
 
-        System.out.println("생성된 루트 카테고리 ID = " + response.categoryId());
         assertThat(response).isNotNull();
         assertThat(response.categoryId()).isEqualTo(categoryId);
         verify(categoryRepository, times(1)).save(any(Category.class));
@@ -70,7 +69,7 @@ class CategoryServiceTest {
 
     @DisplayName("서브 카테고리 생성 성공 테스트")
     @Test
-    void createSubCategory_Success() throws Exception {
+    void createSubCategory_SuccessTest() throws Exception {
         UUID parentId = UUID.randomUUID();
         Category parent = Category.createRootCategory("음식");
         Field parentIdField = Category.class.getDeclaredField("categoryId");
@@ -89,15 +88,14 @@ class CategoryServiceTest {
 
         CategoryResponse response = categoryService.createCategory(request);
 
-        System.out.println("생성된 서브 카테고리 ID = " + response.categoryId());
         assertThat(response.name()).isEqualTo("한식");
         verify(categoryRepository, times(1)).findById(parentId);
         verify(categoryRepository, times(1)).save(any(Category.class));
     }
 
-    @DisplayName("⚠서브 카테고리 생성 실패 테스트 - 부모 없음")
+    @DisplayName("서브 카테고리 생성 실패 테스트 - 부모 없음")
     @Test
-    void createSubCategory_Fail_WhenParentNotFound() {
+    void createSubCategory_FailTest_WhenParentNotFound() {
         UUID parentId = UUID.randomUUID();
         CategoryCreateRequest request = new CategoryCreateRequest("양식", parentId);
         when(categoryRepository.findById(parentId)).thenReturn(Optional.empty());
@@ -108,12 +106,11 @@ class CategoryServiceTest {
 
         verify(categoryRepository, times(1)).findById(parentId);
         verify(categoryRepository, never()).save(any(Category.class));
-        System.out.println("예외 발생 확인: CATEGORY_NOT_FOUND");
     }
 
     @DisplayName("카테고리 이름 수정 성공 테스트")
     @Test
-    void updateCategory_Success() {
+    void updateCategory_SuccessTest() {
         // given
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
         CategoryUpdateRequest request = new CategoryUpdateRequest("디저트");
@@ -122,7 +119,6 @@ class CategoryServiceTest {
         CategoryResponse response = categoryService.updateCategory(categoryId, request);
 
         // then
-        System.out.println("카테고리 이름 변경됨: " + response.name());
         assertThat(category.getName()).isEqualTo("디저트");
         assertThat(response.name()).isEqualTo("디저트");
         verify(categoryRepository, times(1)).findById(categoryId);
@@ -130,7 +126,7 @@ class CategoryServiceTest {
 
     @DisplayName("카테고리 수정 실패 테스트 - 존재하지 않음")
     @Test
-    void updateCategory_Fail_WhenNotFound() {
+    void updateCategory_FailTest_WhenNotFound() {
         // given
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
         CategoryUpdateRequest request = new CategoryUpdateRequest("디저트");
@@ -146,7 +142,7 @@ class CategoryServiceTest {
 
     @DisplayName("카테고리 삭제 성공 테스트")
     @Test
-    void deleteCategory_Success() {
+    void deleteCategory_SuccessTest() {
         // given
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
         when(memberUtil.getCurrentMember()).thenReturn(member);
@@ -155,7 +151,6 @@ class CategoryServiceTest {
         categoryService.deleteCategory(categoryId);
 
         // then
-        System.out.println("카테고리 softDelete 완료: " + category.getDeletedAt());
         assertThat(category.getDeletedAt()).isNotNull();
         verify(categoryRepository, times(1)).findById(categoryId);
         verify(memberUtil, times(1)).getCurrentMember();
@@ -163,7 +158,7 @@ class CategoryServiceTest {
 
     @DisplayName("카테고리 삭제 실패 테스트 - 존재하지 않음")
     @Test
-    void deleteCategory_Fail_WhenNotFound() {
+    void deleteCategory_FailTest_WhenNotFound() {
         // given
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 

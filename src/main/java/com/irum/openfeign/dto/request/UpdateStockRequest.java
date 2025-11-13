@@ -1,4 +1,4 @@
-package com.irum.openfeign.dto.request;
+package com.irum.productservice.domain.openfeign.dto.request;
 
 import java.util.List;
 import java.util.UUID;

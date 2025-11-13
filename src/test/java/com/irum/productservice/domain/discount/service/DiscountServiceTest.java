@@ -56,10 +56,10 @@ class DiscountServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // ✅ Member Mock
+        // Member Mock
         member = new MemberDto(1L, "이삭", "isak@test.com", "010-1111-1111", Role.OWNER);
 
-        // ✅ Store Mock
+        // Store Mock
         storeId = UUID.randomUUID();
         store = Store.createStore(
                 "상점1", "010-1111-2222", "서울 강남구", "1234567890", "0987654321", member.memberId()
@@ -68,7 +68,7 @@ class DiscountServiceTest {
         storeIdField.setAccessible(true);
         storeIdField.set(store, storeId);
 
-        // ✅ Root + Sub Category 직접 생성
+        // Root + Sub Category 직접 생성
         Category rootCategory = Category.createRootCategory("루트 카테고리");
         Field rootIdField = Category.class.getDeclaredField("categoryId");
         rootIdField.setAccessible(true);
@@ -84,10 +84,10 @@ class DiscountServiceTest {
         subIdField.setAccessible(true);
         subIdField.set(category, UUID.randomUUID());
 
-        // ✅ Product Mock
+        // Product Mock
         productId = UUID.randomUUID();
         product = Product.createProduct(
-                store, // ✅ leaf category (최하위)
+                store, //leaf category (최하위)
                 category,
                 "상품1",
                 "설명1",
@@ -102,9 +102,9 @@ class DiscountServiceTest {
     }
 
 
-    @DisplayName("✅ 할인 생성 성공 테스트")
+    @DisplayName("할인 생성 성공 테스트")
     @Test
-    void createDiscount_Success() {
+    void createDiscount_SuccessTest() {
         // given
         DiscountRegisterRequest request =
                 new DiscountRegisterRequest("여름할인", 20, productId);
@@ -119,10 +119,9 @@ class DiscountServiceTest {
         verify(discountRepository, times(1)).save(any(Discount.class));
         verify(discountRepository, times(1)).existsByProductId(productId);
         verify(productRepository, times(1)).findById(productId);
-        System.out.println("🟢 할인 생성 성공 테스트 통과");
     }
 
-    @DisplayName("❌ 중복 할인 등록 시 예외 발생 테스트")
+    @DisplayName("중복 할인 등록 시 예외 발생 테스트")
     @Test
     void createDiscount_Fail_DuplicateDiscount() {
         // given
@@ -139,12 +138,11 @@ class DiscountServiceTest {
 
         verify(discountRepository, times(1)).existsByProductId(productId);
         verify(discountRepository, never()).save(any(Discount.class));
-        System.out.println("🟠 중복 할인 등록 예외 테스트 통과");
     }
 
-    @DisplayName("✅ 상품별 할인 정보 조회 성공 테스트")
+    @DisplayName("상품별 할인 정보 조회 성공 테스트")
     @Test
-    void findDiscountInfoByProduct_Success() {
+    void findDiscountInfoByProduct_SuccessTest() {
         // given
         UUID discountId = UUID.randomUUID();
         Discount discount = Discount.create("겨울세일", 30, product);
@@ -172,12 +170,11 @@ class DiscountServiceTest {
         assertThat(response.amount()).isEqualTo(30);
 
         verify(discountRepository, times(1)).findByProductId(productId);
-        System.out.println("🟢 상품별 할인 조회 성공 테스트 통과");
     }
 
-    @DisplayName("❌ 상품별 할인 정보 조회 실패 테스트 - 할인 정보 없음")
+    @DisplayName("상품별 할인 정보 조회 실패 테스트 - 할인 정보 없음")
     @Test
-    void findDiscountInfoByProduct_Fail_NotFound() {
+    void findDiscountInfoByProduct_FailTest_NotFound() {
         // given
         when(discountRepository.findByProductId(productId)).thenReturn(Optional.empty());
 
@@ -187,14 +184,13 @@ class DiscountServiceTest {
                 .hasMessageContaining("할인 정보를 찾을 수 없습니다"); // 실제 DiscountErrorCode 메시지에 맞춰 수정
 
         verify(discountRepository, times(1)).findByProductId(productId);
-        System.out.println("🟠 상품별 할인 조회 실패 테스트 (예외 발생) 통과");
     }
 
 
 
-    @DisplayName("✅ 상점별 할인 목록 조회 단순 테스트")
+    @DisplayName("상점별 할인 목록 조회 성공 테스트")
     @Test
-    void findDiscountInfoListByStore_SimpleTest() {
+    void findDiscountInfoListByStore_SuccessTest() {
         // given
         UUID cursor = UUID.randomUUID();
         UUID discountId1 = UUID.randomUUID();
@@ -226,28 +222,27 @@ class DiscountServiceTest {
         verify(discountRepository, times(1))
                 .findDiscountListByCursor(storeId, cursor, 11);
 
-        System.out.println("🟢 상점별 할인 목록 단순 테스트 통과");
     }
 
-    @DisplayName("✅ 할인 정보 수정 성공 테스트")
+    @DisplayName("할인 정보 수정 성공 테스트")
     @Test
-    void changeDiscountInfo_Success() throws Exception {
+    void changeDiscountInfo_SuccessTest() throws Exception {
         // given
         UUID discountId = UUID.randomUUID();
 
-        // ✅ 기존 할인 객체
+        // 기존 할인 객체
         Discount discount = Discount.create("봄맞이 세일", 10, product);
 
-        // ✅ 리플렉션으로 ID 주입
+        // 리플렉션으로 ID 주입
         Field idField = Discount.class.getDeclaredField("id");
         idField.setAccessible(true);
         idField.set(discount, discountId);
 
-        // ✅ Mock 설정
+        // Mock 설정
         when(discountRepository.findById(discountId)).thenReturn(Optional.of(discount));
         lenient().doNothing().when(memberUtil).assertMemberResourceAccess(anyLong());
 
-        // ✅ 수정 요청 DTO
+        // 수정 요청 DTO
         var request = new DiscountInfoUpdateRequest("여름맞이 세일", 25);
 
         // when
@@ -258,12 +253,11 @@ class DiscountServiceTest {
         assertThat(discount.getAmount()).isEqualTo(25);
         verify(discountRepository, times(1)).findById(discountId);
 
-        System.out.println("🟢 할인 정보 수정 성공 테스트 통과");
     }
 
-    @DisplayName("✅ 할인 직접 삭제 성공 테스트")
+    @DisplayName("할인 직접 삭제 성공 테스트")
     @Test
-    void removeDiscount_Success() throws Exception {
+    void removeDiscount_SuccessTest() throws Exception {
         // given
         UUID discountId = UUID.randomUUID();
 
@@ -289,12 +283,11 @@ class DiscountServiceTest {
         verify(discountRepository, times(1)).findById(discountId);
         verify(memberUtil, times(1)).getCurrentMember();
 
-        System.out.println("🟢 할인 직접 삭제 성공 테스트 통과");
     }
 
-    @DisplayName("✅ 상품 기준 할인 삭제 성공 테스트")
+    @DisplayName("상품 기준 할인 삭제 성공 테스트")
     @Test
-    void deleteDiscountByProductId_Success() {
+    void deleteDiscountByProductId_SuccessTest() {
         // given
         UUID productId = UUID.randomUUID();
         Long deletedBy = 1L;
@@ -311,12 +304,11 @@ class DiscountServiceTest {
         assertThat(discount.getDeletedBy()).isEqualTo(deletedBy);
         verify(discountRepository, times(1)).findByProductId(productId);
 
-        System.out.println("🟢 상품 기준 할인 삭제 테스트 통과");
     }
 
-    @DisplayName("❌ 상품 기준 할인 삭제 실패 테스트 - 할인 없음")
+    @DisplayName("상품 기준 할인 삭제 실패 테스트 - 할인 없음")
     @Test
-    void deleteDiscountByProductId_Fail_NotFound() {
+    void deleteDiscountByProductId_FailTest_NotFound() {
         // given
         UUID productId = UUID.randomUUID();
 
@@ -327,7 +319,6 @@ class DiscountServiceTest {
 
         // then
         verify(discountRepository, times(1)).findByProductId(productId);
-        System.out.println("🟠 상품 기준 할인 삭제 실패 (할인 없음) 테스트 통과");
     }
 
 
