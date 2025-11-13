@@ -18,6 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.irum.global.advice.exception.GlobalExceptionHandler;
+import com.irum.global.advice.response.CommonResponseAdvice;
 import com.irum.productservice.domain.discount.dto.request.DiscountInfoUpdateRequest;
 import com.irum.productservice.domain.discount.dto.request.DiscountRegisterRequest;
 import com.irum.productservice.domain.discount.dto.response.DiscountInfoListResponse;
@@ -25,18 +27,21 @@ import com.irum.productservice.domain.discount.dto.response.DiscountInfoResponse
 import com.irum.productservice.domain.discount.service.DiscountService;
 import java.util.List;
 import java.util.UUID;
+
+import com.irum.productservice.global.config.TestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(DiscountController.class)
 @AutoConfigureRestDocs
-// @Import({SecurityTestConfig.class, TestConfig.class})
+@Import({CommonResponseAdvice.class, GlobalExceptionHandler.class, TestConfig.class})
 public class DiscountControllerTest {
 
     @Autowired private MockMvc mockMvc;

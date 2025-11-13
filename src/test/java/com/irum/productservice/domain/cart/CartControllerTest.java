@@ -35,7 +35,13 @@
 //
 // @WebMvcTest(CartController.class)
 // @AutoConfigureRestDocs
-//// @Import({SecurityTestConfig.class, TestConfig.class})
+
+//import com.irum.global.advice.exception.GlobalExceptionHandler;
+//import com.irum.global.advice.response.CommonResponseAdvice;
+//import com.irum.productservice.global.config.TestConfig;
+//import org.springframework.context.annotation.Import;
+//
+//@Import({CommonResponseAdvice.class, GlobalExceptionHandler.class, TestConfig.class})
 // class CartControllerTest {
 //
 //    @Autowired private MockMvc mockMvc;

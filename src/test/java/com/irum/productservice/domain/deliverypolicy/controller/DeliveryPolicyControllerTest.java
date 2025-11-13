@@ -9,11 +9,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.irum.global.advice.exception.GlobalExceptionHandler;
+import com.irum.global.advice.response.CommonResponseAdvice;
 import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyCreateRequest;
 import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyInfoUpdateRequest;
 import com.irum.productservice.domain.deliverypolicy.dto.response.DeliveryPolicyInfoResponse;
 import com.irum.productservice.domain.deliverypolicy.service.DeliveryPolicyService;
 import java.util.UUID;
+
+import com.irum.productservice.global.config.TestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,12 +26,13 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(DeliveryPolicyController.class)
 @AutoConfigureRestDocs
-// @Import(SecurityTestConfig.class)
+@Import({CommonResponseAdvice.class, GlobalExceptionHandler.class, TestConfig.class})
 public class DeliveryPolicyControllerTest {
 
     @Autowired private MockMvc mockMvc;
