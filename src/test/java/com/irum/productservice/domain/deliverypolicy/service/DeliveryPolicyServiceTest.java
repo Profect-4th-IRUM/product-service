@@ -1,5 +1,9 @@
 package com.irum.productservice.domain.deliverypolicy.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
 import com.irum.global.advice.exception.CommonException;
 import com.irum.openfeign.member.dto.response.MemberDto;
 import com.irum.openfeign.member.enums.Role;
@@ -10,6 +14,9 @@ import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyI
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.util.MemberUtil;
+import java.lang.reflect.Field;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,29 +24,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-
-
-import java.lang.reflect.Field;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DeliveryPolicyServiceTest {
 
-    @InjectMocks
-    private DeliveryPolicyService deliveryPolicyService;
+    @InjectMocks private DeliveryPolicyService deliveryPolicyService;
 
-    @Mock
-    private DeliveryPolicyRepository deliveryPolicyRepository;
-    @Mock
-    private StoreRepository storeRepository;
-    @Mock
-    private MemberUtil memberUtil;
+    @Mock private DeliveryPolicyRepository deliveryPolicyRepository;
+    @Mock private StoreRepository storeRepository;
+    @Mock private MemberUtil memberUtil;
 
     private MemberDto member;
     private DeliveryPolicy deliveryPolicy;
@@ -55,14 +48,14 @@ public class DeliveryPolicyServiceTest {
 
         // 공통 Store 기본 생성
         storeId = UUID.randomUUID();
-        store = Store.createStore(
-                "기본상점",
-                "010-2222-3333",
-                "서울시 송파구",
-                "1234567890",
-                "0987654321",
-                member.memberId()
-        );
+        store =
+                Store.createStore(
+                        "기본상점",
+                        "010-2222-3333",
+                        "서울시 송파구",
+                        "1234567890",
+                        "0987654321",
+                        member.memberId());
 
         Field storeIdField = Store.class.getDeclaredField("id");
         storeIdField.setAccessible(true);
@@ -70,12 +63,7 @@ public class DeliveryPolicyServiceTest {
 
         // DeliveryPolicy 생성
         deliveryPolicyId = UUID.randomUUID();
-        deliveryPolicy = DeliveryPolicy.createPolicy(
-                10000,
-                2,
-                1000,
-                store
-        );
+        deliveryPolicy = DeliveryPolicy.createPolicy(10000, 2, 1000, store);
         // DeliveryPolicy ID 직접 주입
         try {
             Field policyIdField = DeliveryPolicy.class.getDeclaredField("deliveryPolicyId");
@@ -92,7 +80,6 @@ public class DeliveryPolicyServiceTest {
         Field policyField = Store.class.getDeclaredField("deliveryPolicy");
         policyField.setAccessible(true);
         policyField.set(store, deliveryPolicy);
-
     }
 
     @DisplayName("배송정책 생성 성공 테스트")
@@ -103,8 +90,7 @@ public class DeliveryPolicyServiceTest {
         when(storeRepository.findByMember(member.memberId())).thenReturn(Optional.of(store));
         when(deliveryPolicyRepository.save(any(DeliveryPolicy.class))).thenReturn(deliveryPolicy);
 
-        DeliveryPolicyCreateRequest request =
-                new DeliveryPolicyCreateRequest(10000, 2, 1000);
+        DeliveryPolicyCreateRequest request = new DeliveryPolicyCreateRequest(10000, 2, 1000);
 
         // when
         deliveryPolicyService.createDeliveryPolicy(request);
@@ -152,7 +138,6 @@ public class DeliveryPolicyServiceTest {
         assertThat(deliveryPolicy.getDeletedBy()).isEqualTo(member.memberId());
         verify(deliveryPolicyRepository, times(1)).findById(policyId);
         verify(memberUtil, times(1)).getCurrentMember();
-
     }
 
     @DisplayName("상점 ID로 배송정책 삭제 성공 테스트")
@@ -160,7 +145,8 @@ public class DeliveryPolicyServiceTest {
     void deleteDeliveryPolicyByStoreId_SuccessTest() {
         // given
         UUID storeId = this.storeId;
-        when(deliveryPolicyRepository.findByStoreId(storeId)).thenReturn(Optional.of(deliveryPolicy));
+        when(deliveryPolicyRepository.findByStoreId(storeId))
+                .thenReturn(Optional.of(deliveryPolicy));
 
         // when
         deliveryPolicyService.deleteDeliveryPolicyByStoreId(storeId, 99L); // 99L = 관리자 ID
@@ -169,7 +155,6 @@ public class DeliveryPolicyServiceTest {
         assertThat(deliveryPolicy.getDeletedAt()).isNotNull();
         assertThat(deliveryPolicy.getDeletedBy()).isEqualTo(99L);
         verify(deliveryPolicyRepository, times(1)).findByStoreId(storeId);
-
     }
 
     @DisplayName("배송정책 직접 삭제 실패 테스트 - 정책 없음")
@@ -191,7 +176,8 @@ public class DeliveryPolicyServiceTest {
     @Test
     void findDeliveryPolicy_SuccessTest() {
         // given
-        when(deliveryPolicyRepository.findById(deliveryPolicyId)).thenReturn(Optional.of(deliveryPolicy));
+        when(deliveryPolicyRepository.findById(deliveryPolicyId))
+                .thenReturn(Optional.of(deliveryPolicy));
 
         // when
         var response = deliveryPolicyService.findDeliveryPolicy(deliveryPolicyId);

@@ -1,12 +1,14 @@
 package com.irum.productservice.domain.product.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
 import com.irum.global.advice.exception.CommonException;
 import com.irum.openfeign.member.dto.response.MemberDto;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.category.domain.repository.CategoryRepository;
-import com.irum.productservice.domain.category.dto.request.CategoryUpdateRequest;
 import com.irum.productservice.domain.product.domain.entity.Product;
-import com.irum.productservice.domain.product.domain.entity.ProductImage;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionGroup;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionGroupRepository;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
@@ -16,6 +18,10 @@ import com.irum.productservice.domain.product.event.ProductDeletedEvent;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.util.MemberUtil;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,39 +31,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
 
-    @InjectMocks
-    private ProductService productService;
+    @InjectMocks private ProductService productService;
 
-    @Mock
-    private ProductRepository productRepository;
-    @Mock
-    private ProductOptionGroupRepository optionGroupRepository;
-    @Mock
-    private ProductOptionValueRepository optionValueRepository;
-    @Mock
-    private StoreRepository storeRepository;
-    @Mock
-    private CategoryRepository categoryRepository;
-    @Mock
-    private MemberUtil memberUtil;
-    @Mock
-    private ApplicationEventPublisher eventPublisher;
-    @Mock
-    private ProductOptionGroupRepository productOptionGroupRepository;
-    @Mock
-    private ProductOptionValueRepository productOptionValueRepository;
+    @Mock private ProductRepository productRepository;
+    @Mock private ProductOptionGroupRepository optionGroupRepository;
+    @Mock private ProductOptionValueRepository optionValueRepository;
+    @Mock private StoreRepository storeRepository;
+    @Mock private CategoryRepository categoryRepository;
+    @Mock private MemberUtil memberUtil;
+    @Mock private ApplicationEventPublisher eventPublisher;
+    @Mock private ProductOptionGroupRepository productOptionGroupRepository;
+    @Mock private ProductOptionValueRepository productOptionValueRepository;
 
     private MemberDto member;
     private Store store;
@@ -68,21 +55,26 @@ class ProductServiceTest {
     private UUID optionGroupId;
     private ProductOptionGroup optionGroup;
 
-
     @BeforeEach
     void setUp() throws Exception {
-        member = new MemberDto(1L, "이삭", "isak@test.com", "010-1111-1111", com.irum.openfeign.member.enums.Role.OWNER);
+        member =
+                new MemberDto(
+                        1L,
+                        "이삭",
+                        "isak@test.com",
+                        "010-1111-1111",
+                        com.irum.openfeign.member.enums.Role.OWNER);
 
         storeId = UUID.randomUUID();
         // Store Mock
-        store = Store.createStore(
-                "상점1",
-                "010-2222-3333",
-                "서울 강남구",
-                "1234567890",
-                "0987654321",
-                member.memberId()
-        );
+        store =
+                Store.createStore(
+                        "상점1",
+                        "010-2222-3333",
+                        "서울 강남구",
+                        "1234567890",
+                        "0987654321",
+                        member.memberId());
 
         Field storeIdField = Store.class.getDeclaredField("id");
         storeIdField.setAccessible(true);
@@ -104,17 +96,8 @@ class ProductServiceTest {
         subIdField.setAccessible(true);
         subIdField.set(category, UUID.randomUUID());
 
-
         productId = UUID.randomUUID();
-        product = Product.createProduct(
-                store,
-                category,
-                "원래상품",
-                "원래설명",
-                "원래상세",
-                1000,
-                true
-        );
+        product = Product.createProduct(store, category, "원래상품", "원래설명", "원래상세", 1000, true);
 
         // 리플렉션으로 ID 주입
         Field productIdField = Product.class.getDeclaredField("id");
@@ -127,7 +110,6 @@ class ProductServiceTest {
         Field ogId = ProductOptionGroup.class.getDeclaredField("id");
         ogId.setAccessible(true);
         ogId.set(optionGroup, optionGroupId);
-
     }
 
     @DisplayName("상품 생성 성공 테스트 - 옵션 없이")
@@ -139,15 +121,10 @@ class ProductServiceTest {
         when(storeRepository.findByMember(member.memberId())).thenReturn(Optional.of(store));
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
 
-        ProductCreateRequest request = new ProductCreateRequest(
-                "상품1",
-                "간단한 설명",
-                "상세 설명",
-                true,
-                1000,
-                categoryId,
-                null // 옵션 그룹 없음
-        );
+        ProductCreateRequest request =
+                new ProductCreateRequest(
+                        "상품1", "간단한 설명", "상세 설명", true, 1000, categoryId, null // 옵션 그룹 없음
+                        );
 
         // when
         productService.createProduct(request);
@@ -168,25 +145,19 @@ class ProductServiceTest {
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
 
         // 옵션 값 생성
-        List<ProductOptionValueRequest> optionValues = List.of(
-                new ProductOptionValueRequest("색상: 빨강", 10, 0),
-                new ProductOptionValueRequest("색상: 파랑", 5, 0)
-        );
+        List<ProductOptionValueRequest> optionValues =
+                List.of(
+                        new ProductOptionValueRequest("색상: 빨강", 10, 0),
+                        new ProductOptionValueRequest("색상: 파랑", 5, 0));
 
         // 옵션 그룹 생성
-        List<ProductOptionGroupRequest> optionGroups = List.of(
-                new ProductOptionGroupRequest("색상", optionValues)
-        );
+        List<ProductOptionGroupRequest> optionGroups =
+                List.of(new ProductOptionGroupRequest("색상", optionValues));
 
-        ProductCreateRequest request = new ProductCreateRequest(
-                "상품1",
-                "간단한 설명",
-                "상세 설명",
-                true,
-                1000,
-                categoryId,
-                optionGroups // 옵션 그룹 없음
-        );
+        ProductCreateRequest request =
+                new ProductCreateRequest(
+                        "상품1", "간단한 설명", "상세 설명", true, 1000, categoryId, optionGroups // 옵션 그룹 없음
+                        );
 
         // when
         productService.createProduct(request);
@@ -207,15 +178,10 @@ class ProductServiceTest {
         when(storeRepository.findByMember(member.memberId())).thenReturn(Optional.of(store));
         when(categoryRepository.findById(invalidCategoryId)).thenReturn(Optional.empty());
 
-        ProductCreateRequest request = new ProductCreateRequest(
-                "상품1",
-                "간단한 설명",
-                "상세 설명",
-                true,
-                1000,
-                invalidCategoryId,
-                null // 옵션 그룹 없음
-        );
+        ProductCreateRequest request =
+                new ProductCreateRequest(
+                        "상품1", "간단한 설명", "상세 설명", true, 1000, invalidCategoryId, null // 옵션 그룹 없음
+                        );
 
         // when & then
         assertThatThrownBy(() -> productService.createProduct(request))
@@ -234,15 +200,8 @@ class ProductServiceTest {
         when(memberUtil.getCurrentMember()).thenReturn(member);
         when(storeRepository.findByMember(member.memberId())).thenReturn(Optional.empty());
 
-        ProductCreateRequest request = new ProductCreateRequest(
-                "상품1",
-                "설명",
-                "상세 설명",
-                true,
-                12000,
-                categoryId,
-                null
-        );
+        ProductCreateRequest request =
+                new ProductCreateRequest("상품1", "설명", "상세 설명", true, 12000, categoryId, null);
 
         // when & then
         assertThatThrownBy(() -> productService.createProduct(request))
@@ -253,20 +212,13 @@ class ProductServiceTest {
         verify(productRepository, never()).save(any());
     }
 
-
     @DisplayName("상품 수정 성공 테스트")
     @Test
     void updateProduct_SuccessTest() throws Exception {
         // given
         when(productRepository.findById(any())).thenReturn(Optional.of(product));
 
-        ProductUpdateRequest request = new ProductUpdateRequest(
-                "새상품명",
-                "새설명",
-                "새상세",
-                false,
-                2000
-        );
+        ProductUpdateRequest request = new ProductUpdateRequest("새상품명", "새설명", "새상세", false, 2000);
 
         // when
         productService.updateProduct(productId, request);
@@ -287,16 +239,9 @@ class ProductServiceTest {
     @Test
     void updateProduct_FailTest_NoChanges() throws Exception {
         // given
-        when(productRepository.findById(productId))
-                .thenReturn(Optional.of(product));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
-        ProductUpdateRequest request = new ProductUpdateRequest(
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        ProductUpdateRequest request = new ProductUpdateRequest(null, null, null, null, null);
 
         // when & then
         assertThatThrownBy(() -> productService.updateProduct(productId, request))
@@ -312,16 +257,9 @@ class ProductServiceTest {
         // given
         UUID invalidProductId = UUID.randomUUID();
 
-        when(productRepository.findById(invalidProductId))
-                .thenReturn(Optional.empty());
+        when(productRepository.findById(invalidProductId)).thenReturn(Optional.empty());
 
-        ProductUpdateRequest request = new ProductUpdateRequest(
-                "새상품명",
-                "새설명",
-                "새상세",
-                false,
-                2000
-        );
+        ProductUpdateRequest request = new ProductUpdateRequest("새상품명", "새설명", "새상세", false, 2000);
 
         // when & then
         assertThatThrownBy(() -> productService.updateProduct(invalidProductId, request))
@@ -332,28 +270,30 @@ class ProductServiceTest {
     }
 
     //    @DisplayName("상품 카테고리 수정 성공 테스트")
-//    @Test
-//    void updateProductCategory_Success() throws Exception {
-//        // given
-//
-//        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-//
-//        when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
-//
-//        UUID newCategoryId = UUID.randomUUID();
-//        ProductCategoryUpdateRequest request = new ProductCategoryUpdateRequest(newCategoryId);
-//
-//        // when
-//        productService.updateProductCategory(productId, request);
-//
-//        // then
-//        assertThat(product.getCategory().getCategoryId()).isEqualTo(newCategoryId);
-//
-//        verify(productRepository, times(1)).findById(productId);
-//        verify(categoryRepository, times(1)).findById(newCategoryId);
-//        verify(memberUtil, times(1))
-//                .assertMemberResourceAccess(product.getStore().getMember());
-//    }
+    //    @Test
+    //    void updateProductCategory_Success() throws Exception {
+    //        // given
+    //
+    //        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+    //
+    //
+    // when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
+    //
+    //        UUID newCategoryId = UUID.randomUUID();
+    //        ProductCategoryUpdateRequest request = new
+    // ProductCategoryUpdateRequest(newCategoryId);
+    //
+    //        // when
+    //        productService.updateProductCategory(productId, request);
+    //
+    //        // then
+    //        assertThat(product.getCategory().getCategoryId()).isEqualTo(newCategoryId);
+    //
+    //        verify(productRepository, times(1)).findById(productId);
+    //        verify(categoryRepository, times(1)).findById(newCategoryId);
+    //        verify(memberUtil, times(1))
+    //                .assertMemberResourceAccess(product.getStore().getMember());
+    //    }
     @DisplayName("상품 삭제 성공 테스트")
     @Test
     void deleteProduct_Success() {
@@ -367,12 +307,9 @@ class ProductServiceTest {
         // then
         verify(memberUtil, times(1)).getCurrentMember();
         verify(productRepository, times(1)).findById(productId);
-        verify(memberUtil, times(1))
-                .assertMemberResourceAccess(product.getStore().getMember());
-        verify(eventPublisher, times(1))
-                .publishEvent(any(ProductDeletedEvent.class));
+        verify(memberUtil, times(1)).assertMemberResourceAccess(product.getStore().getMember());
+        verify(eventPublisher, times(1)).publishEvent(any(ProductDeletedEvent.class));
     }
-
 
     @DisplayName("상품 삭제 실패 테스트 - 상품 없음")
     @Test
@@ -398,15 +335,8 @@ class ProductServiceTest {
 
         // 기존 product는 setUp()에서 필드에 저장했다고 가정
         // product2 생성
-        Product product2 = Product.createProduct(
-                store,
-                category,
-                "두번째상품",
-                "설명2",
-                "상세2",
-                2000,
-                true
-        );
+        Product product2 =
+                Product.createProduct(store, category, "두번째상품", "설명2", "상세2", 2000, true);
 
         // reflection ID 주입
         Field idField = Product.class.getDeclaredField("id");
@@ -414,8 +344,7 @@ class ProductServiceTest {
         idField.set(product2, UUID.randomUUID());
 
         // 상품 2개 mock 반환
-        when(productRepository.findByStoreId(storeId))
-                .thenReturn(List.of(product, product2));
+        when(productRepository.findByStoreId(storeId)).thenReturn(List.of(product, product2));
 
         // when
         productService.deleteProductsByStoreId(storeId, deletedBy);
@@ -424,8 +353,7 @@ class ProductServiceTest {
         verify(productRepository, times(1)).findByStoreId(storeId);
 
         // 이벤트는 두 상품 각각 1번씩 = 총 2회 발행됨
-        verify(eventPublisher, times(2))
-                .publishEvent(any(ProductDeletedEvent.class));
+        verify(eventPublisher, times(2)).publishEvent(any(ProductDeletedEvent.class));
     }
 
     @DisplayName("상품 목록 조회 - 키워드 검색")
@@ -434,13 +362,11 @@ class ProductServiceTest {
         String keyword = "바디워시";
         int size = 10;
 
-        when(productRepository.findProductsByKeyword(null, size, keyword))
-                .thenReturn(List.of());
+        when(productRepository.findProductsByKeyword(null, size, keyword)).thenReturn(List.of());
 
         productService.getProductList(null, null, size, keyword);
 
-        verify(productRepository, times(1))
-                .findProductsByKeyword(null, size, keyword);
+        verify(productRepository, times(1)).findProductsByKeyword(null, size, keyword);
     }
 
     @DisplayName("상품 목록 조회 - 카테고리 검색")
@@ -449,12 +375,10 @@ class ProductServiceTest {
         UUID categoryId = UUID.randomUUID();
         int size = 10;
 
-        when(categoryRepository.findChildrenByParentId(any()))
-                .thenReturn(List.of());
+        when(categoryRepository.findChildrenByParentId(any())).thenReturn(List.of());
 
-        when(productRepository.findProductsByCategoryIds(
-                null, size, List.of(categoryId)
-        )).thenReturn(List.of());
+        when(productRepository.findProductsByCategoryIds(null, size, List.of(categoryId)))
+                .thenReturn(List.of());
 
         productService.getProductList(categoryId, null, size, null);
 
@@ -475,32 +399,27 @@ class ProductServiceTest {
                 .thenReturn(List.of()); // leaf category
 
         when(productRepository.findProductsByCategoryIdsAndKeyword(
-                cursor, size, List.of(categoryId), keyword
-        )).thenReturn(List.of());
+                        cursor, size, List.of(categoryId), keyword))
+                .thenReturn(List.of());
 
         // when
         productService.getProductList(categoryId, cursor, size, keyword);
 
         // then
         verify(productRepository, times(1))
-                .findProductsByCategoryIdsAndKeyword(
-                        cursor, size, List.of(categoryId), keyword
-                );
+                .findProductsByCategoryIdsAndKeyword(cursor, size, List.of(categoryId), keyword);
     }
-
 
     @DisplayName("상품 목록 조회 - 기본 전체 조회")
     @Test
     void getProductList_DefaultCursorPaging() {
         int size = 10;
 
-        when(productRepository.findProductsByCursor(null, size))
-                .thenReturn(List.of());
+        when(productRepository.findProductsByCursor(null, size)).thenReturn(List.of());
 
         productService.getProductList(null, null, size, null);
 
-        verify(productRepository, times(1))
-                .findProductsByCursor(null, size);
+        verify(productRepository, times(1)).findProductsByCursor(null, size);
     }
 
     @DisplayName("옵션 그룹 생성 성공 테스트 - 옵션 값 없음")
@@ -510,8 +429,7 @@ class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         doNothing().when(memberUtil).assertMemberResourceAccess(product.getStore().getMember());
 
-        ProductOptionGroupRequest request =
-                new ProductOptionGroupRequest("색상", null);
+        ProductOptionGroupRequest request = new ProductOptionGroupRequest("색상", null);
 
         // when
         productService.createOptionGroup(productId, request);
@@ -522,10 +440,8 @@ class ProductServiceTest {
 
         verify(productRepository, times(1)).findById(productId);
         verify(productRepository, times(1)).save(product);
-        verify(memberUtil, times(1))
-                .assertMemberResourceAccess(product.getStore().getMember());
+        verify(memberUtil, times(1)).assertMemberResourceAccess(product.getStore().getMember());
     }
-
 
     @DisplayName("옵션 그룹 생성 성공 테스트 - 옵션 값 포함")
     @Test
@@ -534,13 +450,12 @@ class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         doNothing().when(memberUtil).assertMemberResourceAccess(product.getStore().getMember());
 
-        List<ProductOptionValueRequest> optionValues = List.of(
-                new ProductOptionValueRequest("빨강", 10, 0),
-                new ProductOptionValueRequest("파랑", 5, 500)
-        );
+        List<ProductOptionValueRequest> optionValues =
+                List.of(
+                        new ProductOptionValueRequest("빨강", 10, 0),
+                        new ProductOptionValueRequest("파랑", 5, 500));
 
-        ProductOptionGroupRequest request =
-                new ProductOptionGroupRequest("색상", optionValues);
+        ProductOptionGroupRequest request = new ProductOptionGroupRequest("색상", optionValues);
 
         // when
         productService.createOptionGroup(productId, request);
@@ -557,15 +472,13 @@ class ProductServiceTest {
         verify(productRepository, times(1)).save(product);
     }
 
-
     @DisplayName("옵션 그룹 생성 실패 테스트 - 상품 없음")
     @Test
     void createOptionGroup_Fail_ProductNotFound() {
         // given
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
-        ProductOptionGroupRequest request =
-                new ProductOptionGroupRequest("색상", null);
+        ProductOptionGroupRequest request = new ProductOptionGroupRequest("색상", null);
 
         // when & then
         assertThatThrownBy(() -> productService.createOptionGroup(productId, request))
@@ -575,15 +488,14 @@ class ProductServiceTest {
         verify(productRepository, times(1)).findById(productId);
         verify(productRepository, never()).save(any());
     }
+
     @DisplayName("옵션 값 생성 성공 테스트")
     @Test
     void createOptionValue_Success() throws Exception {
         // given
-        when(optionGroupRepository.findById(optionGroupId))
-                .thenReturn(Optional.of(optionGroup));
+        when(optionGroupRepository.findById(optionGroupId)).thenReturn(Optional.of(optionGroup));
 
-        ProductOptionValueRequest request =
-                new ProductOptionValueRequest("Large", 10, 500);
+        ProductOptionValueRequest request = new ProductOptionValueRequest("Large", 10, 500);
 
         // when
         productService.createOptionValue(optionGroup.getId(), request);
@@ -597,15 +509,14 @@ class ProductServiceTest {
         verify(optionGroupRepository, times(1)).findById(optionGroupId);
         verify(optionGroupRepository, times(1)).save(optionGroup);
     }
+
     @DisplayName("옵션 값 생성 실패 테스트 - 옵션 그룹 없음")
     @Test
     void createOptionValue_Fail_OptionGroupNotFound() {
         // given
-        when(optionGroupRepository.findById(optionGroupId))
-                .thenReturn(Optional.empty());
+        when(optionGroupRepository.findById(optionGroupId)).thenReturn(Optional.empty());
 
-        ProductOptionValueRequest request =
-                new ProductOptionValueRequest("Large", 10, 500);
+        ProductOptionValueRequest request = new ProductOptionValueRequest("Large", 10, 500);
 
         // when & then
         assertThatThrownBy(() -> productService.createOptionValue(optionGroupId, request))
@@ -615,6 +526,4 @@ class ProductServiceTest {
         verify(optionGroupRepository, times(1)).findById(optionGroupId);
         verify(optionGroupRepository, never()).save(any());
     }
-
-
 }

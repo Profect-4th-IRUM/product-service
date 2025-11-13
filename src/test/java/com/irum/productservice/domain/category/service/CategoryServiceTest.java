@@ -1,5 +1,8 @@
 package com.irum.productservice.domain.category.service;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.irum.global.advice.exception.CommonException;
 import com.irum.openfeign.member.dto.response.MemberDto;
 import com.irum.openfeign.member.enums.Role;
@@ -10,6 +13,9 @@ import com.irum.productservice.domain.category.dto.request.CategoryUpdateRequest
 import com.irum.productservice.domain.category.dto.response.CategoryResponse;
 import com.irum.productservice.global.exception.errorcode.CategoryErrorCode;
 import com.irum.productservice.global.util.MemberUtil;
+import java.lang.reflect.Field;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,13 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
-
-import java.lang.reflect.Field;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
@@ -52,13 +51,16 @@ class CategoryServiceTest {
     @Test
     void createRootCategory_SuccessTest() throws Exception {
         CategoryCreateRequest request = new CategoryCreateRequest("음식", null);
-        when(categoryRepository.save(any(Category.class))).thenAnswer((Answer<Category>) invocation -> {
-            Category c = invocation.getArgument(0);
-            Field field = Category.class.getDeclaredField("categoryId");
-            field.setAccessible(true);
-            field.set(c, categoryId);
-            return c;
-        });
+        when(categoryRepository.save(any(Category.class)))
+                .thenAnswer(
+                        (Answer<Category>)
+                                invocation -> {
+                                    Category c = invocation.getArgument(0);
+                                    Field field = Category.class.getDeclaredField("categoryId");
+                                    field.setAccessible(true);
+                                    field.set(c, categoryId);
+                                    return c;
+                                });
 
         CategoryResponse response = categoryService.createCategory(request);
 
@@ -78,13 +80,16 @@ class CategoryServiceTest {
 
         CategoryCreateRequest request = new CategoryCreateRequest("한식", parentId);
         when(categoryRepository.findById(parentId)).thenReturn(Optional.of(parent));
-        when(categoryRepository.save(any(Category.class))).thenAnswer((Answer<Category>) invocation -> {
-            Category c = invocation.getArgument(0);
-            Field field = Category.class.getDeclaredField("categoryId");
-            field.setAccessible(true);
-            field.set(c, categoryId);
-            return c;
-        });
+        when(categoryRepository.save(any(Category.class)))
+                .thenAnswer(
+                        (Answer<Category>)
+                                invocation -> {
+                                    Category c = invocation.getArgument(0);
+                                    Field field = Category.class.getDeclaredField("categoryId");
+                                    field.setAccessible(true);
+                                    field.set(c, categoryId);
+                                    return c;
+                                });
 
         CategoryResponse response = categoryService.createCategory(request);
 
