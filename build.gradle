@@ -111,7 +111,7 @@ dependencies {
 
     // common module
     implementation 'com.irum:open-feign-client:0.0.4-SNAPSHOT'
-    implementation 'com.irum:global-module:0.1.2-SNAPSHOT'
+    implementation 'com.irum:global-module:0.1.6-SNAPSHOT'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -123,6 +123,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.retry:spring-retry'
 
+    // Embedded Redis
+    testImplementation 'it.ozimov:embedded-redis:0.7.3'
 }
 
 test {
