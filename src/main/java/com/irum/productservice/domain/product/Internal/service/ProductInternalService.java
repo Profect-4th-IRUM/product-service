@@ -77,6 +77,7 @@ public class ProductInternalService {
                 ObjectOptimisticLockingFailureException.class
             },
             noRetryFor = {CommonException.class},
+            notRecoverable = { CommonException.class },
             maxAttempts = 3, // 최대 3번 재시도
             backoff = @Backoff(delay = 50, maxDelay = 500, multiplier = 1.5, random = true),
             recover = "recoverUpdateStock")
@@ -101,6 +102,8 @@ public class ProductInternalService {
                 StaleObjectStateException.class,
                 ObjectOptimisticLockingFailureException.class
             },
+            noRetryFor = {CommonException.class},
+            notRecoverable = { CommonException.class },
             maxAttempts = 10,
             backoff = @Backoff(delay = 100, maxDelay = 1000, multiplier = 1.5, random = true),
             recover = "recoverRollbackStock")
@@ -114,9 +117,6 @@ public class ProductInternalService {
                 "재고 롤백 최종 실패, 설정한 재시도 모두 실패. 발생한 예외 {}, Request : {}",
                 e.getClass().getSimpleName(),
                 request);
-        if (e instanceof CommonException ce) {
-            throw ce;
-        }
         throw new CommonException(ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED);
     }
 }
