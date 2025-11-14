@@ -1,6 +1,7 @@
 package com.irum.productservice.domain.product.Internal.service;
 
 import com.irum.global.advice.exception.CommonException;
+import com.irum.openfeign.dto.request.RollbackStockRequest;
 import com.irum.openfeign.dto.request.UpdateStockRequest;
 import com.irum.openfeign.dto.response.UpdateStockDto;
 import com.irum.productservice.domain.discount.domain.entity.Discount;
@@ -97,6 +98,42 @@ public class ProductStockService {
         // 재고보다 요청 물품 개수가 많을때
         if (pov.getStockQuantity() < optionValueRequest.quantity()) {
             throw new CommonException(ProductErrorCode.PRODUCT_OUT_OF_STOCK);
+        }
+    }
+
+
+    @Transactional
+    public void rollbackStockInTransactional(RollbackStockRequest request) {
+
+        // 재고를 되돌릴 ProductOptionValue ID 목록 추출
+        List<UUID> optionIds =
+                request.optionValueList().stream()
+                        .map(RollbackStockRequest.OptionValueRequest::optionValueId)
+                        .distinct() // 중복 ID 제거
+                        .toList();
+
+        List<ProductOptionValue> options = productOptionValueRepository.findAllByIds(optionIds);
+
+        // <productOptionValueId , ProductOptionValue> 형태의 Map
+        Map<UUID, ProductOptionValue> optionMap =
+                options.stream().collect(Collectors.toMap(ProductOptionValue::getId, pov -> pov));
+
+        // 재고 되돌리기
+        for (RollbackStockRequest.OptionValueRequest opr : request.optionValueList()) {
+            ProductOptionValue option = optionMap.get(opr.optionValueId());
+
+            // 옵션 존재 여부 체크
+            validateOptionExist(option);
+
+            // 재고 되돌리기
+            option.increaseStock(opr.quantity());
+        }
+    }
+
+    /** option 존재하는지 체크 */
+    private void validateOptionExist(ProductOptionValue option){
+        if (option == null) {
+            throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
         }
     }
 }

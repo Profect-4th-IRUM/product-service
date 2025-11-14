@@ -112,33 +112,8 @@ public class ProductInternalService {
             maxAttempts = 10,
             backoff = @Backoff(delay = 100, maxDelay = 1000, multiplier = 1.5, random = true),
             recover = "recoverRollbackStock")
-    @Transactional
     public void rollbackStock(RollbackStockRequest request) {
-
-        // 재고를 되돌릴 ProductOptionValue ID 목록 추출
-        List<UUID> optionIds =
-                request.optionValueList().stream()
-                        .map(RollbackStockRequest.OptionValueRequest::optionValueId)
-                        .distinct() // 중복 ID 제거
-                        .toList();
-
-        List<ProductOptionValue> options = productOptionValueRepository.findAllByIds(optionIds);
-
-        // <productOptionValueId , ProductOptionValue> 형태의 Map
-        Map<UUID, ProductOptionValue> optionMap =
-                options.stream().collect(Collectors.toMap(ProductOptionValue::getId, pov -> pov));
-
-        // 재고 되돌리기
-        for (RollbackStockRequest.OptionValueRequest opr : request.optionValueList()) {
-            ProductOptionValue option = optionMap.get(opr.optionValueId());
-
-            if (option == null) {
-                throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
-            }
-
-            // 재고 되돌리기
-            option.increaseStock(opr.quantity());
-        }
+        productStockService.rollbackStockInTransactional(request);
     }
 
 
