@@ -8,20 +8,18 @@ import com.irum.productservice.domain.discount.domain.entity.Discount;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
-import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +28,6 @@ public class ProductStockService {
     private final ProductOptionValueRepository productOptionValueRepository;
     private final DiscountRepository discountRepository;
     private final StoreRepository storeRepository;
-
 
     @Transactional
     public UpdateStockDto updateStockInTransaction(UpdateStockRequest request) {
@@ -81,15 +78,18 @@ public class ProductStockService {
     }
 
     /** 모든 옵션이 존재하는지 확인 */
-    private void validateAllOptionValuesExist(UpdateStockRequest request,
-                                              List<ProductOptionValue> povList) {
+    private void validateAllOptionValuesExist(
+            UpdateStockRequest request, List<ProductOptionValue> povList) {
         if (povList.size() != request.optionValueList().size()) {
             throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
         }
     }
 
     /** 주문 검증 : 상점의 상품인지, 재고 부족 체크 */
-    private void validateStoreAndStock(ProductOptionValue pov, Store store, UpdateStockRequest.OptionValueRequest optionValueRequest) {
+    private void validateStoreAndStock(
+            ProductOptionValue pov,
+            Store store,
+            UpdateStockRequest.OptionValueRequest optionValueRequest) {
         // 해당 상점의 상품을 주문하고 있는지
         if (!pov.getOptionGroup().getProduct().getStore().getId().equals(store.getId())) {
             throw new CommonException(ProductErrorCode.PRODUCT_NOT_IN_STORE);
@@ -100,7 +100,6 @@ public class ProductStockService {
             throw new CommonException(ProductErrorCode.PRODUCT_OUT_OF_STOCK);
         }
     }
-
 
     @Transactional
     public void rollbackStockInTransactional(RollbackStockRequest request) {
@@ -131,7 +130,7 @@ public class ProductStockService {
     }
 
     /** option 존재하는지 체크 */
-    private void validateOptionExist(ProductOptionValue option){
+    private void validateOptionExist(ProductOptionValue option) {
         if (option == null) {
             throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
         }

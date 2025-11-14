@@ -11,15 +11,10 @@ import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
-import com.irum.productservice.domain.store.domain.entity.Store;
-import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
-import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
 import jakarta.persistence.OptimisticLockException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.StaleObjectStateException;
@@ -29,7 +24,6 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +36,7 @@ public class ProductInternalService {
     private final ProductStockService productStockService;
 
     // 상품 ID를 가지고 상품, 옵션(전체), 할인 조회
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ProductDto getProduct(UUID id) {
         Product product =
                 productRepository
@@ -57,7 +51,7 @@ public class ProductInternalService {
     }
 
     // 옵션 ID를 가지고 상품, 옵션(전체), 할인 조회
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ProductDto getProductByOption(UUID optionId) {
         ProductOptionValue optionValue =
                 productOptionValueRepository
@@ -78,9 +72,9 @@ public class ProductInternalService {
     /** storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회 */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
             retryFor = {
-                    OptimisticLockException.class,
-                    StaleObjectStateException.class,
-                    ObjectOptimisticLockingFailureException.class
+                OptimisticLockException.class,
+                StaleObjectStateException.class,
+                ObjectOptimisticLockingFailureException.class
             },
             noRetryFor = {CommonException.class},
             maxAttempts = 3, // 최대 3번 재시도
@@ -90,8 +84,7 @@ public class ProductInternalService {
         return productStockService.updateStockInTransaction(request);
     }
 
-
-    /** updateStock 낙관적 락 충돌 재시도 횟수 초과시 처리*/
+    /** updateStock 낙관적 락 충돌 재시도 횟수 초과시 처리 */
     @Recover
     public UpdateStockDto recoverUpdateStock(Throwable e, UpdateStockRequest request) {
         log.error(
@@ -100,7 +93,6 @@ public class ProductInternalService {
                 request);
         throw new CommonException(ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED);
     }
-
 
     /** 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
@@ -115,8 +107,6 @@ public class ProductInternalService {
     public void rollbackStock(RollbackStockRequest request) {
         productStockService.rollbackStockInTransactional(request);
     }
-
-
 
     @Recover
     public void recoverRollbackStock(Throwable e, RollbackStockRequest request) {
