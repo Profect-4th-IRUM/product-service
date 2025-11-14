@@ -14,6 +14,8 @@
 // import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 //
 // import com.fasterxml.jackson.databind.ObjectMapper;
+// import com.irum.global.advice.exception.GlobalExceptionHandler;
+// import com.irum.global.advice.response.CommonResponseAdvice;
 // import com.irum.productservice.domain.cart.controller.CartController;
 // import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
 // import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
@@ -29,19 +31,20 @@
 // import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 // import org.springframework.boot.test.context.TestConfiguration;
 // import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Import;
 // import org.springframework.http.MediaType;
 // import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 // import org.springframework.test.web.servlet.MockMvc;
 //
 // @WebMvcTest(CartController.class)
 // @AutoConfigureRestDocs
-
-//import com.irum.global.advice.exception.GlobalExceptionHandler;
-//import com.irum.global.advice.response.CommonResponseAdvice;
-//import com.irum.productservice.global.config.TestConfig;
-//import org.springframework.context.annotation.Import;
 //
-//@Import({CommonResponseAdvice.class, GlobalExceptionHandler.class, TestConfig.class})
+// import com.irum.global.advice.exception.GlobalExceptionHandler;
+// import com.irum.global.advice.response.CommonResponseAdvice;
+// import com.irum.productservice.global.config.TestConfig;
+// import org.springframework.context.annotation.Import;
+//
+// @Import({CommonResponseAdvice.class, GlobalExceptionHandler.class, TestConfig.class})
 // class CartControllerTest {
 //
 //    @Autowired private MockMvc mockMvc;

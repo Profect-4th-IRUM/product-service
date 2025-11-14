@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import com.irum.global.advice.exception.CommonException;
+import com.irum.openfeign.member.client.MemberClient;
 import com.irum.openfeign.member.dto.response.MemberDto;
 import com.irum.openfeign.member.enums.Role;
 import com.irum.productservice.domain.category.domain.entity.Category;
@@ -42,7 +43,7 @@ class DiscountServiceTest {
     @Mock private StoreRepository storeRepository;
     @Mock private CategoryRepository categoryRepository;
     @Mock private MemberUtil memberUtil;
-
+    @Mock private MemberClient memberClient;
     private MemberDto member;
     private Product product;
     private Store store;
@@ -151,7 +152,6 @@ class DiscountServiceTest {
 
         when(discountRepository.findByProductId(productId)).thenReturn(Optional.of(discount));
         // 실제 서비스 내부에서 멤버 접근 검증용 호출
-        lenient().doNothing().when(memberUtil).assertMemberResourceAccess(anyLong());
 
         // when
         var response = discountService.findDiscountInfoByProduct(productId);
@@ -189,7 +189,6 @@ class DiscountServiceTest {
 
         // Mock 상점
         when(storeRepository.findById(storeId)).thenReturn(Optional.of(store));
-        lenient().doNothing().when(memberUtil).assertMemberResourceAccess(anyLong());
 
         // Mock 할인 리스트 (2개)
         List<DiscountInfoResponse> discountList =
@@ -229,7 +228,6 @@ class DiscountServiceTest {
 
         // Mock 설정
         when(discountRepository.findById(discountId)).thenReturn(Optional.of(discount));
-        lenient().doNothing().when(memberUtil).assertMemberResourceAccess(anyLong());
 
         // 수정 요청 DTO
         var request = new DiscountInfoUpdateRequest("여름맞이 세일", 25);
@@ -259,7 +257,6 @@ class DiscountServiceTest {
 
         when(discountRepository.findById(discountId)).thenReturn(Optional.of(discount));
         when(memberUtil.getCurrentMember()).thenReturn(member);
-        lenient().doNothing().when(memberUtil).assertMemberResourceAccess(anyLong());
 
         // when
         discountService.removeDiscount(discountId);

@@ -25,10 +25,9 @@ import com.irum.productservice.domain.discount.dto.request.DiscountRegisterReque
 import com.irum.productservice.domain.discount.dto.response.DiscountInfoListResponse;
 import com.irum.productservice.domain.discount.dto.response.DiscountInfoResponse;
 import com.irum.productservice.domain.discount.service.DiscountService;
+import com.irum.productservice.global.config.TestConfig;
 import java.util.List;
 import java.util.UUID;
-
-import com.irum.productservice.global.config.TestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

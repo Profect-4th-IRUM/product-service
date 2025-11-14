@@ -1,5 +1,8 @@
 package com.irum.productservice.domain.product.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 import com.irum.global.advice.exception.CommonException;
 import com.irum.openfeign.member.dto.response.MemberDto;
@@ -12,6 +15,10 @@ import com.irum.productservice.domain.product.domain.repository.ProductRepositor
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.util.MemberUtil;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,32 +27,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ProductImageServiceTest {
 
-    @InjectMocks
-    private ProductImageService productImageService;
+    @InjectMocks private ProductImageService productImageService;
 
-    @Mock
-    private FileStorageService fileStorageService;
-    @Mock
-    private ProductImageRepository productImageRepository;
-    @Mock
-    private ProductRepository productRepository;
-    @Mock
-    private MemberUtil memberUtil;
-    @Mock
-    private StoreRepository storeRepository;
-    @Mock
-    private CategoryRepository categoryRepository;
+    @Mock private FileStorageService fileStorageService;
+    @Mock private ProductImageRepository productImageRepository;
+    @Mock private ProductRepository productRepository;
+    @Mock private MemberUtil memberUtil;
+    @Mock private StoreRepository storeRepository;
+    @Mock private CategoryRepository categoryRepository;
 
     private ProductImage productImage;
     private Product product;
@@ -56,7 +48,6 @@ public class ProductImageServiceTest {
     private UUID storeId;
     private Category category;
     private UUID categoryId;
-
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -103,14 +94,12 @@ public class ProductImageServiceTest {
         productIdField.setAccessible(true);
         productIdField.set(product, productId);
     }
+
     @DisplayName("상품 이미지 추가 성공 테스트 - 첫 이미지 default 설정")
     @Test
     void saveProductImages_Success_FirstImageDefault() {
         // given
-        List<String> urls = List.of(
-                "https://s3.com/img1.png",
-                "https://s3.com/img2.png"
-        );
+        List<String> urls = List.of("https://s3.com/img1.png", "https://s3.com/img2.png");
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(productImageRepository.existsByProductId(productId)).thenReturn(false); // 기존 이미지 없음
@@ -141,6 +130,7 @@ public class ProductImageServiceTest {
 
         verify(productImageRepository, never()).save(any());
     }
+
     void changeDefaultImage_Success() throws Exception {
 
         // ----- fresh image list -----
@@ -159,30 +149,29 @@ public class ProductImageServiceTest {
         f2.set(img2, imgId2);
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(productImageRepository.findByProductId(productId))
-                .thenReturn(List.of(img1, img2));
+        when(productImageRepository.findByProductId(productId)).thenReturn(List.of(img1, img2));
 
         // when
         productImageService.changeDefaultImage(productId, imgId2);
 
         // then
-        assertThat(img1.isDefault()).isFalse();  // 기존 default → 해제
-        assertThat(img2.isDefault()).isTrue();   // 새 default 지정
+        assertThat(img1.isDefault()).isFalse(); // 기존 default → 해제
+        assertThat(img2.isDefault()).isTrue(); // 새 default 지정
 
         verify(productRepository).findById(productId);
         verify(productImageRepository).findByProductId(productId);
-        verify(memberUtil)
-                .assertMemberResourceAccess(product.getStore().getMember());
+        verify(memberUtil).assertMemberResourceAccess(product.getStore().getMember());
     }
+
     @DisplayName("대표 이미지 변경 실패 - 상품 없음")
     @Test
     void changeDefaultImage_Fail_NoProduct() {
 
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() ->
-                productImageService.changeDefaultImage(productId, UUID.randomUUID())
-        ).isInstanceOf(CommonException.class);
+        assertThatThrownBy(
+                        () -> productImageService.changeDefaultImage(productId, UUID.randomUUID()))
+                .isInstanceOf(CommonException.class);
     }
 
     @DisplayName("대표 이미지 변경 실패 - 잘못된 이미지 ID")
@@ -197,14 +186,12 @@ public class ProductImageServiceTest {
         f1.set(img1, validImgId);
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(productImageRepository.findByProductId(productId))
-                .thenReturn(List.of(img1));
+        when(productImageRepository.findByProductId(productId)).thenReturn(List.of(img1));
 
         UUID wrongId = UUID.randomUUID();
 
-        assertThatThrownBy(() ->
-                productImageService.changeDefaultImage(productId, wrongId)
-        ).isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> productImageService.changeDefaultImage(productId, wrongId))
+                .isInstanceOf(CommonException.class);
     }
 
     @DisplayName("상품 이미지 삭제 성공 테스트 - default 이미지 삭제 시 새로운 default 지정")
@@ -217,7 +204,7 @@ public class ProductImageServiceTest {
         UUID imgId1 = UUID.randomUUID();
         UUID imgId2 = UUID.randomUUID();
 
-        ProductImage img1 = ProductImage.create(product, "url1", true);   // default
+        ProductImage img1 = ProductImage.create(product, "url1", true); // default
         ProductImage img2 = ProductImage.create(product, "url2", false);
 
         Field f1 = ProductImage.class.getDeclaredField("id");
@@ -238,11 +225,10 @@ public class ProductImageServiceTest {
 
         // then
         assertThat(img1.isDefault()).isFalse();
-        assertThat(img2.isDefault()).isTrue();      // 새 default 지정
+        assertThat(img2.isDefault()).isTrue(); // 새 default 지정
 
         verify(fileStorageService, times(1)).delete("url1");
-        verify(memberUtil, times(1))
-                .assertMemberResourceAccess(product.getStore().getMember());
+        verify(memberUtil, times(1)).assertMemberResourceAccess(product.getStore().getMember());
     }
 
     @DisplayName("상품 이미지 삭제 실패 - 이미지가 해당 상품에 속하지 않음")
@@ -250,7 +236,8 @@ public class ProductImageServiceTest {
     void deleteProductImage_Fail_InvalidRelation() throws Exception {
 
         UUID imgId = UUID.randomUUID();
-        Product anotherProduct = Product.createProduct(store, category, "다른상품", "d", "d", 1000, true);
+        Product anotherProduct =
+                Product.createProduct(store, category, "다른상품", "d", "d", 1000, true);
 
         Field aid = Product.class.getDeclaredField("id");
         aid.setAccessible(true);
@@ -263,9 +250,8 @@ public class ProductImageServiceTest {
 
         when(productImageRepository.findById(imgId)).thenReturn(Optional.of(wrongImage));
 
-        assertThatThrownBy(() ->
-                productImageService.deleteProductImage(productId, imgId)
-        ).isInstanceOf(CommonException.class)
+        assertThatThrownBy(() -> productImageService.deleteProductImage(productId, imgId))
+                .isInstanceOf(CommonException.class)
                 .hasMessageContaining("요청한 상품과 이미지가 일치하지 않습니다.");
     }
 
@@ -287,8 +273,7 @@ public class ProductImageServiceTest {
         f2.setAccessible(true);
         f2.set(img2, imgId2);
 
-        when(productImageRepository.findByProductId(productId))
-                .thenReturn(List.of(img1, img2));
+        when(productImageRepository.findByProductId(productId)).thenReturn(List.of(img1, img2));
 
         Long deletedBy = 999L;
 
@@ -310,22 +295,22 @@ public class ProductImageServiceTest {
 
         when(productImageRepository.findById(fakeId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() ->
-                productImageService.deleteProductImage(productId, fakeId)
-        ).isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> productImageService.deleteProductImage(productId, fakeId))
+                .isInstanceOf(CommonException.class);
     }
+
     @DisplayName("상품 이미지 삭제 실패 - 이미지 없음")
     @Test
     void deleteProductImagesByProductId_NoImages() {
 
-        when(productImageRepository.findByProductId(productId))
-                .thenReturn(List.of());
+        when(productImageRepository.findByProductId(productId)).thenReturn(List.of());
 
         productImageService.deleteProductImagesByProductId(productId, 1L);
 
         verify(productImageRepository, times(1)).findByProductId(productId);
         verifyNoMoreInteractions(productImageRepository);
     }
+
     @DisplayName("상품 이미지 조회 성공 테스트 - 이미지 2개 조회")
     @Test
     void getProductImages_Success_TwoImages() throws Exception {
@@ -346,8 +331,7 @@ public class ProductImageServiceTest {
         id2.setAccessible(true);
         id2.set(img2, imgId2);
 
-        when(productImageRepository.findByProductId(productId))
-                .thenReturn(List.of(img1, img2));
+        when(productImageRepository.findByProductId(productId)).thenReturn(List.of(img1, img2));
 
         // when
         var response = productImageService.getProductImages(productId);
@@ -359,5 +343,4 @@ public class ProductImageServiceTest {
 
         verify(productImageRepository, times(1)).findByProductId(productId);
     }
-
 }

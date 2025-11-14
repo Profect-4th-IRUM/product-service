@@ -15,9 +15,8 @@ import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyC
 import com.irum.productservice.domain.deliverypolicy.dto.request.DeliveryPolicyInfoUpdateRequest;
 import com.irum.productservice.domain.deliverypolicy.dto.response.DeliveryPolicyInfoResponse;
 import com.irum.productservice.domain.deliverypolicy.service.DeliveryPolicyService;
-import java.util.UUID;
-
 import com.irum.productservice.global.config.TestConfig;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

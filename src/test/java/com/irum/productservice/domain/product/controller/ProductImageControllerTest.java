@@ -18,10 +18,9 @@ import com.irum.global.advice.exception.GlobalExceptionHandler;
 import com.irum.global.advice.response.CommonResponseAdvice;
 import com.irum.productservice.domain.product.dto.response.ProductImageResponse;
 import com.irum.productservice.domain.product.service.ProductImageService;
+import com.irum.productservice.global.config.TestConfig;
 import java.util.List;
 import java.util.UUID;
-
-import com.irum.productservice.global.config.TestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
