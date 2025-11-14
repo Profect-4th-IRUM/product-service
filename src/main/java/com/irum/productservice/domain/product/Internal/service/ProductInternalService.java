@@ -73,19 +73,24 @@ public class ProductInternalService {
         return ProductDto.from(product, options, discount);
     }
 
-    // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
+    /** storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회 */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
             retryFor = {
-                OptimisticLockException.class,
-                StaleObjectStateException.class,
-                ObjectOptimisticLockingFailureException.class
+                    OptimisticLockException.class,
+                    StaleObjectStateException.class,
+                    ObjectOptimisticLockingFailureException.class
             },
             noRetryFor = {CommonException.class},
             maxAttempts = 3, // 최대 3번 재시도
             backoff = @Backoff(delay = 50, maxDelay = 500, multiplier = 1.5, random = true),
             recover = "recoverUpdateStock")
-    @Transactional
     public UpdateStockDto updateStock(UpdateStockRequest request) {
+        return updateStockInTransaction(request);
+    }
+
+
+    @Transactional
+    public UpdateStockDto updateStockInTransaction(UpdateStockRequest request) {
         Store store =
                 storeRepository
                         .findByIdWithDeliveryPolicy(request.storeId())
@@ -107,22 +112,14 @@ public class ProductInternalService {
                                         productOptionValue -> productOptionValue));
 
         // 정합 점검 : 존재하지 않는 상품을 주문하고 있는지
-        if (productOptionValueList.size() != request.optionValueList().size()) {
-            throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
-        }
+        validateAllOptionValueExist(request, productOptionValueList);
+
         // 재고 감소
         for (UpdateStockRequest.OptionValueRequest optionValueRequest : request.optionValueList()) {
             ProductOptionValue pov = povMap.get(optionValueRequest.optionValueId());
 
-            // 해당 상점의 상품을 주문하고 있는지
-            if (!pov.getOptionGroup().getProduct().getStore().getId().equals(store.getId())) {
-                throw new CommonException(ProductErrorCode.PRODUCT_NOT_IN_STORE);
-            }
-
-            // 재고보다 요청 물품 개수가 많을때
-            if (pov.getStockQuantity() < optionValueRequest.quantity()) {
-                throw new CommonException(ProductErrorCode.PRODUCT_OUT_OF_STOCK);
-            }
+            // 주문 검증 : 상점의 상품인지, 재고 부족 체크
+            validateStoreAndStock(pov, store, optionValueRequest);
 
             pov.decreaseStock(optionValueRequest.quantity());
         }
@@ -139,6 +136,38 @@ public class ProductInternalService {
 
         return UpdateStockDto.from(store, productOptionValueList, discountMap);
     }
+
+    /** 모든 옵션이 존재하는지 확인 */
+    private void validateAllOptionValueExist(UpdateStockRequest request,
+                                             List<ProductOptionValue> povList) {
+        if (povList.size() != request.optionValueList().size()) {
+            throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
+        }
+    }
+
+    /** 주문 검증 : 상점의 상품인지, 재고 부족 체크 */
+    private void validateStoreAndStock(ProductOptionValue pov, Store store, UpdateStockRequest.OptionValueRequest optionValueRequest) {
+        // 해당 상점의 상품을 주문하고 있는지
+        if (!pov.getOptionGroup().getProduct().getStore().getId().equals(store.getId())) {
+            throw new CommonException(ProductErrorCode.PRODUCT_NOT_IN_STORE);
+        }
+
+        // 재고보다 요청 물품 개수가 많을때
+        if (pov.getStockQuantity() < optionValueRequest.quantity()) {
+            throw new CommonException(ProductErrorCode.PRODUCT_OUT_OF_STOCK);
+        }
+    }
+
+    /** updateStock 낙관적 락 충돌 재시도 횟수 초과시 처리*/
+    @Recover
+    public UpdateStockDto recoverUpdateStock(Throwable e, UpdateStockRequest request) {
+        log.error(
+                "재고 차감 최종 실패, 3번의 재시도 모두 실패. 발생한 예외 {},  Request : {}",
+                e.getClass().getSimpleName(),
+                request);
+        throw new CommonException(ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED);
+    }
+
 
     /** 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
@@ -179,17 +208,7 @@ public class ProductInternalService {
         }
     }
 
-    @Recover
-    public UpdateStockDto recoverUpdateStock(Throwable e, UpdateStockRequest request) {
-        log.error(
-                "재고 차감 최종 실패, 3번의 재시도 모두 실패. 발생한 예외 {},  Request : {}",
-                e.getClass().getSimpleName(),
-                request);
-        if (e instanceof CommonException ce) {
-            throw ce;
-        }
-        throw new CommonException(ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED);
-    }
+
 
     @Recover
     public void recoverRollbackStock(Throwable e, RollbackStockRequest request) {
