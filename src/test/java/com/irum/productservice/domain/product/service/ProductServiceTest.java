@@ -37,25 +37,16 @@ import org.springframework.context.ApplicationEventPublisher;
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
 
-    @InjectMocks
-    private ProductService productService;
+    @InjectMocks private ProductService productService;
 
-    @Mock
-    private ProductRepository productRepository;
-    @Mock
-    private ProductOptionGroupRepository optionGroupRepository;
-    @Mock
-    private ProductOptionValueRepository optionValueRepository;
-    @Mock
-    private StoreRepository storeRepository;
-    @Mock
-    private CategoryRepository categoryRepository;
-    @Mock
-    private MemberUtil memberUtil;
-    @Mock
-    private ApplicationEventPublisher eventPublisher;
-    @Mock
-    private MemberClient memberClient;
+    @Mock private ProductRepository productRepository;
+    @Mock private ProductOptionGroupRepository optionGroupRepository;
+    @Mock private ProductOptionValueRepository optionValueRepository;
+    @Mock private StoreRepository storeRepository;
+    @Mock private CategoryRepository categoryRepository;
+    @Mock private MemberUtil memberUtil;
+    @Mock private ApplicationEventPublisher eventPublisher;
+    @Mock private MemberClient memberClient;
 
     private MemberDto member;
     private Store store;
@@ -117,14 +108,13 @@ class ProductServiceTest {
         productIdField.setAccessible(true);
         productIdField.set(product, productId);
 
-
-//        // OptionValue Mock
-//        optionValueId = UUID.randomUUID();
-//        optionValue = ProductOptionValue.createOptionValue(optionGroup, "기존옵션", 10, 500);
-//
-//        Field ovIdField = ProductOptionValue.class.getDeclaredField("id");
-//        ovIdField.setAccessible(true);
-//        ovIdField.set(optionValue, optionValueId);
+        //        // OptionValue Mock
+        //        optionValueId = UUID.randomUUID();
+        //        optionValue = ProductOptionValue.createOptionValue(optionGroup, "기존옵션", 10, 500);
+        //
+        //        Field ovIdField = ProductOptionValue.class.getDeclaredField("id");
+        //        ovIdField.setAccessible(true);
+        //        ovIdField.set(optionValue, optionValueId);
     }
 
     @DisplayName("상품 생성 성공 테스트 - 옵션 없이")
@@ -139,7 +129,7 @@ class ProductServiceTest {
         ProductCreateRequest request =
                 new ProductCreateRequest(
                         "상품1", "간단한 설명", "상세 설명", true, 1000, categoryId, null // 옵션 그룹 없음
-                );
+                        );
 
         // when
         productService.createProduct(request);
@@ -172,7 +162,7 @@ class ProductServiceTest {
         ProductCreateRequest request =
                 new ProductCreateRequest(
                         "상품1", "간단한 설명", "상세 설명", true, 1000, categoryId, optionGroups // 옵션 그룹 없음
-                );
+                        );
 
         // when
         productService.createProduct(request);
@@ -196,7 +186,7 @@ class ProductServiceTest {
         ProductCreateRequest request =
                 new ProductCreateRequest(
                         "상품1", "간단한 설명", "상세 설명", true, 1000, invalidCategoryId, null // 옵션 그룹 없음
-                );
+                        );
 
         // when & then
         assertThatThrownBy(() -> productService.createProduct(request))
@@ -414,7 +404,7 @@ class ProductServiceTest {
                 .thenReturn(List.of()); // leaf category
 
         when(productRepository.findProductsByCategoryIdsAndKeyword(
-                cursor, size, List.of(categoryId), keyword))
+                        cursor, size, List.of(categoryId), keyword))
                 .thenReturn(List.of());
 
         // when
@@ -447,13 +437,12 @@ class ProductServiceTest {
         // given
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
-        List<ProductOptionValueRequest> optionValues = List.of(
-                new ProductOptionValueRequest("빨강", 10, 0),
-                new ProductOptionValueRequest("파랑", 5, 500)
-        );
+        List<ProductOptionValueRequest> optionValues =
+                List.of(
+                        new ProductOptionValueRequest("빨강", 10, 0),
+                        new ProductOptionValueRequest("파랑", 5, 500));
 
-        ProductOptionGroupRequest request =
-                new ProductOptionGroupRequest("색상", optionValues);
+        ProductOptionGroupRequest request = new ProductOptionGroupRequest("색상", optionValues);
 
         // when
         productService.createOptionGroup(productId, request);
@@ -476,8 +465,7 @@ class ProductServiceTest {
 
         // given
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
-        ProductOptionGroupRequest request =
-                new ProductOptionGroupRequest("색상", null);
+        ProductOptionGroupRequest request = new ProductOptionGroupRequest("색상", null);
 
         // when & then
         assertThatThrownBy(() -> productService.createOptionGroup(productId, request))
@@ -509,11 +497,9 @@ class ProductServiceTest {
         assertThat(group.getOptionValues()).isEmpty();
 
         // given
-        when(optionGroupRepository.findById(optionGroupId))
-                .thenReturn(Optional.of(group));
+        when(optionGroupRepository.findById(optionGroupId)).thenReturn(Optional.of(group));
 
-        ProductOptionValueRequest request =
-                new ProductOptionValueRequest("Large", 10, 500);
+        ProductOptionValueRequest request = new ProductOptionValueRequest("Large", 10, 500);
 
         // when
         productService.createOptionValue(optionGroupId, request);
@@ -535,8 +521,7 @@ class ProductServiceTest {
         // given
         when(optionGroupRepository.findById(optionGroupId)).thenReturn(Optional.empty());
 
-        ProductOptionValueRequest request =
-                new ProductOptionValueRequest("Large", 10, 500);
+        ProductOptionValueRequest request = new ProductOptionValueRequest("Large", 10, 500);
 
         // when & then
         assertThatThrownBy(() -> productService.createOptionValue(optionGroupId, request))
@@ -569,8 +554,7 @@ class ProductServiceTest {
         when(optionGroupRepository.findById(optionGroupId)).thenReturn(Optional.of(group));
         when(memberUtil.assertMemberResourceAccess(anyLong())).thenReturn(member);
 
-        ProductOptionGroupRequest request =
-                new ProductOptionGroupRequest("새로운 옵션 그룹명", null);
+        ProductOptionGroupRequest request = new ProductOptionGroupRequest("새로운 옵션 그룹명", null);
 
         // when
         var response = productService.updateProductOptionGroup(optionGroupId, request);
@@ -580,10 +564,8 @@ class ProductServiceTest {
         assertThat(response.name()).isEqualTo("새로운 옵션 그룹명");
 
         verify(optionGroupRepository, times(1)).findById(optionGroupId);
-        verify(memberUtil, times(1))
-                .assertMemberResourceAccess(product.getStore().getMember());
+        verify(memberUtil, times(1)).assertMemberResourceAccess(product.getStore().getMember());
     }
-
 
     @DisplayName("옵션 값 수정 성공 테스트")
     @Test
@@ -655,9 +637,7 @@ class ProductServiceTest {
                 new ProductOptionValueUpdateRequest(null, null, null);
 
         // when & then
-        assertThatThrownBy(() ->
-                productService.updateProductOptionValue(optionValueId, request)
-        )
+        assertThatThrownBy(() -> productService.updateProductOptionValue(optionValueId, request))
                 .isInstanceOf(CommonException.class)
                 .hasMessageContaining("변경된 내용이 없습니다");
 
@@ -696,10 +676,6 @@ class ProductServiceTest {
         verify(memberUtil, times(1))
                 .assertMemberResourceAccess(optionGroup.getProduct().getStore().getMember());
         verify(optionGroupRepository, times(1)).delete(optionGroup);
-        verify(eventPublisher, times(1))
-                .publishEvent(any(OptionGroupDeletedEvent.class));
+        verify(eventPublisher, times(1)).publishEvent(any(OptionGroupDeletedEvent.class));
     }
-
-
-
 }

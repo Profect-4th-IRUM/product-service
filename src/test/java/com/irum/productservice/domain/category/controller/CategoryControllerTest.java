@@ -20,10 +20,9 @@ import com.irum.productservice.domain.category.dto.request.CategoryUpdateRequest
 import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
 import com.irum.productservice.domain.category.dto.response.CategoryResponse;
 import com.irum.productservice.domain.category.service.CategoryService;
+import com.irum.productservice.global.config.TestConfig;
 import java.util.List;
 import java.util.UUID;
-
-import com.irum.productservice.global.config.TestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
