@@ -29,9 +29,9 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class ProductInternalService {
@@ -39,9 +39,10 @@ public class ProductInternalService {
     private final ProductRepository productRepository;
     private final ProductOptionValueRepository productOptionValueRepository;
     private final DiscountRepository discountRepository;
-    private final StoreRepository storeRepository;
+    private final ProductStockService productStockService;
 
     // 상품 ID를 가지고 상품, 옵션(전체), 할인 조회
+    @Transactional(readOnly=true)
     public ProductDto getProduct(UUID id) {
         Product product =
                 productRepository
@@ -56,6 +57,7 @@ public class ProductInternalService {
     }
 
     // 옵션 ID를 가지고 상품, 옵션(전체), 할인 조회
+    @Transactional(readOnly=true)
     public ProductDto getProductByOption(UUID optionId) {
         ProductOptionValue optionValue =
                 productOptionValueRepository
@@ -85,78 +87,9 @@ public class ProductInternalService {
             backoff = @Backoff(delay = 50, maxDelay = 500, multiplier = 1.5, random = true),
             recover = "recoverUpdateStock")
     public UpdateStockDto updateStock(UpdateStockRequest request) {
-        return updateStockInTransaction(request);
+        return productStockService.updateStockInTransaction(request);
     }
 
-
-    @Transactional
-    public UpdateStockDto updateStockInTransaction(UpdateStockRequest request) {
-        Store store =
-                storeRepository
-                        .findByIdWithDeliveryPolicy(request.storeId())
-                        .orElseThrow(() -> new CommonException(StoreErrorCode.STORE_NOT_FOUND));
-        // 옵션 id 모으기
-        List<UUID> productOptionValueIdList =
-                request.optionValueList().stream()
-                        .map(UpdateStockRequest.OptionValueRequest::optionValueId)
-                        .toList();
-
-        // 옵션 조회. product group, product, store도 fetch join
-        List<ProductOptionValue> productOptionValueList =
-                productOptionValueRepository.findAllByIdWithFetchJoin(productOptionValueIdList);
-        Map<UUID, ProductOptionValue> povMap =
-                productOptionValueList.stream()
-                        .collect(
-                                Collectors.toMap(
-                                        ProductOptionValue::getId,
-                                        productOptionValue -> productOptionValue));
-
-        // 정합 점검 : 존재하지 않는 상품을 주문하고 있는지
-        validateAllOptionValueExist(request, productOptionValueList);
-
-        // 재고 감소
-        for (UpdateStockRequest.OptionValueRequest optionValueRequest : request.optionValueList()) {
-            ProductOptionValue pov = povMap.get(optionValueRequest.optionValueId());
-
-            // 주문 검증 : 상점의 상품인지, 재고 부족 체크
-            validateStoreAndStock(pov, store, optionValueRequest);
-
-            pov.decreaseStock(optionValueRequest.quantity());
-        }
-
-        // 할인 조회
-        List<UUID> productIdList =
-                productOptionValueList.stream()
-                        .map(pov -> pov.getOptionGroup().getProduct().getId())
-                        .toList();
-        List<Discount> discountList = discountRepository.findAllByProductIds(productIdList);
-        Map<UUID, Integer> discountMap =
-                discountList.stream()
-                        .collect(Collectors.toMap(Discount::getId, Discount::getAmount));
-
-        return UpdateStockDto.from(store, productOptionValueList, discountMap);
-    }
-
-    /** 모든 옵션이 존재하는지 확인 */
-    private void validateAllOptionValueExist(UpdateStockRequest request,
-                                             List<ProductOptionValue> povList) {
-        if (povList.size() != request.optionValueList().size()) {
-            throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
-        }
-    }
-
-    /** 주문 검증 : 상점의 상품인지, 재고 부족 체크 */
-    private void validateStoreAndStock(ProductOptionValue pov, Store store, UpdateStockRequest.OptionValueRequest optionValueRequest) {
-        // 해당 상점의 상품을 주문하고 있는지
-        if (!pov.getOptionGroup().getProduct().getStore().getId().equals(store.getId())) {
-            throw new CommonException(ProductErrorCode.PRODUCT_NOT_IN_STORE);
-        }
-
-        // 재고보다 요청 물품 개수가 많을때
-        if (pov.getStockQuantity() < optionValueRequest.quantity()) {
-            throw new CommonException(ProductErrorCode.PRODUCT_OUT_OF_STOCK);
-        }
-    }
 
     /** updateStock 낙관적 락 충돌 재시도 횟수 초과시 처리*/
     @Recover
