@@ -12,5 +12,7 @@ public interface CartRedisRepository extends CrudRepository<CartRedis, String> {
 
     Optional<CartRedis> findByMemberIdAndCartId(Long memberId, UUID cartId);
 
-    long deleteByMemberIdAndCartId(Long memberId, UUID cartId);
+    Optional<CartRedis> findByMemberIdAndOptionValueId(Long memberId, UUID optionValueId);
+
+    void deleteByMemberIdAndCartId(Long memberId, UUID cartId);
 }
