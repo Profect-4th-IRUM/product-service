@@ -12,6 +12,7 @@ public class CartMapper {
     /** Redis 장바구니 데이터 + 상품 옵션 + 할인 금액 결합 */
     public CartResponse toResponse(
             CartRedis cart, ProductOptionValue optionValue, int discountAmount) {
+
         var product = optionValue.getOptionGroup().getProduct();
 
         int base = product.getPrice();
@@ -20,6 +21,8 @@ public class CartMapper {
 
         int unit = Math.max(base + extra - discount, 0);
         int total = unit * cart.getQuantity();
+
+        int stockQuantity = optionValue.getStockQuantity();
 
         String imageUrl =
                 product.getProductImages().stream()
@@ -45,6 +48,7 @@ public class CartMapper {
                 .discountAmount(discount)
                 .unitPrice(unit)
                 .lineTotal(total)
+                .stockQuantity(stockQuantity)
                 .build();
     }
 }

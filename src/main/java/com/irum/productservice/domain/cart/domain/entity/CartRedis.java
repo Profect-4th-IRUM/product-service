@@ -1,5 +1,6 @@
 package com.irum.productservice.domain.cart.domain.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 import lombok.*;
@@ -15,20 +16,30 @@ import org.springframework.data.redis.core.index.Indexed;
 @Builder
 public class CartRedis implements Serializable {
 
-    @Id private String id;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-    @Indexed private Long memberId;
+    @Id
+    private String id;
 
-    private UUID cartId;
+    @Indexed
+    private Long memberId;
+
+    @Indexed
     private UUID optionValueId;
+
+    @Indexed
+    private UUID cartId;
+
     private Integer quantity;
 
-    @TimeToLive private Long ttlSeconds;
+    @TimeToLive
+    private Long ttlSeconds;
 
     public static CartRedis of(
             Long memberId, UUID cartId, UUID optionValueId, int quantity, long ttlSeconds) {
         return CartRedis.builder()
-                .id(cartId.toString())
+                .id(UUID.randomUUID().toString())
                 .memberId(memberId)
                 .cartId(cartId)
                 .optionValueId(optionValueId)

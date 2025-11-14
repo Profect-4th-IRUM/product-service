@@ -18,12 +18,14 @@ public record CartResponse(
         int extraPrice, // 옵션 추가금
         int discountAmount, // 할인 금액
         int unitPrice, // 단가 (base + extra - discount)
-        int lineTotal // 총액 (unitPrice * quantity)
+        int lineTotal, // 총액 (unitPrice * quantity)
+        int stockQuantity // 옵션 재고 수량
         ) {
 
     /** Redis 장바구니 데이터 + 상품 옵션 + 할인 금액을 기반으로 CartResponse 생성 */
     public static CartResponse from(
             CartRedis cart, ProductOptionValue optionValue, int discountAmount) {
+
         var product = optionValue.getOptionGroup().getProduct();
 
         int base = product.getPrice();
@@ -32,6 +34,8 @@ public record CartResponse(
 
         int unit = Math.max(base + extra - discount, 0);
         int total = unit * cart.getQuantity();
+
+        int stockQuantity = optionValue.getStockQuantity();
 
         // 대표 이미지 (기본이미지 우선)
         String imageUrl =
@@ -58,6 +62,7 @@ public record CartResponse(
                 .discountAmount(discount)
                 .unitPrice(unit)
                 .lineTotal(total)
+                .stockQuantity(stockQuantity)
                 .build();
     }
 }
