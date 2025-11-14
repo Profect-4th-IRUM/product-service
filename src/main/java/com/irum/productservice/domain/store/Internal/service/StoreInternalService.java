@@ -2,6 +2,7 @@ package com.irum.productservice.domain.store.Internal.service;
 
 import com.irum.global.advice.exception.CommonException;
 import com.irum.openfeign.dto.response.StoreDto;
+import com.irum.openfeign.dto.response.StoreResponse;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
@@ -22,6 +23,11 @@ public class StoreInternalService {
     public StoreDto getStore(UUID storeId) {
         Store store = getStoreById(storeId);
         return StoreDto.from(store);
+    }
+
+    public StoreResponse getStoreResponse(UUID storeId) {
+        Store store = getStoreById(storeId);
+        return StoreResponse.builder().storeId(storeId).memberId(store.getMember()).build();
     }
 
     private Store getStoreById(UUID storeId) {

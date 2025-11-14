@@ -1,6 +1,7 @@
 package com.irum.productservice.domain.store.Internal.controller;
 
 import com.irum.openfeign.dto.response.StoreDto;
+import com.irum.openfeign.dto.response.StoreResponse;
 import com.irum.productservice.domain.store.Internal.service.StoreInternalService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -18,5 +19,10 @@ public class StoreFeignController {
     @GetMapping("/{storeId}")
     public StoreDto getStore(@PathVariable("storeId") UUID storeId) {
         return storeInternalService.getStore(storeId);
+    }
+
+    @GetMapping("/{storeId}/owner")
+    public StoreResponse getStoreId(@PathVariable UUID storeId) {
+        return storeInternalService.getStoreResponse(storeId);
     }
 }
