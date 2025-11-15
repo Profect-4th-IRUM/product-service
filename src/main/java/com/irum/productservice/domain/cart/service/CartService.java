@@ -33,32 +33,32 @@ public class CartService {
     private final CartMapper cartMapper;
     private final MemberUtil memberUtil;
 
-    private static final long TTL_SECONDS = 600L;
+    private static final long TTL_SECONDS = 604800L;
 
-    /** memberId를 nullable 로 가져오기 (안 잡혀도 죽이지 않음) */
-    private Long getCurrentMemberIdNullable() {
+    private Long requireCurrentMemberId() {
         MemberDto member = memberUtil.getCurrentMember();
         if (member == null) {
-            log.warn("[CartService] getCurrentMemberIdNullable -> member is null");
-            return null;
+            log.warn("[CartService] requireCurrentMemberId -> member is null");
+            throw new CommonException(CartErrorCode.CART_UNAUTHORIZED);
         }
         return member.memberId();
     }
 
-    /** Redis findAll → List 변환 */
-    private List<CartRedis> findAllCarts() {
+    /** Redis findAll → 특정 회원 것만 필터링 */
+    private List<CartRedis> findAllForMember(Long memberId) {
         List<CartRedis> list =
                 StreamSupport.stream(cartRedisRepository.findAll().spliterator(), false)
-                        .filter(c -> c != null)
+                        .filter(c -> c != null && c.getMemberId() != null)
+                        .filter(c -> memberId.equals(c.getMemberId()))
                         .collect(Collectors.toList());
 
-        log.info("[CartService] findAllCarts size={}", list.size());
+        log.info("[CartService] findAllForMember memberId={}, size={}", memberId, list.size());
         return list;
     }
 
-    /** 장바구니 아이템 추가 - 같은 optionValueId가 있으면 quantity 증가 */
+    /** 장바구니 아이템 추가 (같은 옵션이면 quantity 증가) */
     public CartRedis createCart(CartCreateRequest request) {
-        Long memberId = getCurrentMemberIdNullable();
+        Long memberId = requireCurrentMemberId();
 
         if (request.quantity() <= 0) {
             throw new CommonException(CartErrorCode.INVALID_QUANTITY);
@@ -71,45 +71,36 @@ public class CartService {
                                 () -> new CommonException(ProductErrorCode.OPTION_VALUE_NOT_FOUND));
 
         try {
-            // 1) 전체 카트 중 (필요하다면 나중에 memberId까지 포함해서 필터링)
-            List<CartRedis> allCarts = findAllCarts();
+            List<CartRedis> memberCarts = findAllForMember(memberId);
 
-            // 같은 옵션 값 있는지 확인
             CartRedis existing =
-                    allCarts.stream()
-                            .filter(c -> c.getOptionValueId() != null)
-                            .filter(c -> optionValue.getId().equals(c.getOptionValueId()))
+                    memberCarts.stream()
+                            .filter(c -> request.optionValueId().equals(c.getOptionValueId()))
                             .findFirst()
                             .orElse(null);
 
             if (existing != null) {
                 existing.updateQuantity(existing.getQuantity() + request.quantity());
+                existing.refreshTtl(TTL_SECONDS);
                 CartRedis saved = cartRedisRepository.save(existing);
                 log.info(
-                        "[CartService] increase quantity: cartId={}, memberId={}, optionValueId={}, quantity={}",
+                        "[CartService] increase quantity: cartId={}, memberId={}, q={}",
                         saved.getCartId(),
                         saved.getMemberId(),
-                        saved.getOptionValueId(),
                         saved.getQuantity());
                 return saved;
             }
 
-            // 2) 없으면 새 카트 생성
             UUID cartId = UUID.randomUUID();
             CartRedis newCart =
                     CartRedis.of(
-                            memberId,
-                            cartId,
-                            optionValue.getId(),
-                            request.quantity(),
-                            TTL_SECONDS);
+                            memberId, cartId, optionValue.getId(), request.quantity(), TTL_SECONDS);
 
             CartRedis saved = cartRedisRepository.save(newCart);
             log.info(
-                    "[CartService] create new cart: cartId={}, memberId={}, optionValueId={}, quantity={}",
+                    "[CartService] new cart: cartId={}, memberId={}, q={}",
                     saved.getCartId(),
                     saved.getMemberId(),
-                    saved.getOptionValueId(),
                     saved.getQuantity());
             return saved;
 
@@ -142,22 +133,22 @@ public class CartService {
         return cartMapper.toResponse(cart, optionValue, discount);
     }
 
-    /** 장바구니 수량 수정 (cartId 기준) */
+    /** 장바구니 수량 수정 */
     public CartRedis updateCart(UUID cartId, CartUpdateRequest request) {
-        Long memberId = getCurrentMemberIdNullable();
-
-        CartRedis cart =
-                findAllCarts().stream()
-                        .filter(c -> c.getCartId() != null)
-                        .filter(c -> cartId.equals(c.getCartId()))
-                        .findFirst()
-                        .orElseThrow(() -> new CommonException(CartErrorCode.CART_EXPIRED));
+        Long memberId = requireCurrentMemberId();
 
         if (request.quantity() <= 0) {
             throw new CommonException(CartErrorCode.INVALID_QUANTITY);
         }
 
+        CartRedis cart =
+                findAllForMember(memberId).stream()
+                        .filter(c -> cartId.equals(c.getCartId()))
+                        .findFirst()
+                        .orElseThrow(() -> new CommonException(CartErrorCode.CART_EXPIRED));
+
         cart.updateQuantity(request.quantity());
+        cart.refreshTtl(TTL_SECONDS);
         CartRedis saved = cartRedisRepository.save(cart);
 
         log.info(
@@ -169,22 +160,12 @@ public class CartService {
         return saved;
     }
 
-    /** 장바구니 목록 조회 - memberId가 null이면: 전체 카트 반환 - memberId가 있으면: 그 멤버 것만 필터 */
+    /** 장바구니 목록 조회 - 현재 로그인한 회원 기준 */
     public List<CartResponse> getCartListByMember() {
-        Long memberId = getCurrentMemberIdNullable();
+        Long memberId = requireCurrentMemberId();
         log.info("[CartService] getCartListByMember for memberId={}", memberId);
 
-        List<CartRedis> carts = findAllCarts();
-
-        if (memberId != null) {
-            carts =
-                    carts.stream()
-                            .filter(c -> c.getMemberId() != null)
-                            .filter(c -> memberId.equals(c.getMemberId()))
-                            .collect(Collectors.toList());
-        }
-
-        log.info("[CartService] carts for member (after filter) size={}", carts.size());
+        List<CartRedis> carts = findAllForMember(memberId);
 
         return carts.stream()
                 .map(
@@ -213,12 +194,11 @@ public class CartService {
                 .collect(Collectors.toList());
     }
 
-    /** 삭제 (cartId 기준) */
+    /** 장바구니 삭제 (cartId 기준) */
     public void deleteCart(UUID cartId) {
-        Long memberId = getCurrentMemberIdNullable();
+        Long memberId = requireCurrentMemberId();
 
-        findAllCarts().stream()
-                .filter(c -> c.getCartId() != null)
+        findAllForMember(memberId).stream()
                 .filter(c -> cartId.equals(c.getCartId()))
                 .findFirst()
                 .ifPresent(

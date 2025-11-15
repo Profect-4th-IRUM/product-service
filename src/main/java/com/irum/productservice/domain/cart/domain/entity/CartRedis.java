@@ -14,14 +14,14 @@ import org.springframework.data.redis.core.TimeToLive;
 @Builder
 public class CartRedis implements Serializable {
 
-    @Id private String id; // Redis Key(ID)
+    @Id private String id; // Redis key (cart:<uuid>)
 
-    private Long memberId; // 멤버 ID
-    private UUID optionValueId; // 옵션 값 ID
-    private UUID cartId; // 장바구니 아이템 고유 ID
-    private Integer quantity; // 수량
+    private Long memberId;
+    private UUID optionValueId;
+    private UUID cartId;
+    private Integer quantity;
 
-    @TimeToLive private Long ttlSeconds; // TTL
+    @TimeToLive private Long ttlSeconds;
 
     public static CartRedis of(
             Long memberId, UUID cartId, UUID optionValueId, int quantity, long ttlSeconds) {
@@ -37,5 +37,9 @@ public class CartRedis implements Serializable {
 
     public void updateQuantity(int q) {
         this.quantity = q;
+    }
+
+    public void refreshTtl(long ttlSeconds) {
+        this.ttlSeconds = ttlSeconds;
     }
 }
