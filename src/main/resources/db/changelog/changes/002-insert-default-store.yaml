@@ -31,13 +31,13 @@ databaseChangeLog:
                   valueDate: now()
               - column:
                   name: created_by
-                  valueDate: "1"
+                  value: "1"
               - column:
                   name: updated_at
                   valueDate: now()
               - column:
                   name : updated_by
-                  valueDate: "1"
+                  value: "1"
               - column:
                   name: deleted_at
                   value: null
