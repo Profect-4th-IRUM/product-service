@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert-data-1
+      id: insert-data-2
       author: isak-kang
       comment: "상점 데이터 삽입"
 
@@ -8,6 +8,9 @@ databaseChangeLog:
         - insert:
             tableName: p_store
             columns:
+              - column:
+                  name: store_id
+                  value: "7f000001-9a8c-1ca8-819a-8cfdb1f20000"
               - column:
                   name: store_name
                   value: "홍콩반점"
@@ -28,22 +31,17 @@ databaseChangeLog:
                   value: "1"
               - column:
                   name: created_at
-                  valueDate: now()
+                  valueComputed: now()
               - column:
                   name: created_by
                   value: "1"
               - column:
                   name: updated_at
-                  valueDate: now()
+                  valueComputed: now()
               - column:
                   name : updated_by
                   value: "1"
-              - column:
-                  name: deleted_at
-                  value: null
-              - column:
-                  name: deleted_by
-                  value: null
+
       rollback:
         - delete:
             tableName: p_store
