@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.data.redis.core.index.Indexed;
 
 @RedisHash("cart")
 @Getter
@@ -14,11 +15,14 @@ import org.springframework.data.redis.core.TimeToLive;
 @Builder
 public class CartRedis implements Serializable {
 
-    @Id private String id; // Redis key (cart:<uuid>)
+    @Id private String id; // Redis 내부 키 (UUID 문자열)
 
-    private Long memberId;
-    private UUID optionValueId;
-    private UUID cartId;
+    @Indexed private Long memberId;
+
+    @Indexed private UUID optionValueId;
+
+    @Indexed private UUID cartId; // 장바구니 개별 아이템 식별용 인덱스
+
     private Integer quantity;
 
     @TimeToLive private Long ttlSeconds;
