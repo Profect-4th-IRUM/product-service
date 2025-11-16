@@ -5,6 +5,7 @@ import com.irum.productservice.domain.cart.service.CartService;
 import com.irum.productservice.domain.category.service.CategoryService;
 import com.irum.productservice.domain.discount.service.DiscountService;
 import com.irum.productservice.domain.product.service.ProductImageService;
+//import com.irum.productservice.domain.review.service.ReviewService;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
