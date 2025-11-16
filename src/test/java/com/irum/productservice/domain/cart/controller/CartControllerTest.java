@@ -3,8 +3,11 @@ package com.irum.productservice.domain.cart.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -65,13 +68,12 @@ class CartControllerTest {
                         .quantity(2)
                         .basePrice(10_000)
                         .extraPrice(500)
-                        .discountAmount(0) // 할인 0원 가정
-                        .unitPrice(10_500) // 10,000 + 500 - 0
-                        .lineTotal(21_000) // 10,500 * 2
-                        .stockQuantity(5) // 재고 5개 가정
+                        .discountAmount(0)
+                        .unitPrice(10_500)
+                        .lineTotal(21_000)
+                        .stockQuantity(5)
                         .build();
 
-        // CartService는 createCartWithResponse 를 사용한다고 가정
         Mockito.when(cartService.createCartWithResponse(any(CartCreateRequest.class)))
                 .thenReturn(response);
 
@@ -90,22 +92,18 @@ class CartControllerTest {
                                         fieldWithPath("optionValueId").description("옵션 값 ID"),
                                         fieldWithPath("quantity").description("상품 수량")),
                                 responseFields(
-                                        fieldWithPath("success").description("true"),
-                                        fieldWithPath("status").description("201"),
-                                        fieldWithPath("timestamp").description("응답 시간"),
-                                        fieldWithPath("data.cartId").description("장바구니 ID"),
-                                        fieldWithPath("data.optionValueId").description("옵션 값 ID"),
-                                        fieldWithPath("data.productName").description("상품 이름"),
-                                        fieldWithPath("data.optionValueName").description("옵션 이름"),
-                                        fieldWithPath("data.imageUrl").description("대표 이미지 URL"),
-                                        fieldWithPath("data.quantity").description("수량"),
-                                        fieldWithPath("data.basePrice").description("상품 기본가"),
-                                        fieldWithPath("data.extraPrice").description("옵션 추가금"),
-                                        fieldWithPath("data.discountAmount").description("할인 금액"),
-                                        fieldWithPath("data.unitPrice").description("단가"),
-                                        fieldWithPath("data.lineTotal").description("총 금액"),
-                                        fieldWithPath("data.stockQuantity")
-                                                .description("옵션 재고 수량"))));
+                                        fieldWithPath("cartId").description("장바구니 ID"),
+                                        fieldWithPath("optionValueId").description("옵션 값 ID"),
+                                        fieldWithPath("productName").description("상품 이름"),
+                                        fieldWithPath("optionValueName").description("옵션 이름"),
+                                        fieldWithPath("imageUrl").description("대표 이미지 URL"),
+                                        fieldWithPath("quantity").description("수량"),
+                                        fieldWithPath("basePrice").description("상품 기본가"),
+                                        fieldWithPath("extraPrice").description("옵션 추가금"),
+                                        fieldWithPath("discountAmount").description("할인 금액"),
+                                        fieldWithPath("unitPrice").description("단가"),
+                                        fieldWithPath("lineTotal").description("총 금액"),
+                                        fieldWithPath("stockQuantity").description("옵션 재고 수량"))));
     }
 
     @Test
@@ -140,23 +138,18 @@ class CartControllerTest {
                         document(
                                 "cart-get-list",
                                 responseFields(
-                                        fieldWithPath("success").description("true"),
-                                        fieldWithPath("status").description("200"),
-                                        fieldWithPath("timestamp").description("응답 시간"),
-                                        fieldWithPath("data[].cartId").description("장바구니 ID"),
-                                        fieldWithPath("data[].optionValueId")
-                                                .description("옵션 값 ID"),
-                                        fieldWithPath("data[].productName").description("상품 이름"),
-                                        fieldWithPath("data[].optionValueName")
-                                                .description("옵션 이름"),
-                                        fieldWithPath("data[].imageUrl").description("대표 이미지 URL"),
-                                        fieldWithPath("data[].quantity").description("수량"),
-                                        fieldWithPath("data[].basePrice").description("상품 기본가"),
-                                        fieldWithPath("data[].extraPrice").description("옵션 추가금"),
-                                        fieldWithPath("data[].discountAmount").description("할인 금액"),
-                                        fieldWithPath("data[].unitPrice").description("단가"),
-                                        fieldWithPath("data[].lineTotal").description("총 금액"),
-                                        fieldWithPath("data[].stockQuantity")
+                                        fieldWithPath("[].cartId").description("장바구니 ID"),
+                                        fieldWithPath("[].optionValueId").description("옵션 값 ID"),
+                                        fieldWithPath("[].productName").description("상품 이름"),
+                                        fieldWithPath("[].optionValueName").description("옵션 이름"),
+                                        fieldWithPath("[].imageUrl").description("대표 이미지 URL"),
+                                        fieldWithPath("[].quantity").description("수량"),
+                                        fieldWithPath("[].basePrice").description("상품 기본가"),
+                                        fieldWithPath("[].extraPrice").description("옵션 추가금"),
+                                        fieldWithPath("[].discountAmount").description("할인 금액"),
+                                        fieldWithPath("[].unitPrice").description("단가"),
+                                        fieldWithPath("[].lineTotal").description("총 금액"),
+                                        fieldWithPath("[].stockQuantity")
                                                 .description("옵션 재고 수량"))));
     }
 
@@ -167,7 +160,6 @@ class CartControllerTest {
         CartUpdateRequest request = new CartUpdateRequest(5);
         String requestJson = objectMapper.writeValueAsString(request);
 
-        // updateCart는 CartRedis를 반환하므로, 목 객체를 리턴하도록 설정
         Mockito.when(cartService.updateCart(eq(mockCartId), any(CartUpdateRequest.class)))
                 .thenReturn(Mockito.mock(CartRedis.class));
 
@@ -190,14 +182,12 @@ class CartControllerTest {
     @Test
     @DisplayName("장바구니 삭제 API (CUSTOMER)")
     void deleteCartApiTest() throws Exception {
-        // given
         Mockito.doNothing().when(cartService).deleteCart(eq(mockCartId));
 
-        // when & then
         mockMvc.perform(
                         RestDocumentationRequestBuilders.delete("/carts/{cartId}", mockCartId)
                                 .with(csrf())
-                                .with(user("1").roles("CUSTOMER")))
+                                .with(user("1").roles("CUSTOMOMER")))
                 .andExpect(status().isNoContent())
                 .andDo(
                         document(

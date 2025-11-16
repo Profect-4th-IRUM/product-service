@@ -6,12 +6,15 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.irum.global.advice.exception.CommonException;
+import com.irum.openfeign.member.dto.response.MemberDto;
+import com.irum.openfeign.member.enums.Role;
 import com.irum.productservice.domain.cart.domain.entity.CartRedis;
 import com.irum.productservice.domain.cart.domain.repository.CartRedisRepository;
 import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
 import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
 import com.irum.productservice.domain.cart.dto.response.CartResponse;
 import com.irum.productservice.domain.cart.mapper.CartMapper;
+import com.irum.productservice.domain.discount.domain.entity.Discount;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
 import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionGroup;
@@ -23,10 +26,10 @@ import com.irum.productservice.global.util.MemberUtil;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,95 +37,100 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CartServiceTest {
 
+    @InjectMocks private CartService cartService;
+
     @Mock private CartRedisRepository cartRedisRepository;
     @Mock private ProductOptionValueRepository productOptionValueRepository;
     @Mock private DiscountRepository discountRepository;
     @Mock private CartMapper cartMapper;
+    @Mock private MemberUtil memberUtil;
 
-    // getCurrentMember().memberId() 까지 체이닝을 써서 mock 해야 하므로 deep stub 사용
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private MemberUtil memberUtil;
+    private MemberDto member;
+    private UUID optionValueId;
+    private UUID productId;
+    private UUID cartId;
 
-    @InjectMocks private CartService cartService;
+    @BeforeEach
+    void setUp() {
+        member = new MemberDto(1L, "테스트유저", "test@test.com", "010-1111-2222", Role.CUSTOMER);
 
-    private final UUID optionValueId = UUID.randomUUID();
-    private final UUID productId = UUID.randomUUID();
-    private final UUID cartId = UUID.randomUUID();
-    private final Long memberId = 1L;
+        optionValueId = UUID.randomUUID();
+        productId = UUID.randomUUID();
+        cartId = UUID.randomUUID();
+    }
 
-    private ProductOptionValue stubOptionValue() {
-        Product product = mock(Product.class);
-        when(product.getId()).thenReturn(productId);
-        when(product.getPrice()).thenReturn(10_000);
-
-        ProductOptionGroup group = mock(ProductOptionGroup.class);
-        when(group.getProduct()).thenReturn(product);
-
+    /** createCart 내부에서 optionValue.getId() 까지만 쓰는 최소 stub */
+    private ProductOptionValue stubOptionValueIdOnly() {
         ProductOptionValue optionValue = mock(ProductOptionValue.class);
         when(optionValue.getId()).thenReturn(optionValueId);
-        when(optionValue.getOptionGroup()).thenReturn(group);
-        when(optionValue.getExtraPrice()).thenReturn(500);
-        when(optionValue.getStockQuantity()).thenReturn(5);
-
         return optionValue;
     }
 
     @Test
-    @DisplayName("createCartWithResponse: 신규 장바구니 생성 성공")
-    void createCartWithResponse_success() {
+    @DisplayName("createCart — 새 장바구니 생성 성공")
+    void createCart_new_success() {
         // given
         CartCreateRequest request = new CartCreateRequest(optionValueId, 2);
 
-        when(memberUtil.getCurrentMember().memberId()).thenReturn(memberId);
+        when(memberUtil.getCurrentMember()).thenReturn(member);
 
-        ProductOptionValue optionValue = stubOptionValue();
+        ProductOptionValue optionValue = stubOptionValueIdOnly();
         when(productOptionValueRepository.findById(optionValueId))
                 .thenReturn(Optional.of(optionValue));
-        when(cartRedisRepository.findByMemberIdAndOptionValueId(memberId, optionValueId))
+
+        when(cartRedisRepository.findByMemberIdAndOptionValueId(member.memberId(), optionValueId))
                 .thenReturn(Optional.empty());
-        when(cartRedisRepository.save(any(CartRedis.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        when(discountRepository.findByProductId(productId)).thenReturn(Optional.empty());
-
-        CartResponse mapped =
-                CartResponse.builder()
-                        .cartId(cartId)
-                        .optionValueId(optionValueId)
-                        .productName("테스트 상품")
-                        .optionValueName("옵션A")
-                        .imageUrl("url")
-                        .quantity(2)
-                        .basePrice(10_000)
-                        .extraPrice(500)
-                        .discountAmount(0)
-                        .unitPrice(10_500)
-                        .lineTotal(21_000)
-                        .stockQuantity(5)
-                        .build();
-
-        when(cartMapper.toResponse(any(CartRedis.class), eq(optionValue), eq(0)))
-                .thenReturn(mapped);
+        when(cartRedisRepository.save(any(CartRedis.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        CartResponse result = cartService.createCartWithResponse(request);
+        CartRedis result = cartService.createCart(request);
 
         // then
-        assertThat(result).isNotNull();
-        assertThat(result.quantity()).isEqualTo(2);
+        assertThat(result.getMemberId()).isEqualTo(member.memberId());
+        assertThat(result.getOptionValueId()).isEqualTo(optionValueId);
+        assertThat(result.getQuantity()).isEqualTo(2);
         verify(cartRedisRepository).save(any(CartRedis.class));
     }
 
     @Test
-    @DisplayName("createCartWithResponse: quantity <= 0 → INVALID_QUANTITY")
-    void createCartWithResponse_invalidQuantity() {
+    @DisplayName("createCart — 기존 장바구니 존재 → 수량 누적")
+    void createCart_existing_accumulateQuantity() {
+        // given
+        CartCreateRequest request = new CartCreateRequest(optionValueId, 3);
+
+        when(memberUtil.getCurrentMember()).thenReturn(member);
+
+        ProductOptionValue optionValue = stubOptionValueIdOnly();
+        when(productOptionValueRepository.findById(optionValueId))
+                .thenReturn(Optional.of(optionValue));
+
+        CartRedis existing = CartRedis.of(member.memberId(), cartId, optionValueId, 2, 60L);
+        when(cartRedisRepository.findByMemberIdAndOptionValueId(member.memberId(), optionValueId))
+                .thenReturn(Optional.of(existing));
+
+        when(cartRedisRepository.save(any(CartRedis.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        CartRedis result = cartService.createCart(request);
+
+        // then
+        assertThat(result.getQuantity()).isEqualTo(5);
+        verify(cartRedisRepository).save(existing);
+    }
+
+    @Test
+    @DisplayName("createCart — quantity <= 0 이면 INVALID_QUANTITY")
+    void createCart_invalidQuantity() {
         // given
         CartCreateRequest request = new CartCreateRequest(optionValueId, 0);
-        when(memberUtil.getCurrentMember().memberId()).thenReturn(memberId);
+        when(memberUtil.getCurrentMember()).thenReturn(member);
 
         // when
         CommonException ex =
-                assertThrows(
-                        CommonException.class, () -> cartService.createCartWithResponse(request));
+                assertThrows(CommonException.class, () -> cartService.createCart(request));
 
         // then
         assertThat(ex.getErrorCode()).isEqualTo(CartErrorCode.INVALID_QUANTITY);
@@ -131,17 +139,16 @@ class CartServiceTest {
     }
 
     @Test
-    @DisplayName("createCartWithResponse: 옵션 없으면 OPTION_VALUE_NOT_FOUND")
-    void createCartWithResponse_optionNotFound() {
+    @DisplayName("createCart — 옵션 값이 없으면 OPTION_VALUE_NOT_FOUND")
+    void createCart_optionNotFound() {
         // given
         CartCreateRequest request = new CartCreateRequest(optionValueId, 1);
-        when(memberUtil.getCurrentMember().memberId()).thenReturn(memberId);
+        when(memberUtil.getCurrentMember()).thenReturn(member);
         when(productOptionValueRepository.findById(optionValueId)).thenReturn(Optional.empty());
 
         // when
         CommonException ex =
-                assertThrows(
-                        CommonException.class, () -> cartService.createCartWithResponse(request));
+                assertThrows(CommonException.class, () -> cartService.createCart(request));
 
         // then
         assertThat(ex.getErrorCode()).isEqualTo(ProductErrorCode.OPTION_VALUE_NOT_FOUND);
@@ -149,17 +156,80 @@ class CartServiceTest {
     }
 
     @Test
-    @DisplayName("updateCart: 수량 수정 성공")
+    @DisplayName("createCartWithResponse — 할인 적용 + 응답 DTO 매핑")
+    void createCartWithResponse_discountAndMapping() {
+        // given
+        CartCreateRequest request = new CartCreateRequest(optionValueId, 2);
+        when(memberUtil.getCurrentMember()).thenReturn(member);
+
+        // 1) createCart() 에서 사용할 최소 optionValue (getId만)
+        ProductOptionValue optionValueForCreate = stubOptionValueIdOnly();
+
+        // 2) createCartWithResponse() 내부에서 할인 계산/매핑용 optionValue
+        Product product = mock(Product.class);
+        when(product.getId()).thenReturn(productId);
+
+        ProductOptionGroup group = mock(ProductOptionGroup.class);
+        when(group.getProduct()).thenReturn(product);
+
+        ProductOptionValue optionValueForMapping = mock(ProductOptionValue.class);
+        when(optionValueForMapping.getOptionGroup()).thenReturn(group);
+
+        // 같은 findById(...) 호출이 두 번 일어나므로 순차 반환
+        when(productOptionValueRepository.findById(optionValueId))
+                .thenReturn(Optional.of(optionValueForCreate))
+                .thenReturn(Optional.of(optionValueForMapping));
+
+        CartRedis cart = CartRedis.of(member.memberId(), cartId, optionValueId, 2, 60L);
+        when(cartRedisRepository.findByMemberIdAndOptionValueId(member.memberId(), optionValueId))
+                .thenReturn(Optional.empty());
+        when(cartRedisRepository.save(any(CartRedis.class))).thenReturn(cart);
+
+        Discount discount = mock(Discount.class);
+        when(discount.getAmount()).thenReturn(1_000);
+        when(discountRepository.findByProductId(productId)).thenReturn(Optional.of(discount));
+
+        CartResponse mapped =
+                CartResponse.builder()
+                        .cartId(cartId)
+                        .optionValueId(optionValueId)
+                        .productName("테스트 상품")
+                        .optionValueName("옵션A")
+                        .imageUrl("image")
+                        .quantity(2)
+                        .basePrice(10_000)
+                        .extraPrice(500)
+                        .discountAmount(1_000)
+                        .unitPrice(9_500)
+                        .lineTotal(19_000)
+                        .stockQuantity(5)
+                        .build();
+
+        when(cartMapper.toResponse(cart, optionValueForMapping, 1_000)).thenReturn(mapped);
+
+        // when
+        CartResponse result = cartService.createCartWithResponse(request);
+
+        // then
+        assertThat(result.cartId()).isEqualTo(cartId);
+        assertThat(result.discountAmount()).isEqualTo(1_000);
+        verify(discountRepository).findByProductId(productId);
+        verify(cartMapper).toResponse(cart, optionValueForMapping, 1_000);
+    }
+
+    @Test
+    @DisplayName("updateCart — 수량 수정 성공")
     void updateCart_success() {
         // given
+        when(memberUtil.getCurrentMember()).thenReturn(member);
+
         CartUpdateRequest request = new CartUpdateRequest(5);
-        when(memberUtil.getCurrentMember().memberId()).thenReturn(memberId);
+        CartRedis existing = CartRedis.of(member.memberId(), cartId, optionValueId, 2, 60L);
 
-        CartRedis existing = CartRedis.of(memberId, cartId, optionValueId, 2, 30L);
-
-        when(cartRedisRepository.findByMemberIdAndCartId(memberId, cartId))
+        when(cartRedisRepository.findByMemberIdAndCartId(member.memberId(), cartId))
                 .thenReturn(Optional.of(existing));
-        when(cartRedisRepository.save(any(CartRedis.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(cartRedisRepository.save(any(CartRedis.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
         CartRedis updated = cartService.updateCart(cartId, request);
@@ -170,12 +240,28 @@ class CartServiceTest {
     }
 
     @Test
-    @DisplayName("updateCart: Redis에 없으면 CART_EXPIRED")
+    @DisplayName("updateCart — quantity <= 0 → INVALID_QUANTITY")
+    void updateCart_invalidQuantity() {
+        // given
+        when(memberUtil.getCurrentMember()).thenReturn(member);
+        CartUpdateRequest request = new CartUpdateRequest(0);
+
+        // when
+        CommonException ex =
+                assertThrows(CommonException.class, () -> cartService.updateCart(cartId, request));
+
+        // then
+        assertThat(ex.getErrorCode()).isEqualTo(CartErrorCode.INVALID_QUANTITY);
+        verify(cartRedisRepository, never()).findByMemberIdAndCartId(anyLong(), any());
+    }
+
+    @Test
+    @DisplayName("updateCart — Redis 에 장바구니 없으면 CART_EXPIRED")
     void updateCart_expired() {
         // given
+        when(memberUtil.getCurrentMember()).thenReturn(member);
         CartUpdateRequest request = new CartUpdateRequest(3);
-        when(memberUtil.getCurrentMember().memberId()).thenReturn(memberId);
-        when(cartRedisRepository.findByMemberIdAndCartId(memberId, cartId))
+        when(cartRedisRepository.findByMemberIdAndCartId(member.memberId(), cartId))
                 .thenReturn(Optional.empty());
 
         // when
@@ -188,19 +274,29 @@ class CartServiceTest {
     }
 
     @Test
-    @DisplayName("getCartListByMember: 장바구니 목록 조회 성공")
+    @DisplayName("getCartListByMember — 정상 조회")
     void getCartListByMember_success() {
         // given
-        when(memberUtil.getCurrentMember().memberId()).thenReturn(memberId);
+        when(memberUtil.getCurrentMember()).thenReturn(member);
 
-        CartRedis cart = CartRedis.of(memberId, cartId, optionValueId, 2, 30L);
-        when(cartRedisRepository.findByMemberId(memberId)).thenReturn(List.of(cart));
+        CartRedis cart = CartRedis.of(member.memberId(), cartId, optionValueId, 2, 60L);
+        when(cartRedisRepository.findByMemberId(member.memberId())).thenReturn(List.of(cart));
 
-        ProductOptionValue optionValue = stubOptionValue();
+        Product product = mock(Product.class);
+        when(product.getId()).thenReturn(productId);
+
+        ProductOptionGroup group = mock(ProductOptionGroup.class);
+        when(group.getProduct()).thenReturn(product);
+
+        ProductOptionValue optionValue = mock(ProductOptionValue.class);
+        when(optionValue.getOptionGroup()).thenReturn(group);
+
         when(productOptionValueRepository.findById(optionValueId))
                 .thenReturn(Optional.of(optionValue));
 
-        when(discountRepository.findByProductId(productId)).thenReturn(Optional.empty());
+        Discount discount = mock(Discount.class);
+        when(discount.getAmount()).thenReturn(1_000);
+        when(discountRepository.findByProductId(productId)).thenReturn(Optional.of(discount));
 
         CartResponse mapped =
                 CartResponse.builder()
@@ -208,37 +304,41 @@ class CartServiceTest {
                         .optionValueId(optionValueId)
                         .productName("테스트 상품")
                         .optionValueName("옵션A")
-                        .imageUrl("url")
+                        .imageUrl("image")
                         .quantity(2)
                         .basePrice(10_000)
                         .extraPrice(500)
-                        .discountAmount(0)
-                        .unitPrice(10_500)
-                        .lineTotal(21_000)
+                        .discountAmount(1_000)
+                        .unitPrice(9_500)
+                        .lineTotal(19_000)
                         .stockQuantity(5)
                         .build();
 
-        when(cartMapper.toResponse(cart, optionValue, 0)).thenReturn(mapped);
+        when(cartMapper.toResponse(cart, optionValue, 1_000)).thenReturn(mapped);
 
         // when
-        var result = cartService.getCartListByMember();
+        List<CartResponse> result = cartService.getCartListByMember();
 
         // then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).cartId()).isEqualTo(cartId);
-        verify(cartRedisRepository).findByMemberId(memberId);
+        verify(cartRedisRepository).findByMemberId(member.memberId());
     }
 
     @Test
-    @DisplayName("deleteCart: 회원 기준 장바구니 삭제 호출")
+    @DisplayName("deleteCart — 장바구니 존재 시 삭제 수행")
     void deleteCart_success() {
         // given
-        when(memberUtil.getCurrentMember().memberId()).thenReturn(memberId);
+        when(memberUtil.getCurrentMember()).thenReturn(member);
+
+        CartRedis cart = CartRedis.of(member.memberId(), cartId, optionValueId, 2, 60L);
+        when(cartRedisRepository.findByMemberIdAndCartId(member.memberId(), cartId))
+                .thenReturn(Optional.of(cart));
 
         // when
         cartService.deleteCart(cartId);
 
         // then
-        verify(cartRedisRepository).deleteByMemberIdAndCartId(memberId, cartId);
+        verify(cartRedisRepository).deleteById(cart.getId());
     }
 }
