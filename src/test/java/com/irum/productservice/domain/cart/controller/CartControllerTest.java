@@ -1,9 +1,7 @@
-package com.irum.productservice.domain.cart;
+package com.irum.productservice.domain.cart.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -12,7 +10,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.productservice.domain.cart.controller.CartController;
+import com.irum.productservice.domain.cart.domain.entity.CartRedis;
 import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
 import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
 import com.irum.productservice.domain.cart.dto.response.CartResponse;
@@ -33,7 +31,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(CartController.class)
 @AutoConfigureRestDocs
-// @Import({SecurityTestConfig.class, TestConfig.class})
 class CartControllerTest {
 
     @Autowired private MockMvc mockMvc;
@@ -54,24 +51,31 @@ class CartControllerTest {
     @Test
     @DisplayName("장바구니 추가 API (CUSTOMER)")
     void createCartApiTest() throws Exception {
+        // given
         CartCreateRequest request = new CartCreateRequest(mockOptionValueId, 2);
         String requestJson = objectMapper.writeValueAsString(request);
 
         CartResponse response =
-                new CartResponse(
-                        mockCartId,
-                        mockOptionValueId,
-                        "테스트 상품",
-                        "옵션A",
-                        "https://example.com/image.jpg",
-                        2,
-                        10000,
-                        500,
-                        10500,
-                        21000);
+                CartResponse.builder()
+                        .cartId(mockCartId)
+                        .optionValueId(mockOptionValueId)
+                        .productName("테스트 상품")
+                        .optionValueName("옵션A")
+                        .imageUrl("https://example.com/image.jpg")
+                        .quantity(2)
+                        .basePrice(10_000)
+                        .extraPrice(500)
+                        .discountAmount(0) // 할인 0원 가정
+                        .unitPrice(10_500) // 10,000 + 500 - 0
+                        .lineTotal(21_000) // 10,500 * 2
+                        .stockQuantity(5) // 재고 5개 가정
+                        .build();
 
-        when(cartService.createCart(any(CartCreateRequest.class))).thenReturn(response);
+        // CartService는 createCartWithResponse 를 사용한다고 가정
+        Mockito.when(cartService.createCartWithResponse(any(CartCreateRequest.class)))
+                .thenReturn(response);
 
+        // when & then
         mockMvc.perform(
                         RestDocumentationRequestBuilders.post("/carts")
                                 .with(csrf())
@@ -97,28 +101,36 @@ class CartControllerTest {
                                         fieldWithPath("data.quantity").description("수량"),
                                         fieldWithPath("data.basePrice").description("상품 기본가"),
                                         fieldWithPath("data.extraPrice").description("옵션 추가금"),
+                                        fieldWithPath("data.discountAmount").description("할인 금액"),
                                         fieldWithPath("data.unitPrice").description("단가"),
-                                        fieldWithPath("data.lineTotal").description("총 금액"))));
+                                        fieldWithPath("data.lineTotal").description("총 금액"),
+                                        fieldWithPath("data.stockQuantity")
+                                                .description("옵션 재고 수량"))));
     }
 
     @Test
     @DisplayName("장바구니 목록 조회 API (CUSTOMER)")
     void getCartListApiTest() throws Exception {
+        // given
         CartResponse response =
-                new CartResponse(
-                        mockCartId,
-                        mockOptionValueId,
-                        "테스트 상품",
-                        "옵션A",
-                        "https://example.com/image.jpg",
-                        2,
-                        10000,
-                        500,
-                        10500,
-                        21000);
+                CartResponse.builder()
+                        .cartId(mockCartId)
+                        .optionValueId(mockOptionValueId)
+                        .productName("테스트 상품")
+                        .optionValueName("옵션A")
+                        .imageUrl("https://example.com/image.jpg")
+                        .quantity(2)
+                        .basePrice(10_000)
+                        .extraPrice(500)
+                        .discountAmount(0)
+                        .unitPrice(10_500)
+                        .lineTotal(21_000)
+                        .stockQuantity(5)
+                        .build();
 
-        when(cartService.getCartListByMember()).thenReturn(List.of(response));
+        Mockito.when(cartService.getCartListByMember()).thenReturn(List.of(response));
 
+        // when & then
         mockMvc.perform(
                         RestDocumentationRequestBuilders.get("/carts")
                                 .with(csrf().asHeader())
@@ -141,18 +153,25 @@ class CartControllerTest {
                                         fieldWithPath("data[].quantity").description("수량"),
                                         fieldWithPath("data[].basePrice").description("상품 기본가"),
                                         fieldWithPath("data[].extraPrice").description("옵션 추가금"),
+                                        fieldWithPath("data[].discountAmount").description("할인 금액"),
                                         fieldWithPath("data[].unitPrice").description("단가"),
-                                        fieldWithPath("data[].lineTotal").description("총 금액"))));
+                                        fieldWithPath("data[].lineTotal").description("총 금액"),
+                                        fieldWithPath("data[].stockQuantity")
+                                                .description("옵션 재고 수량"))));
     }
 
     @Test
     @DisplayName("장바구니 수정 API (CUSTOMER)")
     void updateCartApiTest() throws Exception {
+        // given
         CartUpdateRequest request = new CartUpdateRequest(5);
         String requestJson = objectMapper.writeValueAsString(request);
 
-        doNothing().when(cartService).updateCart(eq(mockCartId), any(CartUpdateRequest.class));
+        // updateCart는 CartRedis를 반환하므로, 목 객체를 리턴하도록 설정
+        Mockito.when(cartService.updateCart(eq(mockCartId), any(CartUpdateRequest.class)))
+                .thenReturn(Mockito.mock(CartRedis.class));
 
+        // when & then
         mockMvc.perform(
                         RestDocumentationRequestBuilders.patch("/carts/{cartId}", mockCartId)
                                 .with(csrf())
@@ -171,8 +190,10 @@ class CartControllerTest {
     @Test
     @DisplayName("장바구니 삭제 API (CUSTOMER)")
     void deleteCartApiTest() throws Exception {
-        doNothing().when(cartService).deleteCart(eq(mockCartId));
+        // given
+        Mockito.doNothing().when(cartService).deleteCart(eq(mockCartId));
 
+        // when & then
         mockMvc.perform(
                         RestDocumentationRequestBuilders.delete("/carts/{cartId}", mockCartId)
                                 .with(csrf())
