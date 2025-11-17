@@ -1,0 +1,85 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-category-data
+      author: isak-kang
+      comment: "카테고리 기본 데이터 삽입(root + sub)"
+
+      changes:
+        # ------ ROOT CATEGORIES (depth = 1) ------
+        - insert:
+            tableName: p_category
+            columns:
+              - column: { name: category_id, value: "00000000-0000-0000-0000-000000000001" }
+              - column: { name: name, value: "음식" }
+              - column: { name: depth, valueNumeric: 1 }
+              - column: { name: parent_id, value: null }
+              - column: { name: created_at, valueDate: now() }
+
+        - insert:
+            tableName: p_category
+            columns:
+              - column: { name: category_id, value: "00000000-0000-0000-0000-000000000006" }
+              - column: { name: name, value: "생활용품" }
+              - column: { name: depth, valueNumeric: 1 }
+              - column: { name: parent_id, value: null }
+              - column: { name: created_at, valueDate: now() }
+
+        # ------ SUB CATEGORIES (depth = 2) ------
+        - insert:
+            tableName: p_category
+            columns:
+              - column: { name: category_id, value: "00000000-0000-0000-0000-000000000002" }
+              - column: { name: name, value: "한식" }
+              - column: { name: depth, valueNumeric: 2 }
+              - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000001" }
+              - column: { name: created_at, valueDate: now() }
+
+        - insert:
+            tableName: p_category
+            columns:
+              - column: { name: category_id, value: "00000000-0000-0000-0000-000000000004" }
+              - column: { name: name, value: "양식" }
+              - column: { name: depth, valueNumeric: 2 }
+              - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000001" }
+              - column: { name: created_at, valueDate: now() }
+
+        - insert:
+            tableName: p_category
+            columns:
+              - column: { name: category_id, value: "00000000-0000-0000-0000-000000000005" }
+              - column: { name: name, value: "중식" }
+              - column: { name: depth, valueNumeric: 2 }
+              - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000001" }
+              - column: { name: created_at, valueDate: now() }
+
+        - insert:
+            tableName: p_category
+            columns:
+              - column: { name: category_id, value: "00000000-0000-0000-0000-000000000007" }
+              - column: { name: name, value: "청소용품" }
+              - column: { name: depth, valueNumeric: 2 }
+              - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000006" }
+              - column: { name: created_at, valueDate: now() }
+
+        # ------ DEPTH 3 (sub-of-sub) ------
+        - insert:
+            tableName: p_category
+            columns:
+              - column: { name: category_id, value: "00000000-0000-0000-0000-000000000003" }
+              - column: { name: name, value: "찌개류" }
+              - column: { name: depth, valueNumeric: 3 }
+              - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000002" }
+              - column: { name: created_at, valueDate: now() }
+
+      rollback:
+        - delete:
+            tableName: p_category
+            where: "category_id IN (
+                '00000000-0000-0000-0000-000000000001',
+                '00000000-0000-0000-0000-000000000002',
+                '00000000-0000-0000-0000-000000000003',
+                '00000000-0000-0000-0000-000000000004',
+                '00000000-0000-0000-0000-000000000005',
+                '00000000-0000-0000-0000-000000000006',
+                '00000000-0000-0000-0000-000000000007'
+            )"
