@@ -5,3 +5,42 @@ databaseChangeLog:
   - include:
       file: changes/002-insert-default-store.yaml
       relativeToChangelogFile: true
+
+  - include:
+      file: changes/003-create-category-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/004-insert-default-category.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/005-create-product-table.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/007-create-product-option-group-table.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/009-create-product-option-value-table.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/011-create-product-image-table.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/013-create-delivery-policy-table.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/015-create-discount-table.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/017-create-review-table.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/019-create-review-image-table.yaml
+      relativeToChangelogFile: true
