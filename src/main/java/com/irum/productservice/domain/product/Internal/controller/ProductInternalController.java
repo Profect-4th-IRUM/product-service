@@ -1,9 +1,9 @@
 package com.irum.productservice.domain.product.Internal.controller;
 
-import com.irum.openfeign.dto.request.RollbackStockRequest;
-import com.irum.openfeign.dto.request.UpdateStockRequest;
 import com.irum.openfeign.dto.response.ProductDto;
-import com.irum.openfeign.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.ProductInternalRequest;
+import com.irum.openfeign.product.dto.request.RollbackStockRequest;
+import com.irum.openfeign.product.dto.response.ProductInternalResponse;
 import com.irum.productservice.domain.product.Internal.service.ProductInternalService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ProductInternalController {
 
     // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
     @PatchMapping("/stock")
-    public UpdateStockDto updateStock(@RequestBody UpdateStockRequest request) {
+    public ProductInternalResponse updateStock(@RequestBody ProductInternalRequest request) {
         return productInternalService.updateStock(request);
     }
 

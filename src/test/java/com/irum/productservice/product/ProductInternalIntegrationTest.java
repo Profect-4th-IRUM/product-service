@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.irum.global.advice.exception.CommonException;
-import com.irum.openfeign.dto.request.RollbackStockRequest;
-import com.irum.openfeign.dto.request.UpdateStockRequest;
+import com.irum.openfeign.product.dto.request.ProductInternalRequest;
+import com.irum.openfeign.product.dto.request.RollbackStockRequest;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.category.domain.repository.CategoryRepository;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
@@ -103,9 +103,9 @@ public class ProductInternalIntegrationTest {
         AtomicInteger recoverCount = new AtomicInteger(); // 재시도 횟수 초과 카운트
 
         // 요청
-        UpdateStockRequest.OptionValueRequest optionRequest =
-                new UpdateStockRequest.OptionValueRequest(optionValueId, 1); // 1개씩 주문
-        UpdateStockRequest request = new UpdateStockRequest(List.of(optionRequest), storeId);
+        ProductInternalRequest.OptionValueRequest optionRequest =
+                new ProductInternalRequest.OptionValueRequest(optionValueId, 1); // 1개씩 주문
+        ProductInternalRequest request = new ProductInternalRequest(List.of(optionRequest), storeId);
 
         // when
         for (int i = 0; i < USER_COUNT; i++) {
@@ -164,9 +164,9 @@ public class ProductInternalIntegrationTest {
         AtomicInteger recoverCount = new AtomicInteger(); // 재시도 횟수 초과 카운트
 
         // 요청
-        UpdateStockRequest.OptionValueRequest optionRequest =
-                new UpdateStockRequest.OptionValueRequest(optionValueId, 1); // 1개씩 주문
-        UpdateStockRequest request = new UpdateStockRequest(List.of(optionRequest), storeId);
+        ProductInternalRequest.OptionValueRequest optionRequest =
+                new ProductInternalRequest.OptionValueRequest(optionValueId, 1); // 1개씩 주문
+        ProductInternalRequest request = new ProductInternalRequest(List.of(optionRequest), storeId);
 
         // when
         for (int i = 0; i < USER_COUNT; i++) {

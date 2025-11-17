@@ -5,8 +5,8 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.lenient;
 
-import com.irum.openfeign.dto.request.UpdateStockRequest;
-import com.irum.openfeign.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.ProductInternalRequest;
+import com.irum.openfeign.product.dto.response.ProductInternalResponse;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
@@ -56,12 +56,12 @@ class ProductStockServiceTest {
     void updateStockInTransaction_success() {
         // given
         // 1) 요청 DTO
-        UpdateStockRequest.OptionValueRequest reqOption1 =
-                new UpdateStockRequest.OptionValueRequest(optionValueId1, 5);
-        UpdateStockRequest.OptionValueRequest reqOption2 =
-                new UpdateStockRequest.OptionValueRequest(optionValueId2, 10);
-        UpdateStockRequest request =
-                new UpdateStockRequest(List.of(reqOption1, reqOption2), storeId);
+        ProductInternalRequest.OptionValueRequest reqOption1 =
+                new ProductInternalRequest.OptionValueRequest(optionValueId1, 5);
+        ProductInternalRequest.OptionValueRequest reqOption2 =
+                new ProductInternalRequest.OptionValueRequest(optionValueId2, 10);
+        ProductInternalRequest request =
+                new ProductInternalRequest(List.of(reqOption1, reqOption2), storeId);
 
         // 2) 상점
         Store mockStore =
@@ -105,7 +105,7 @@ class ProductStockServiceTest {
         lenient().when(discountRepository.findAllByProductIds(anyList())).thenReturn(List.of());
 
         // when
-        UpdateStockDto result = productStockService.updateStockInTransaction(request);
+        ProductInternalResponse result = productStockService.updateStockInTransaction(request);
 
         // then
         // 1) 반환 DTO는 null 이 아니어야 함 (세부 필드는 서비스 구현에 따라 다를 수 있으므로 여기서는 존재 여부만 검증)

@@ -1,10 +1,10 @@
 package com.irum.productservice.domain.product.Internal.service;
 
 import com.irum.global.advice.exception.CommonException;
-import com.irum.openfeign.dto.request.RollbackStockRequest;
-import com.irum.openfeign.dto.request.UpdateStockRequest;
 import com.irum.openfeign.dto.response.ProductDto;
-import com.irum.openfeign.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.ProductInternalRequest;
+import com.irum.openfeign.product.dto.request.RollbackStockRequest;
+import com.irum.openfeign.product.dto.response.ProductInternalResponse;
 import com.irum.productservice.domain.discount.domain.entity.Discount;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
 import com.irum.productservice.domain.product.domain.entity.Product;
@@ -81,13 +81,13 @@ public class ProductInternalService {
             maxAttempts = 3, // 최대 3번 재시도
             backoff = @Backoff(delay = 50, maxDelay = 500, multiplier = 1.5, random = true),
             recover = "recoverUpdateStock")
-    public UpdateStockDto updateStock(UpdateStockRequest request) {
+    public ProductInternalResponse updateStock(ProductInternalRequest request) {
         return productStockService.updateStockInTransaction(request);
     }
 
     /** updateStock 낙관적 락 충돌 재시도 횟수 초과시 처리 */
     @Recover
-    public UpdateStockDto recoverUpdateStock(Throwable e, UpdateStockRequest request) {
+    public ProductInternalResponse recoverUpdateStock(Throwable e, ProductInternalRequest request) {
         log.error(
                 "재고 차감 최종 실패, 3번의 재시도 모두 실패. 발생한 예외 {},  Request : {}",
                 e.getClass().getSimpleName(),

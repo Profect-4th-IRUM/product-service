@@ -1,11 +1,12 @@
 package com.irum.productservice.domain.product.Internal.service;
 
 import com.irum.global.advice.exception.CommonException;
-import com.irum.openfeign.dto.request.RollbackStockRequest;
-import com.irum.openfeign.dto.request.UpdateStockRequest;
-import com.irum.openfeign.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.ProductInternalRequest;
+import com.irum.openfeign.product.dto.request.RollbackStockRequest;
+import com.irum.openfeign.product.dto.response.ProductInternalResponse;
 import com.irum.productservice.domain.discount.domain.entity.Discount;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
+import com.irum.productservice.domain.product.Internal.service.converter.ProductInternalResponseMapper;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
 import com.irum.productservice.domain.store.domain.entity.Store;
@@ -30,7 +31,7 @@ public class ProductStockService {
     private final StoreRepository storeRepository;
 
     @Transactional
-    public UpdateStockDto updateStockInTransaction(UpdateStockRequest request) {
+    public ProductInternalResponse updateStockInTransaction(ProductInternalRequest request) {
         // 상점 + 배송정책 조회
         Store store =
                 storeRepository
@@ -39,7 +40,7 @@ public class ProductStockService {
         // 옵션 id 모으기
         List<UUID> productOptionValueIdList =
                 request.optionValueList().stream()
-                        .map(UpdateStockRequest.OptionValueRequest::optionValueId)
+                        .map(ProductInternalRequest.OptionValueRequest::optionValueId)
                         .toList();
 
         // 옵션 조회. optionGroup, product, store 까지 fetch join
@@ -56,7 +57,7 @@ public class ProductStockService {
         validateAllOptionValuesExist(request, productOptionValueList);
 
         // 재고 감소
-        for (UpdateStockRequest.OptionValueRequest optionValueRequest : request.optionValueList()) {
+        for (ProductInternalRequest.OptionValueRequest optionValueRequest : request.optionValueList()) {
             ProductOptionValue pov = povMap.get(optionValueRequest.optionValueId());
 
             // 주문 검증 : 상점의 상품인지, 재고 부족 체크
@@ -80,12 +81,12 @@ public class ProductStockService {
                                         discount -> discount.getProduct().getId(), // productId
                                         Discount::getAmount));
 
-        return UpdateStockDto.from(store, productOptionValueList, discountMap);
+        return ProductInternalResponseMapper.toProductInternalResponse(store, productOptionValueList, discountMap);
     }
 
     /** 모든 옵션이 존재하는지 확인 */
     private void validateAllOptionValuesExist(
-            UpdateStockRequest request, List<ProductOptionValue> povList) {
+            ProductInternalRequest request, List<ProductOptionValue> povList) {
         if (povList.size() != request.optionValueList().size()) {
             throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
         }
@@ -95,7 +96,7 @@ public class ProductStockService {
     private void validateStoreAndStock(
             ProductOptionValue pov,
             Store store,
-            UpdateStockRequest.OptionValueRequest optionValueRequest) {
+            ProductInternalRequest.OptionValueRequest optionValueRequest) {
 
         // 해당 상점의 상품인지 확인
         if (!pov.getOptionGroup().getProduct().getStore().getId().equals(store.getId())) {
