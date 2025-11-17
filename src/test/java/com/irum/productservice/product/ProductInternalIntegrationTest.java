@@ -26,8 +26,8 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,8 +49,7 @@ public class ProductInternalIntegrationTest {
     @Autowired private ProductOptionGroupRepository productOptionGroupRepository;
     @Autowired private ProductOptionValueRepository productOptionValueRepository;
 
-    @MockitoBean
-    private AuditorAware<Long> auditorAware;
+    @MockitoBean private AuditorAware<Long> auditorAware;
 
     private UUID storeId;
     private UUID optionValueId;
@@ -64,8 +63,8 @@ public class ProductInternalIntegrationTest {
     private ProductOptionGroup optionGroup;
     private ProductOptionValue optionValue;
 
-    private final int INITIAL_STOCK = 20;   // 초기 재고
-    private final int USER_COUNT = 100;     // 주문 요청 사용자 수
+    private final int INITIAL_STOCK = 20; // 초기 재고
+    private final int USER_COUNT = 100; // 주문 요청 사용자 수
     private final int ROLLBACK_COUNT = 100; // 롤백 요청 수
 
     // 유니크 제약 피하려고 테스트용 member 값 랜덤 생성
@@ -110,14 +109,7 @@ public class ProductInternalIntegrationTest {
         // Product
         product =
                 productRepository.save(
-                        Product.createProduct(
-                                store,
-                                category2,
-                                "테스트 상품",
-                                "설명",
-                                "상세",
-                                10000,
-                                true));
+                        Product.createProduct(store, category2, "테스트 상품", "설명", "상세", 10000, true));
 
         // OptionGroup
         optionGroup =
@@ -156,10 +148,7 @@ public class ProductInternalIntegrationTest {
                 }
             } catch (Exception e) {
                 System.err.println(
-                        "테스트 중 감지된 예외: "
-                                + e.getClass().getSimpleName()
-                                + " - "
-                                + e.getMessage());
+                        "테스트 중 감지된 예외: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             }
         }
 
@@ -265,10 +254,7 @@ public class ProductInternalIntegrationTest {
                 }
             } catch (Exception e) {
                 System.err.println(
-                        "테스트 중 감지된 예외: "
-                                + e.getClass().getSimpleName()
-                                + " - "
-                                + e.getMessage());
+                        "테스트 중 감지된 예외: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             }
         }
 
@@ -311,8 +297,7 @@ public class ProductInternalIntegrationTest {
                             productInternalService.rollbackStock(request);
                             successCount.incrementAndGet();
                         } catch (CommonException e) {
-                            if (e.getErrorCode()
-                                    == ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED) {
+                            if (e.getErrorCode() == ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED) {
                                 recoverCount.incrementAndGet();
                             } else {
                                 System.err.println("예상치 못한 예외: " + e.getMessage());
