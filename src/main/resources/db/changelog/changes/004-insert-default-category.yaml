@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert-category-data
+      id: insert-data-2
       author: isak-kang
       comment: "카테고리 기본 데이터 삽입(root + sub)"
 
@@ -14,6 +14,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 1 }
               - column: { name: parent_id, value: null }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
 
         - insert:
             tableName: p_category
@@ -23,6 +26,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 1 }
               - column: { name: parent_id, value: null }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
 
         - insert:
             tableName: p_category
@@ -32,6 +38,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 1 }
               - column: { name: parent_id, value: null }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
 
         - insert:
             tableName: p_category
@@ -41,6 +50,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 1 }
               - column: { name: parent_id, value: null }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
 
         - insert:
             tableName: p_category
@@ -50,6 +62,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 1 }
               - column: { name: parent_id, value: null }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
 
 
 
@@ -62,6 +77,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 2 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000100" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -70,6 +88,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 2 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000100" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -78,6 +99,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 2 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000100" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
 
         - insert:
             tableName: p_category
@@ -87,6 +111,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 2 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000200" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -95,6 +122,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 2 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000200" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -103,6 +133,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 2 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000200" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
 
 
         # ------ DEPTH 3 (sub-of-sub) ------
@@ -114,6 +147,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000110" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -122,6 +158,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000110" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -130,6 +169,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000110" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
 
         - insert:
             tableName: p_category
@@ -139,6 +181,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000120" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -147,6 +192,10 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000120" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
+
         - insert:
             tableName: p_category
             columns:
@@ -155,6 +204,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000120" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
 
         - insert:
             tableName: p_category
@@ -164,6 +216,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000210" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -172,6 +227,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000210" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -180,6 +238,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000210" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -188,6 +249,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000220" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -196,6 +260,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000220" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
         - insert:
             tableName: p_category
             columns:
@@ -204,6 +271,9 @@ databaseChangeLog:
               - column: { name: depth, valueNumeric: 3 }
               - column: { name: parent_id, value: "00000000-0000-0000-0000-000000000220" }
               - column: { name: created_at, valueDate: now() }
+              - column: { name: created_by, value: "1" }
+              - column: { name: updated_at, valueDate: now() }
+              - column: { name: updated_by, value: "1" }
 
       rollback:
         - delete:
