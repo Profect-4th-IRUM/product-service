@@ -36,14 +36,14 @@ databaseChangeLog:
 
                                             - column:
                                                       name: business_registration_number
-                                                      type: CHAR(10)
+                                                      type: VARCHAR(10)
                                                       constraints:
                                                               nullable: false
                                                               unique: true
 
                                             - column:
                                                       name: telemarketing_registration_number
-                                                      type: CHAR(10)
+                                                      type: VARCHAR(10)
                                                       constraints:
                                                               nullable: false
                                                               unique: true
