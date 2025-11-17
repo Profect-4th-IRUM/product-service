@@ -77,7 +77,7 @@ public class ProductInternalService {
                 ObjectOptimisticLockingFailureException.class
             },
             noRetryFor = {CommonException.class},
-            notRecoverable = { CommonException.class },
+            notRecoverable = {CommonException.class},
             maxAttempts = 3, // 최대 3번 재시도
             backoff = @Backoff(delay = 50, maxDelay = 500, multiplier = 1.5, random = true),
             recover = "recoverUpdateStock")
@@ -103,7 +103,7 @@ public class ProductInternalService {
                 ObjectOptimisticLockingFailureException.class
             },
             noRetryFor = {CommonException.class},
-            notRecoverable = { CommonException.class },
+            notRecoverable = {CommonException.class},
             maxAttempts = 10,
             backoff = @Backoff(delay = 100, maxDelay = 1000, multiplier = 1.5, random = true),
             recover = "recoverRollbackStock")

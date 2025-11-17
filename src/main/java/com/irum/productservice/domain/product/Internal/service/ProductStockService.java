@@ -31,6 +31,7 @@ public class ProductStockService {
 
     @Transactional
     public UpdateStockDto updateStockInTransaction(UpdateStockRequest request) {
+        // 상점 + 배송정책 조회
         Store store =
                 storeRepository
                         .findByIdWithDeliveryPolicy(request.storeId())
@@ -41,7 +42,7 @@ public class ProductStockService {
                         .map(UpdateStockRequest.OptionValueRequest::optionValueId)
                         .toList();
 
-        // 옵션 조회. product group, product, store도 fetch join
+        // 옵션 조회. optionGroup, product, store 까지 fetch join
         List<ProductOptionValue> productOptionValueList =
                 productOptionValueRepository.findAllByIdWithFetchJoin(productOptionValueIdList);
         Map<UUID, ProductOptionValue> povMap =
@@ -51,7 +52,7 @@ public class ProductStockService {
                                         ProductOptionValue::getId,
                                         productOptionValue -> productOptionValue));
 
-        // 정합 점검 : 존재하지 않는 상품을 주문하고 있는지
+        // 정합 점검 : 존재하지 않는 옵션이 섞여 있는지
         validateAllOptionValuesExist(request, productOptionValueList);
 
         // 재고 감소
@@ -70,9 +71,14 @@ public class ProductStockService {
                         .map(pov -> pov.getOptionGroup().getProduct().getId())
                         .toList();
         List<Discount> discountList = discountRepository.findAllByProductIds(productIdList);
+
+        // productId 기준으로 할인 맵핑
         Map<UUID, Integer> discountMap =
                 discountList.stream()
-                        .collect(Collectors.toMap(Discount::getId, Discount::getAmount));
+                        .collect(
+                                Collectors.toMap(
+                                        discount -> discount.getProduct().getId(), // productId
+                                        Discount::getAmount));
 
         return UpdateStockDto.from(store, productOptionValueList, discountMap);
     }
@@ -90,12 +96,13 @@ public class ProductStockService {
             ProductOptionValue pov,
             Store store,
             UpdateStockRequest.OptionValueRequest optionValueRequest) {
-        // 해당 상점의 상품을 주문하고 있는지
+
+        // 해당 상점의 상품인지 확인
         if (!pov.getOptionGroup().getProduct().getStore().getId().equals(store.getId())) {
             throw new CommonException(ProductErrorCode.PRODUCT_NOT_IN_STORE);
         }
 
-        // 재고보다 요청 물품 개수가 많을때
+        // 재고보다 요청 수량이 많은지 체크
         if (pov.getStockQuantity() < optionValueRequest.quantity()) {
             throw new CommonException(ProductErrorCode.PRODUCT_OUT_OF_STOCK);
         }
@@ -108,7 +115,7 @@ public class ProductStockService {
         List<UUID> optionIds =
                 request.optionValueList().stream()
                         .map(RollbackStockRequest.OptionValueRequest::optionValueId)
-                        .distinct() // 중복 ID 제거
+                        .distinct()
                         .toList();
 
         List<ProductOptionValue> options = productOptionValueRepository.findAllByIds(optionIds);
