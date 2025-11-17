@@ -36,13 +36,10 @@ public class Store extends BaseEntity {
     @Column(name = "address", nullable = false, length = 50)
     private String address;
 
-    @Column(name = "business_registration_number", nullable = false, columnDefinition = "char(10)")
+    @Column(name = "business_registration_number", nullable = false, length = 10)
     private String businessRegistrationNumber;
 
-    @Column(
-            name = "telemarketing_registration_number",
-            nullable = false,
-            columnDefinition = "char(10)")
+    @Column(name = "telemarketing_registration_number", nullable = false, length = 10)
     private String telemarketingRegistrationNumber;
 
     @Column(name = "member", updatable = false, nullable = false)
