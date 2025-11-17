@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 liquibase.properties
 
+liquibase.properties
 ### STS ###
 .apt_generated
 .classpath
