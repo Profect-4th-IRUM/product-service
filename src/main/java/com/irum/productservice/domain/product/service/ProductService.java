@@ -14,6 +14,7 @@ import com.irum.productservice.domain.product.dto.request.*;
 import com.irum.productservice.domain.product.dto.response.*;
 import com.irum.productservice.domain.product.event.OptionGroupDeletedEvent;
 import com.irum.productservice.domain.product.event.ProductDeletedEvent;
+import com.irum.productservice.domain.product.event.ProductVisibilityChangedEvent;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.CategoryErrorCode;
@@ -109,6 +110,8 @@ public class ProductService {
             throw new CommonException(ProductErrorCode.PRODUCT_NOT_MODIFIED);
         }
 
+        boolean beforeIsPublic = product.isPublic();
+
         String updatedName = request.name() != null ? request.name() : product.getName();
         String updatedDescription =
                 request.description() != null ? request.description() : product.getDescription();
@@ -139,6 +142,8 @@ public class ProductService {
         }
         if (product.isPublic() != updatedIsPublic) {
             log.info("공개여부 변경: {} → {}", product.isPublic(), updatedIsPublic);
+            eventPublisher.publishEvent(
+                    new ProductVisibilityChangedEvent(productId, updatedIsPublic));
         }
 
         product.updateProduct(
