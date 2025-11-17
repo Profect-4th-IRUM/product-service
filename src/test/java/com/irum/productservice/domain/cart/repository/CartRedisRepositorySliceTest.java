@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 @DataRedisTest
+@ActiveProfiles("test")
 @Import(EmbeddedRedisConfig.class)
 class CartRedisRepositorySliceTest {
 
