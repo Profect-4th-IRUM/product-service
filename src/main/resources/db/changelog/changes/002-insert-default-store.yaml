@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert-data-2
+      id: insert-data-1
       author: isak-kang
       comment: "상점 데이터 삽입"
 
