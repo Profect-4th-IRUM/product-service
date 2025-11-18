@@ -1,4 +1,4 @@
-package com.irum.productservice.product;
+package com.irum.productservice.domain.product;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
