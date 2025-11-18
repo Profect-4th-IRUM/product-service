@@ -15,6 +15,7 @@ import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionGroup;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
+import com.irum.productservice.domain.product.mapper.UpdateStockMapper;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import java.util.List;
@@ -39,6 +40,8 @@ class ProductStockServiceTest {
     @Mock private ProductOptionValueRepository productOptionValueRepository;
 
     @Mock private DiscountRepository discountRepository;
+
+    @Mock private UpdateStockMapper updateStockMapper;
 
     private UUID storeId;
     private UUID optionValueId1;
