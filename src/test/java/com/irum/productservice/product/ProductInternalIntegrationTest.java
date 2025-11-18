@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.irum.global.advice.exception.CommonException;
-import com.irum.openfeign.dto.request.RollbackStockRequest;
-import com.irum.openfeign.dto.request.UpdateStockRequest;
+import com.irum.openfeign.product.dto.request.RollbackStockRequest;
+import com.irum.openfeign.product.dto.request.UpdateStockRequest;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.category.domain.repository.CategoryRepository;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;

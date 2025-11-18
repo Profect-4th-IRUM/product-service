@@ -5,8 +5,8 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.lenient;
 
-import com.irum.openfeign.dto.request.UpdateStockRequest;
-import com.irum.openfeign.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.UpdateStockRequest;
+import com.irum.openfeign.product.dto.response.UpdateStockDto;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;

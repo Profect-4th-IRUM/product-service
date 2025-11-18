@@ -1,13 +1,14 @@
 package com.irum.productservice.domain.product.Internal.service;
 
 import com.irum.global.advice.exception.CommonException;
-import com.irum.openfeign.dto.request.RollbackStockRequest;
-import com.irum.openfeign.dto.request.UpdateStockRequest;
-import com.irum.openfeign.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.RollbackStockRequest;
+import com.irum.openfeign.product.dto.request.UpdateStockRequest;
+import com.irum.openfeign.product.dto.response.UpdateStockDto;
 import com.irum.productservice.domain.discount.domain.entity.Discount;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
+import com.irum.productservice.domain.product.mapper.UpdateStockMapper;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
@@ -28,6 +29,7 @@ public class ProductStockService {
     private final ProductOptionValueRepository productOptionValueRepository;
     private final DiscountRepository discountRepository;
     private final StoreRepository storeRepository;
+    private final UpdateStockMapper updateStockMapper;
 
     @Transactional
     public UpdateStockDto updateStockInTransaction(UpdateStockRequest request) {
@@ -80,7 +82,7 @@ public class ProductStockService {
                                         discount -> discount.getProduct().getId(), // productId
                                         Discount::getAmount));
 
-        return UpdateStockDto.from(store, productOptionValueList, discountMap);
+        return updateStockMapper.toDto(store, productOptionValueList, discountMap);
     }
 
     /** 모든 옵션이 존재하는지 확인 */

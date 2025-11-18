@@ -1,7 +1,7 @@
 package com.irum.productservice.domain.store.Internal.controller;
 
-import com.irum.openfeign.dto.response.StoreDto;
-import com.irum.openfeign.dto.response.StoreResponse;
+import com.irum.openfeign.product.dto.response.StoreDto;
+import com.irum.openfeign.product.dto.response.StoreResponse;
 import com.irum.productservice.domain.store.Internal.service.StoreInternalService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
