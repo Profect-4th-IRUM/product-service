@@ -102,7 +102,6 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'io.github.openfeign:feign-gson:11.0'
-    implementation 'io.github.openfeign:feign-okhttp'
 
     // Config Server
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
