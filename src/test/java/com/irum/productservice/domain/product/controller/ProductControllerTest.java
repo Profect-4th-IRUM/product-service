@@ -2,27 +2,37 @@ package com.irum.productservice.domain.product.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.global.advice.exception.GlobalExceptionHandler;
-import com.irum.global.advice.response.CommonResponseAdvice;
 import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
-import com.irum.productservice.domain.product.dto.request.*;
+import com.irum.productservice.domain.product.dto.request.ProductCategoryUpdateRequest;
+import com.irum.productservice.domain.product.dto.request.ProductCreateRequest;
+import com.irum.productservice.domain.product.dto.request.ProductOptionGroupRequest;
+import com.irum.productservice.domain.product.dto.request.ProductOptionValueRequest;
+import com.irum.productservice.domain.product.dto.request.ProductOptionValueUpdateRequest;
+import com.irum.productservice.domain.product.dto.request.ProductPublicUpdateRequest;
+import com.irum.productservice.domain.product.dto.request.ProductUpdateRequest;
+import com.irum.productservice.domain.product.dto.response.ProductCursorResponse;
 import com.irum.productservice.domain.product.dto.response.ProductDetailResponse;
 import com.irum.productservice.domain.product.dto.response.ProductOptionGroupResponse;
 import com.irum.productservice.domain.product.dto.response.ProductOptionValueResponse;
 import com.irum.productservice.domain.product.dto.response.ProductResponse;
 import com.irum.productservice.domain.product.service.ProductService;
-import com.irum.productservice.domain.store.dto.response.*;
+import com.irum.productservice.domain.store.dto.response.StoreInfoResponse;
+import com.irum.productservice.global.config.TestConfig;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -31,30 +41,20 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ProductController.class)
 @AutoConfigureRestDocs
-@Import({CommonResponseAdvice.class, GlobalExceptionHandler.class})
-public class ProductControllerTest {
+@Import(TestConfig.class)
+class ProductControllerTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private ProductService productService;
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public ProductService productService() {
-            return Mockito.mock(ProductService.class);
-        }
-    }
-
-    // 1 상품등록
     @Test
     @DisplayName("상품 등록 API")
     void createProductTest() throws Exception {
@@ -102,6 +102,8 @@ public class ProductControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
                 .andExpect(jsonPath("$.data.name").value("라운드 반팔 티셔츠"))
                 .andExpect(jsonPath("$.data.price").value(15000))
                 .andExpect(jsonPath("$.data.isPublic").value(true))
@@ -129,7 +131,7 @@ public class ProductControllerTest {
                                                 .description("추가 금액")),
                                 responseFields(
                                         fieldWithPath("success").description("API 성공 여부"),
-                                        fieldWithPath("status").description("HTTP 상태 코드"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 201"),
                                         fieldWithPath("timestamp").description("응답 시각"),
                                         fieldWithPath("data.id").description("상품 ID"),
                                         fieldWithPath("data.name").description("상품명"),
@@ -144,7 +146,6 @@ public class ProductControllerTest {
                                         fieldWithPath("data.categoryName").description("카테고리명"))));
     }
 
-    // 2상품수정.
     @Test
     @DisplayName("상품 수정 API")
     void updateProductTest() throws Exception {
@@ -181,6 +182,8 @@ public class ProductControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.data.name").value("수정된 반팔 티셔츠"))
                 .andExpect(jsonPath("$.data.price").value(17000))
                 .andDo(
@@ -200,7 +203,7 @@ public class ProductControllerTest {
                                         fieldWithPath("price").description("상품 가격 (nullable)")),
                                 responseFields(
                                         fieldWithPath("success").description("API 성공 여부"),
-                                        fieldWithPath("status").description("HTTP 상태 코드"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시각"),
                                         fieldWithPath("data.id").description("상품 ID"),
                                         fieldWithPath("data.name").description("상품명"),
@@ -215,7 +218,6 @@ public class ProductControllerTest {
                                         fieldWithPath("data.categoryName").description("카테고리명"))));
     }
 
-    // 3. 상품공개상태변경
     @Test
     @DisplayName("상품 공개 상태 변경 API")
     void updateProductPublicStatusTest() throws Exception {
@@ -223,10 +225,8 @@ public class ProductControllerTest {
         UUID productId = UUID.randomUUID();
         UUID categoryId = UUID.randomUUID();
 
-        // 요청 DTO
         ProductPublicUpdateRequest request = new ProductPublicUpdateRequest(true);
 
-        // 응답 DTO (ProductResponse)
         ProductResponse response =
                 new ProductResponse(
                         productId,
@@ -240,7 +240,6 @@ public class ProductControllerTest {
                         categoryId,
                         "상의");
 
-        // Mocking
         Mockito.when(
                         productService.updateProductPublicStatus(
                                 any(UUID.class), any(ProductPublicUpdateRequest.class)))
@@ -255,6 +254,8 @@ public class ProductControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.data.isPublic").value(true))
                 .andDo(
                         document(
@@ -269,7 +270,7 @@ public class ProductControllerTest {
                                                 .description("상품 공개 여부 (true = 공개, false = 비공개)")),
                                 responseFields(
                                         fieldWithPath("success").description("API 성공 여부"),
-                                        fieldWithPath("status").description("HTTP 상태 코드"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시각"),
                                         fieldWithPath("data.id").description("상품 ID"),
                                         fieldWithPath("data.name").description("상품명"),
@@ -284,7 +285,6 @@ public class ProductControllerTest {
                                         fieldWithPath("data.categoryName").description("카테고리명"))));
     }
 
-    // 4상품 카테고리 변경
     @Test
     @DisplayName("상품 카테고리 변경 API")
     void updateProductCategoryTest() throws Exception {
@@ -292,10 +292,8 @@ public class ProductControllerTest {
         UUID productId = UUID.randomUUID();
         UUID newCategoryId = UUID.randomUUID();
 
-        // 요청 DTO
         ProductCategoryUpdateRequest request = new ProductCategoryUpdateRequest(newCategoryId);
 
-        // 응답 DTO (ProductResponse)
         ProductResponse response =
                 new ProductResponse(
                         productId,
@@ -309,7 +307,6 @@ public class ProductControllerTest {
                         newCategoryId,
                         "상의");
 
-        // Mocking
         Mockito.when(
                         productService.updateProductCategory(
                                 any(UUID.class), any(ProductCategoryUpdateRequest.class)))
@@ -324,6 +321,8 @@ public class ProductControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.data.categoryId").value(newCategoryId.toString()))
                 .andDo(
                         document(
@@ -338,7 +337,7 @@ public class ProductControllerTest {
                                                 .description("새로 지정할 카테고리 ID (필수)")),
                                 responseFields(
                                         fieldWithPath("success").description("API 성공 여부"),
-                                        fieldWithPath("status").description("HTTP 상태 코드"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시각"),
                                         fieldWithPath("data.id").description("상품 ID"),
                                         fieldWithPath("data.name").description("상품명"),
@@ -353,7 +352,6 @@ public class ProductControllerTest {
                                         fieldWithPath("data.categoryName").description("카테고리명"))));
     }
 
-    // 5. 상품목록조회
     @Test
     @DisplayName("상품 목록 조회 API")
     void getProductListTest() throws Exception {
@@ -400,6 +398,8 @@ public class ProductControllerTest {
                                 .param("keyword", "티셔츠")
                                 .with(csrf().asHeader()))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.data.products").isArray())
                 .andExpect(jsonPath("$.data.products[0].name").value("반팔 티셔츠"))
                 .andDo(
@@ -423,7 +423,7 @@ public class ProductControllerTest {
                                                 .optional()),
                                 responseFields(
                                         fieldWithPath("success").description("API 성공 여부"),
-                                        fieldWithPath("status").description("HTTP 상태 코드"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시각"),
                                         fieldWithPath("data.products[].id").description("상품 ID"),
                                         fieldWithPath("data.products[].name").description("상품명"),
@@ -446,7 +446,6 @@ public class ProductControllerTest {
                                                 .description("다음 페이지 커서 (없을 경우 null)"))));
     }
 
-    // 6 상품 상세 조회
     @Test
     @DisplayName("상품 상세 조회 API")
     void getProductDetailTest() throws Exception {
@@ -455,7 +454,6 @@ public class ProductControllerTest {
         UUID categoryId = UUID.randomUUID();
         UUID storeId = UUID.randomUUID();
 
-        // 하위 객체 생성
         StoreInfoResponse store =
                 new StoreInfoResponse(
                         storeId,
@@ -497,6 +495,8 @@ public class ProductControllerTest {
                                 .with(csrf().asHeader())
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.data.name").value("라운드 반팔 티셔츠"))
                 .andDo(
                         document(
@@ -507,9 +507,8 @@ public class ProductControllerTest {
                                         parameterWithName("productId").description("상세 조회할 상품 ID")),
                                 responseFields(
                                         fieldWithPath("success").description("API 성공 여부"),
-                                        fieldWithPath("status").description("HTTP 상태 코드"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시각"),
-
                                         // Product
                                         fieldWithPath("data.id").description("상품 ID"),
                                         fieldWithPath("data.name").description("상품명"),
@@ -520,7 +519,6 @@ public class ProductControllerTest {
                                         fieldWithPath("data.isPublic").description("공개 여부"),
                                         fieldWithPath("data.avgRating").description("평균 평점"),
                                         fieldWithPath("data.reviewCount").description("리뷰 수"),
-
                                         // Store
                                         fieldWithPath("data.store.id").description("상점 ID"),
                                         fieldWithPath("data.store.name").description("상점명"),
@@ -530,14 +528,12 @@ public class ProductControllerTest {
                                                 .description("사업자등록번호"),
                                         fieldWithPath("data.store.telemarketingRegistrationNumber")
                                                 .description("통신판매업번호"),
-
                                         // Category
                                         fieldWithPath("data.category.categoryId")
                                                 .description("카테고리 ID"),
                                         fieldWithPath("data.category.name").description("카테고리명"),
                                         fieldWithPath("data.category.depth")
                                                 .description("카테고리 깊이 (1=대분류, 2=중분류, 3=소분류)"),
-
                                         // Option Groups
                                         fieldWithPath("data.optionGroups[].id")
                                                 .description("옵션 그룹 ID"),
@@ -555,7 +551,6 @@ public class ProductControllerTest {
                                                 .description("추가 금액"))));
     }
 
-    // 7. 상품 삭제
     @Test
     @DisplayName("상품 삭제 API")
     void deleteProductTest() throws Exception {
@@ -567,15 +562,21 @@ public class ProductControllerTest {
         // when & then
         mockMvc.perform(delete("/products/{productId}", productId).with(csrf().asHeader()))
                 .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.NO_CONTENT.value()))
                 .andDo(
                         document(
                                 "product-delete",
                                 preprocessRequest(prettyPrint()),
                                 pathParameters(
-                                        parameterWithName("productId").description("삭제할 상품의 ID"))));
+                                        parameterWithName("productId").description("삭제할 상품의 ID")),
+                                responseFields(
+                                        fieldWithPath("success").description("API 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 204"),
+                                        fieldWithPath("timestamp").description("응답 시각"),
+                                        fieldWithPath("data").description("null 또는 응답 데이터 없음"))));
     }
 
-    // 8 상품 옵션 그룹 생성
     @Test
     @DisplayName("상품 옵션 그룹 생성 API")
     void createProductOptionGroupTest() throws Exception {
@@ -595,6 +596,8 @@ public class ProductControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
                 .andDo(
                         document(
                                 "product-option-group-create",
@@ -609,10 +612,14 @@ public class ProductControllerTest {
                                         fieldWithPath("optionValues[].stockQuantity")
                                                 .description("재고 수량"),
                                         fieldWithPath("optionValues[].extraPrice")
-                                                .description("추가 금액"))));
+                                                .description("추가 금액")),
+                                responseFields(
+                                        fieldWithPath("success").description("API 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 201"),
+                                        fieldWithPath("timestamp").description("응답 시각"),
+                                        fieldWithPath("data").description("null 또는 응답 데이터 없음"))));
     }
 
-    // 9 상품 옵션 그룹 수정
     @Test
     @DisplayName("상품 옵션 그룹 수정 API")
     void updateProductOptionGroupTest() throws Exception {
@@ -643,6 +650,8 @@ public class ProductControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andDo(
                         document(
                                 "product-option-group-update",
@@ -659,7 +668,7 @@ public class ProductControllerTest {
                                                 .description("추가 금액")),
                                 responseFields(
                                         fieldWithPath("success").description("API 성공 여부"),
-                                        fieldWithPath("status").description("HTTP 상태 코드"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시각"),
                                         fieldWithPath("data.id").description("옵션 그룹 ID"),
                                         fieldWithPath("data.name").description("옵션 그룹명"),
@@ -673,7 +682,6 @@ public class ProductControllerTest {
                                                 .description("추가 금액"))));
     }
 
-    // 10 상품 그룹 삭제
     @Test
     @DisplayName("상품 옵션 그룹 삭제 API")
     void deleteProductOptionGroupTest() throws Exception {
@@ -685,15 +693,21 @@ public class ProductControllerTest {
                         delete("/products/options/{optionGroupId}", optionGroupId)
                                 .with(csrf().asHeader()))
                 .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.NO_CONTENT.value()))
                 .andDo(
                         document(
                                 "product-option-group-delete",
                                 pathParameters(
                                         parameterWithName("optionGroupId")
-                                                .description("삭제할 옵션 그룹 ID"))));
+                                                .description("삭제할 옵션 그룹 ID")),
+                                responseFields(
+                                        fieldWithPath("success").description("API 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 204"),
+                                        fieldWithPath("timestamp").description("응답 시각"),
+                                        fieldWithPath("data").description("null 또는 응답 데이터 없음"))));
     }
 
-    // 11 상품 옵션 값 생성
     @Test
     @DisplayName("상품 옵션 값 추가 API")
     void createProductOptionValueTest() throws Exception {
@@ -708,6 +722,8 @@ public class ProductControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
                 .andDo(
                         document(
                                 "product-option-value-create",
@@ -717,10 +733,14 @@ public class ProductControllerTest {
                                 requestFields(
                                         fieldWithPath("name").description("옵션명"),
                                         fieldWithPath("stockQuantity").description("재고 수량"),
-                                        fieldWithPath("extraPrice").description("추가 금액"))));
+                                        fieldWithPath("extraPrice").description("추가 금액")),
+                                responseFields(
+                                        fieldWithPath("success").description("API 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 201"),
+                                        fieldWithPath("timestamp").description("응답 시각"),
+                                        fieldWithPath("data").description("null 또는 응답 데이터 없음"))));
     }
 
-    // 12 상품 값 수정
     @Test
     @DisplayName("상품 옵션 값 수정 API")
     void updateProductOptionValueTest() throws Exception {
@@ -741,6 +761,8 @@ public class ProductControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andDo(
                         document(
                                 "product-option-value-update",
@@ -753,7 +775,7 @@ public class ProductControllerTest {
                                         fieldWithPath("extraPrice").description("추가 금액")),
                                 responseFields(
                                         fieldWithPath("success").description("API 성공 여부"),
-                                        fieldWithPath("status").description("HTTP 상태 코드"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시각"),
                                         fieldWithPath("data.id").description("옵션 값 ID"),
                                         fieldWithPath("data.name").description("옵션명"),
@@ -772,11 +794,18 @@ public class ProductControllerTest {
                         delete("/products/options/values/{optionValueId}", optionValueId)
                                 .with(csrf().asHeader()))
                 .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.NO_CONTENT.value()))
                 .andDo(
                         document(
                                 "product-option-value-delete",
                                 pathParameters(
                                         parameterWithName("optionValueId")
-                                                .description("삭제할 옵션 값 ID"))));
+                                                .description("삭제할 옵션 값 ID")),
+                                responseFields(
+                                        fieldWithPath("success").description("API 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 204"),
+                                        fieldWithPath("timestamp").description("응답 시각"),
+                                        fieldWithPath("data").description("null 또는 응답 데이터 없음"))));
     }
 }

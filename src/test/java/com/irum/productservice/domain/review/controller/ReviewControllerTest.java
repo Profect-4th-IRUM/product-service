@@ -10,6 +10,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +19,7 @@ import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
 import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
 import com.irum.productservice.domain.review.dto.response.ReviewResponse;
 import com.irum.productservice.domain.review.service.ReviewService;
+import com.irum.productservice.global.config.TestConfig;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -25,17 +28,17 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ReviewController.class)
 @AutoConfigureRestDocs
+@Import(TestConfig.class)
 class ReviewControllerTest {
 
     @Autowired private MockMvc mockMvc;
@@ -45,14 +48,6 @@ class ReviewControllerTest {
     private final UUID mockReviewId = UUID.randomUUID();
     private final UUID mockProductId = UUID.randomUUID();
     private final UUID mockOrderDetailId = UUID.randomUUID();
-
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public ReviewService reviewService() {
-            return Mockito.mock(ReviewService.class);
-        }
-    }
 
     private ReviewResponse createMockReviewResponse() {
         return new ReviewResponse(
@@ -85,12 +80,15 @@ class ReviewControllerTest {
 
         // when & then
         mockMvc.perform(
-                        RestDocumentationRequestBuilders.post("/reviews")
+                        post("/reviews")
                                 .with(csrf())
                                 .with(user("1").roles("CUSTOMER"))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
+                .andExpect(jsonPath("$.data.reviewId").value(mockReviewId.toString()))
                 .andDo(
                         document(
                                 "review-create",
@@ -102,12 +100,15 @@ class ReviewControllerTest {
                                         fieldWithPath("imageUrls")
                                                 .description("리뷰 이미지 URL 목록 (최대 5개)")),
                                 responseFields(
-                                        fieldWithPath("reviewId").description("리뷰 ID"),
-                                        fieldWithPath("productId").description("상품 ID"),
-                                        fieldWithPath("memberId").description("회원 ID"),
-                                        fieldWithPath("content").description("리뷰 내용"),
-                                        fieldWithPath("rate").description("평점"),
-                                        fieldWithPath("imageUrls[]")
+                                        fieldWithPath("success").description("요청 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 201"),
+                                        fieldWithPath("timestamp").description("응답 시간"),
+                                        fieldWithPath("data.reviewId").description("리뷰 ID"),
+                                        fieldWithPath("data.productId").description("상품 ID"),
+                                        fieldWithPath("data.memberId").description("회원 ID"),
+                                        fieldWithPath("data.content").description("리뷰 내용"),
+                                        fieldWithPath("data.rate").description("평점"),
+                                        fieldWithPath("data.imageUrls[]")
                                                 .description("리뷰 이미지 URL 목록"))));
     }
 
@@ -134,12 +135,15 @@ class ReviewControllerTest {
 
         // when & then
         mockMvc.perform(
-                        RestDocumentationRequestBuilders.patch("/reviews/{reviewId}", mockReviewId)
+                        patch("/reviews/{reviewId}", mockReviewId)
                                 .with(csrf())
                                 .with(user("1").roles("CUSTOMER"))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.data.reviewId").value(mockReviewId.toString()))
                 .andDo(
                         document(
                                 "review-update",
@@ -156,12 +160,15 @@ class ReviewControllerTest {
                                                 .description("수정할 리뷰 이미지 URL 목록 (null이면 변경 없음)")
                                                 .optional()),
                                 responseFields(
-                                        fieldWithPath("reviewId").description("리뷰 ID"),
-                                        fieldWithPath("productId").description("상품 ID"),
-                                        fieldWithPath("memberId").description("회원 ID"),
-                                        fieldWithPath("content").description("리뷰 내용"),
-                                        fieldWithPath("rate").description("평점"),
-                                        fieldWithPath("imageUrls[]")
+                                        fieldWithPath("success").description("요청 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
+                                        fieldWithPath("timestamp").description("응답 시간"),
+                                        fieldWithPath("data.reviewId").description("리뷰 ID"),
+                                        fieldWithPath("data.productId").description("상품 ID"),
+                                        fieldWithPath("data.memberId").description("회원 ID"),
+                                        fieldWithPath("data.content").description("리뷰 내용"),
+                                        fieldWithPath("data.rate").description("평점"),
+                                        fieldWithPath("data.imageUrls[]")
                                                 .description("리뷰 이미지 URL 목록"))));
     }
 
@@ -177,32 +184,43 @@ class ReviewControllerTest {
 
         // when & then
         mockMvc.perform(
-                        RestDocumentationRequestBuilders.get("/reviews/me")
+                        get("/reviews/me")
                                 .param("page", "0")
                                 .param("size", "10")
                                 .with(csrf().asHeader())
                                 .with(user("1").roles("CUSTOMER")))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.data.reviewList[0].reviewId").value(mockReviewId.toString()))
                 .andDo(
                         document(
                                 "review-get-my-reviews",
                                 responseFields(
-                                        fieldWithPath("reviewList[].reviewId").description("리뷰 ID"),
-                                        fieldWithPath("reviewList[].productId")
+                                        fieldWithPath("success").description("요청 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
+                                        fieldWithPath("timestamp").description("응답 시간"),
+                                        fieldWithPath("data.reviewList[].reviewId")
+                                                .description("리뷰 ID"),
+                                        fieldWithPath("data.reviewList[].productId")
                                                 .description("상품 ID"),
-                                        fieldWithPath("reviewList[].memberId").description("회원 ID"),
-                                        fieldWithPath("reviewList[].content").description("리뷰 내용"),
-                                        fieldWithPath("reviewList[].rate").description("평점"),
-                                        fieldWithPath("reviewList[].imageUrls[]")
+                                        fieldWithPath("data.reviewList[].memberId")
+                                                .description("회원 ID"),
+                                        fieldWithPath("data.reviewList[].content")
+                                                .description("리뷰 내용"),
+                                        fieldWithPath("data.reviewList[].rate").description("평점"),
+                                        fieldWithPath("data.reviewList[].imageUrls[]")
                                                 .description("리뷰 이미지 URL 목록"),
-                                        fieldWithPath("pageInfo.pageNumber")
+                                        fieldWithPath("data.pageInfo.pageNumber")
                                                 .description("현재 페이지 번호(0부터 시작)"),
-                                        fieldWithPath("pageInfo.pageSize").description("페이지 크기"),
-                                        fieldWithPath("pageInfo.totalElements")
+                                        fieldWithPath("data.pageInfo.pageSize")
+                                                .description("페이지 크기"),
+                                        fieldWithPath("data.pageInfo.totalElements")
                                                 .description("전체 요소 수"),
-                                        fieldWithPath("pageInfo.totalPages")
+                                        fieldWithPath("data.pageInfo.totalPages")
                                                 .description("전체 페이지 수"),
-                                        fieldWithPath("pageInfo.last").description("마지막 페이지 여부"))));
+                                        fieldWithPath("data.pageInfo.last")
+                                                .description("마지막 페이지 여부"))));
     }
 
     @Test
@@ -217,34 +235,45 @@ class ReviewControllerTest {
 
         // when & then
         mockMvc.perform(
-                        RestDocumentationRequestBuilders.get(
-                                        "/reviews/products/{productId}", mockProductId)
+                        get("/reviews/products/{productId}", mockProductId)
                                 .param("page", "0")
                                 .param("size", "10")
                                 .with(csrf().asHeader())
                                 .with(user("1").roles("CUSTOMER")))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
+                .andExpect(
+                        jsonPath("$.data.reviewList[0].productId").value(mockProductId.toString()))
                 .andDo(
                         document(
                                 "review-get-product-reviews",
                                 pathParameters(parameterWithName("productId").description("상품 ID")),
                                 responseFields(
-                                        fieldWithPath("reviewList[].reviewId").description("리뷰 ID"),
-                                        fieldWithPath("reviewList[].productId")
+                                        fieldWithPath("success").description("요청 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
+                                        fieldWithPath("timestamp").description("응답 시간"),
+                                        fieldWithPath("data.reviewList[].reviewId")
+                                                .description("리뷰 ID"),
+                                        fieldWithPath("data.reviewList[].productId")
                                                 .description("상품 ID"),
-                                        fieldWithPath("reviewList[].memberId").description("회원 ID"),
-                                        fieldWithPath("reviewList[].content").description("리뷰 내용"),
-                                        fieldWithPath("reviewList[].rate").description("평점"),
-                                        fieldWithPath("reviewList[].imageUrls[]")
+                                        fieldWithPath("data.reviewList[].memberId")
+                                                .description("회원 ID"),
+                                        fieldWithPath("data.reviewList[].content")
+                                                .description("리뷰 내용"),
+                                        fieldWithPath("data.reviewList[].rate").description("평점"),
+                                        fieldWithPath("data.reviewList[].imageUrls[]")
                                                 .description("리뷰 이미지 URL 목록"),
-                                        fieldWithPath("pageInfo.pageNumber")
+                                        fieldWithPath("data.pageInfo.pageNumber")
                                                 .description("현재 페이지 번호(0부터 시작)"),
-                                        fieldWithPath("pageInfo.pageSize").description("페이지 크기"),
-                                        fieldWithPath("pageInfo.totalElements")
+                                        fieldWithPath("data.pageInfo.pageSize")
+                                                .description("페이지 크기"),
+                                        fieldWithPath("data.pageInfo.totalElements")
                                                 .description("전체 요소 수"),
-                                        fieldWithPath("pageInfo.totalPages")
+                                        fieldWithPath("data.pageInfo.totalPages")
                                                 .description("전체 페이지 수"),
-                                        fieldWithPath("pageInfo.last").description("마지막 페이지 여부"))));
+                                        fieldWithPath("data.pageInfo.last")
+                                                .description("마지막 페이지 여부"))));
     }
 
     @Test
@@ -255,14 +284,21 @@ class ReviewControllerTest {
 
         // when & then
         mockMvc.perform(
-                        RestDocumentationRequestBuilders.delete("/reviews/{reviewId}", mockReviewId)
+                        delete("/reviews/{reviewId}", mockReviewId)
                                 .with(csrf())
                                 .with(user("1").roles("CUSTOMER")))
                 .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.NO_CONTENT.value()))
                 .andDo(
                         document(
                                 "review-delete",
                                 pathParameters(
-                                        parameterWithName("reviewId").description("삭제할 리뷰 ID"))));
+                                        parameterWithName("reviewId").description("삭제할 리뷰 ID")),
+                                responseFields(
+                                        fieldWithPath("success").description("요청 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 204"),
+                                        fieldWithPath("timestamp").description("응답 시간"),
+                                        fieldWithPath("data").description("null 또는 응답 데이터 없음"))));
     }
 }
