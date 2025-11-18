@@ -3,7 +3,7 @@ package com.irum.productservice.domain.store.service;
 import com.irum.global.advice.exception.CommonException;
 import com.irum.openfeign.member.dto.response.MemberDto;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
-import com.irum.productservice.domain.product.dto.request.ProductCursorResponse;
+import com.irum.productservice.domain.product.dto.response.ProductCursorResponse;
 import com.irum.productservice.domain.product.dto.response.ProductResponse;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
