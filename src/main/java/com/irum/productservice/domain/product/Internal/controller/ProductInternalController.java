@@ -27,12 +27,12 @@ public class ProductInternalController {
     }
 
     // storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회
-    @PatchMapping("/stock")
+    @PutMapping("/stock")
     public ProductInternalResponse updateStock(@RequestBody ProductInternalRequest request) {
         return productInternalService.updateStock(request);
     }
 
-    @PatchMapping("/rollback")
+    @PutMapping("/rollback")
     public void rollbackStock(@RequestBody RollbackStockRequest request) {
         productInternalService.rollbackStock(request);
     }

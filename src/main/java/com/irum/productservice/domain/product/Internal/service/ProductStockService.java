@@ -33,6 +33,7 @@ public class ProductStockService {
     @Transactional
     public ProductInternalResponse updateStockInTransaction(ProductInternalRequest request) {
         // 상점 + 배송정책 조회
+        log.warn("updateStockInTransaction {}", request);
         Store store =
                 storeRepository
                         .findByIdWithDeliveryPolicy(request.storeId())
@@ -88,6 +89,10 @@ public class ProductStockService {
     private void validateAllOptionValuesExist(
             ProductInternalRequest request, List<ProductOptionValue> povList) {
         if (povList.size() != request.optionValueList().size()) {
+            log.warn(
+                    "Product not found. Request size: {}, Found size: {}",
+                    request.optionValueList().size(),
+                    povList.size());
             throw new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND);
         }
     }
@@ -100,11 +105,20 @@ public class ProductStockService {
 
         // 해당 상점의 상품인지 확인
         if (!pov.getOptionGroup().getProduct().getStore().getId().equals(store.getId())) {
+            log.warn(
+                    "Product not in store. Product store ID: {}, Request store ID: {}",
+                    pov.getOptionGroup().getProduct().getStore().getId(),
+                    store.getId());
             throw new CommonException(ProductErrorCode.PRODUCT_NOT_IN_STORE);
         }
 
         // 재고보다 요청 수량이 많은지 체크
         if (pov.getStockQuantity() < optionValueRequest.quantity()) {
+            log.warn(
+                    "Product out of stock. OptionValue ID: {}, Stock: {}, Request: {}",
+                    pov.getId(),
+                    pov.getStockQuantity(),
+                    optionValueRequest.quantity());
             throw new CommonException(ProductErrorCode.PRODUCT_OUT_OF_STOCK);
         }
     }

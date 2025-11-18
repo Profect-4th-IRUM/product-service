@@ -102,6 +102,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'io.github.openfeign:feign-gson:11.0'
+    implementation 'io.github.openfeign:feign-okhttp'
 
     // Config Server
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
@@ -110,7 +111,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     // common module
-    implementation 'com.irum:open-feign-client:0.0.5-SNAPSHOT'
+    implementation 'com.irum:open-feign-client:1.0.0-SNAPSHOT'
     implementation 'com.irum:global-module:0.1.8-SNAPSHOT'
 
     // Test
