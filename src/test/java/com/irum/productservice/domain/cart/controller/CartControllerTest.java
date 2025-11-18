@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.productservice.domain.cart.domain.entity.CartRedis;
+import com.irum.productservice.domain.cart.domain.entity.CartItem;
 import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
 import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
 import com.irum.productservice.domain.cart.dto.response.CartResponse;
@@ -45,7 +45,7 @@ class CartControllerTest {
     @Autowired private CartService cartService;
     @Autowired private ObjectMapper objectMapper;
 
-    private final UUID mockCartId = UUID.randomUUID();
+    private final String mockCartItemId = UUID.randomUUID().toString();
     private final UUID mockOptionValueId = UUID.randomUUID();
 
     @Test
@@ -57,7 +57,7 @@ class CartControllerTest {
 
         CartResponse response =
                 CartResponse.builder()
-                        .cartId(mockCartId)
+                        .cartItemId(mockCartItemId)
                         .optionValueId(mockOptionValueId)
                         .productName("테스트 상품")
                         .optionValueName("옵션A")
@@ -83,7 +83,7 @@ class CartControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
-                .andExpect(jsonPath("$.data.cartId").value(mockCartId.toString()))
+                .andExpect(jsonPath("$.data.cartItemId").value(mockCartItemId))
                 .andExpect(jsonPath("$.data.optionValueId").value(mockOptionValueId.toString()))
                 .andExpect(jsonPath("$.data.productName").value("테스트 상품"))
                 .andDo(
@@ -96,7 +96,7 @@ class CartControllerTest {
                                         fieldWithPath("success").description("true"),
                                         fieldWithPath("status").description("HTTP 상태 코드"),
                                         fieldWithPath("timestamp").description("응답 생성 시간"),
-                                        fieldWithPath("data.cartId").description("장바구니 ID"),
+                                        fieldWithPath("data.cartItemId").description("장바구니 아이템 ID"),
                                         fieldWithPath("data.optionValueId").description("옵션 값 ID"),
                                         fieldWithPath("data.productName").description("상품 이름"),
                                         fieldWithPath("data.optionValueName").description("옵션 이름"),
@@ -117,7 +117,7 @@ class CartControllerTest {
         // given
         CartResponse response =
                 CartResponse.builder()
-                        .cartId(mockCartId)
+                        .cartItemId(mockCartItemId)
                         .optionValueId(mockOptionValueId)
                         .productName("테스트 상품")
                         .optionValueName("옵션A")
@@ -138,7 +138,7 @@ class CartControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
-                .andExpect(jsonPath("$.data[0].cartId").value(mockCartId.toString()))
+                .andExpect(jsonPath("$.data[0].cartItemId").value(mockCartItemId))
                 .andDo(
                         document(
                                 "cart-get-list",
@@ -146,7 +146,8 @@ class CartControllerTest {
                                         fieldWithPath("success").description("true"),
                                         fieldWithPath("status").description("HTTP 상태 코드"),
                                         fieldWithPath("timestamp").description("응답 생성 시간"),
-                                        fieldWithPath("data[].cartId").description("장바구니 ID"),
+                                        fieldWithPath("data[].cartItemId")
+                                                .description("장바구니 아이템 ID"),
                                         fieldWithPath("data[].optionValueId")
                                                 .description("옵션 값 ID"),
                                         fieldWithPath("data[].productName").description("상품 이름"),
@@ -156,7 +157,7 @@ class CartControllerTest {
                                         fieldWithPath("data[].quantity").description("수량"),
                                         fieldWithPath("data[].basePrice").description("상품 기본가"),
                                         fieldWithPath("data[].extraPrice").description("옵션 추가금"),
-                                        fieldWithPath("data[].discountAmount").description("할인 금액"),
+                                        fieldWithPath("data[].discountAmount").description("홀인 금액"),
                                         fieldWithPath("data[].unitPrice").description("단가"),
                                         fieldWithPath("data[].lineTotal").description("총 금액"),
                                         fieldWithPath("data[].stockQuantity")
@@ -170,12 +171,12 @@ class CartControllerTest {
         CartUpdateRequest request = new CartUpdateRequest(5);
         String requestJson = objectMapper.writeValueAsString(request);
 
-        when(cartService.updateCart(eq(mockCartId), any(CartUpdateRequest.class)))
-                .thenReturn(Mockito.mock(CartRedis.class));
+        when(cartService.updateCart(eq(mockCartItemId), any(CartUpdateRequest.class)))
+                .thenReturn((CartItem) Mockito.mock(Object.class));
 
         // when & then
         mockMvc.perform(
-                        patch("/carts/{cartId}", mockCartId)
+                        patch("/carts/{cartItemId}", mockCartItemId)
                                 .with(csrf())
                                 .with(user("1").roles("CUSTOMER"))
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -187,7 +188,8 @@ class CartControllerTest {
                         document(
                                 "cart-update",
                                 pathParameters(
-                                        parameterWithName("cartId").description("수정할 장바구니 ID")),
+                                        parameterWithName("cartItemId")
+                                                .description("수정할 장바구니 아이템 ID")),
                                 requestFields(fieldWithPath("quantity").description("변경할 수량")),
                                 responseFields(
                                         fieldWithPath("success").description("true"),
@@ -199,10 +201,10 @@ class CartControllerTest {
     @Test
     @DisplayName("장바구니 삭제 API (CUSTOMER)")
     void deleteCartApiTest() throws Exception {
-        doNothing().when(cartService).deleteCart(eq(mockCartId));
+        doNothing().when(cartService).deleteCart(eq(mockCartItemId));
 
         mockMvc.perform(
-                        delete("/carts/{cartId}", mockCartId)
+                        delete("/carts/{cartItemId}", mockCartItemId)
                                 .with(csrf())
                                 .with(user("1").roles("CUSTOMER")))
                 .andExpect(status().isNoContent())
@@ -212,7 +214,8 @@ class CartControllerTest {
                         document(
                                 "cart-delete",
                                 pathParameters(
-                                        parameterWithName("cartId").description("삭제할 장바구니 ID")),
+                                        parameterWithName("cartItemId")
+                                                .description("삭제할 장바구니 아이템 ID")),
                                 responseFields(
                                         fieldWithPath("success").description("true"),
                                         fieldWithPath("status").description("HTTP 상태 코드"),
