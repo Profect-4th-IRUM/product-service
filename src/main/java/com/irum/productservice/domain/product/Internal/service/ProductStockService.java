@@ -58,7 +58,8 @@ public class ProductStockService {
         validateAllOptionValuesExist(request, productOptionValueList);
 
         // 재고 감소
-        for (ProductInternalRequest.OptionValueRequest optionValueRequest : request.optionValueList()) {
+        for (ProductInternalRequest.OptionValueRequest optionValueRequest :
+                request.optionValueList()) {
             ProductOptionValue pov = povMap.get(optionValueRequest.optionValueId());
 
             // 주문 검증 : 상점의 상품인지, 재고 부족 체크
@@ -82,7 +83,8 @@ public class ProductStockService {
                                         discount -> discount.getProduct().getId(), // productId
                                         Discount::getAmount));
 
-        return ProductInternalResponseMapper.toProductInternalResponse(store, productOptionValueList, discountMap);
+        return ProductInternalResponseMapper.toProductInternalResponse(
+                store, productOptionValueList, discountMap);
     }
 
     /** 모든 옵션이 존재하는지 확인 */

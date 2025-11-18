@@ -43,7 +43,8 @@ class ProductInternalServiceTest {
                 new ProductInternalRequest(List.of(reqOption1, reqOption2), storeId);
 
         // ProductStockService가 반환할 DTO
-        ProductInternalResponse expectedDto = org.mockito.Mockito.mock(ProductInternalResponse.class);
+        ProductInternalResponse expectedDto =
+                org.mockito.Mockito.mock(ProductInternalResponse.class);
 
         given(productStockService.updateStockInTransaction(any(ProductInternalRequest.class)))
                 .willReturn(expectedDto);

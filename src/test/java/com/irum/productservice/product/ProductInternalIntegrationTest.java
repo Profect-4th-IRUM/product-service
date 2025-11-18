@@ -105,7 +105,8 @@ public class ProductInternalIntegrationTest {
         // 요청
         ProductInternalRequest.OptionValueRequest optionRequest =
                 new ProductInternalRequest.OptionValueRequest(optionValueId, 1); // 1개씩 주문
-        ProductInternalRequest request = new ProductInternalRequest(List.of(optionRequest), storeId);
+        ProductInternalRequest request =
+                new ProductInternalRequest(List.of(optionRequest), storeId);
 
         // when
         for (int i = 0; i < USER_COUNT; i++) {
@@ -166,7 +167,8 @@ public class ProductInternalIntegrationTest {
         // 요청
         ProductInternalRequest.OptionValueRequest optionRequest =
                 new ProductInternalRequest.OptionValueRequest(optionValueId, 1); // 1개씩 주문
-        ProductInternalRequest request = new ProductInternalRequest(List.of(optionRequest), storeId);
+        ProductInternalRequest request =
+                new ProductInternalRequest(List.of(optionRequest), storeId);
 
         // when
         for (int i = 0; i < USER_COUNT; i++) {
