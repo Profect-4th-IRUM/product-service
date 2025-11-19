@@ -20,7 +20,7 @@ INSERT INTO p_product (
 SELECT
     (
         '00000004-0000-7000-8000-' ||
-        LPAD(to_hex(i::bigint), 12, '0')
+        LPAD(i::text, 12, '0')
         )::uuid AS product_id,
         stores.store_id,
     categories.category_id,
@@ -35,7 +35,7 @@ SELECT
     '100000',
     CURRENT_TIMESTAMP,
     '100000'
-FROM generate_series(1, 100) AS i
+FROM generate_series(1, 1000000) AS i
          CROSS JOIN LATERAL (
     SELECT store_id
     FROM p_store

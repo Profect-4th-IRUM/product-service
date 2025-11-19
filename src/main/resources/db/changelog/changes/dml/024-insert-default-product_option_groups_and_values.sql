@@ -13,7 +13,7 @@ INSERT INTO p_product_option_group (
 SELECT
     (
         '00000005-0000-7000-8000-' ||
-        LPAD(to_hex(i::bigint), 12, '0')
+        LPAD(i::text, 12, '0')
         )::uuid AS option_group_id,
         product_id,
     '사이즈' AS name,
@@ -45,7 +45,7 @@ INSERT INTO p_product_option_value (
 SELECT
     (
         '00000006-0000-7000-8000-' ||
-        LPAD(to_hex(i::bigint), 12, '0')
+        LPAD(i::text, 12, '0')
         )::uuid AS option_value_id,
         option_group_id,
     'M' AS name,
