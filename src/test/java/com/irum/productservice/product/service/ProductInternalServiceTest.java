@@ -6,8 +6,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import com.irum.openfeign.dto.request.UpdateStockRequest;
-import com.irum.openfeign.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.UpdateStockRequest;
+import com.irum.openfeign.product.dto.response.UpdateStockDto;
 import com.irum.productservice.domain.product.Internal.service.ProductInternalService;
 import com.irum.productservice.domain.product.Internal.service.ProductStockService;
 import java.util.List;

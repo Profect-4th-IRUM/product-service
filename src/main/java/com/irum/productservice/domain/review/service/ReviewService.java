@@ -2,8 +2,8 @@ package com.irum.productservice.domain.review.service;
 
 import com.irum.global.advice.exception.CommonException;
 import com.irum.global.context.MemberAuthContext;
-import com.irum.openfeign.client.OrderClient;
-import com.irum.openfeign.dto.response.OrderDetailDto;
+import com.irum.openfeign.order.client.OrderClient;
+import com.irum.openfeign.order.dto.response.OrderDetailDto;
 import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
 import com.irum.productservice.domain.review.domain.entity.Review;

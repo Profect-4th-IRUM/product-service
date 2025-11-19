@@ -1,16 +1,17 @@
 package com.irum.productservice.domain.product.Internal.service;
 
 import com.irum.global.advice.exception.CommonException;
-import com.irum.openfeign.dto.request.RollbackStockRequest;
-import com.irum.openfeign.dto.request.UpdateStockRequest;
-import com.irum.openfeign.dto.response.ProductDto;
-import com.irum.openfeign.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.RollbackStockRequest;
+import com.irum.openfeign.product.dto.request.UpdateStockRequest;
+import com.irum.openfeign.product.dto.response.ProductDto;
+import com.irum.openfeign.product.dto.response.UpdateStockDto;
 import com.irum.productservice.domain.discount.domain.entity.Discount;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
 import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
+import com.irum.productservice.domain.product.mapper.ProductMapper;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import jakarta.persistence.OptimisticLockException;
 import java.util.List;
@@ -34,6 +35,7 @@ public class ProductInternalService {
     private final ProductOptionValueRepository productOptionValueRepository;
     private final DiscountRepository discountRepository;
     private final ProductStockService productStockService;
+    private final ProductMapper productMapper;
 
     // 상품 ID를 가지고 상품, 옵션(전체), 할인 조회
     @Transactional(readOnly = true)
@@ -47,7 +49,7 @@ public class ProductInternalService {
         List<ProductOptionValue> optionValues =
                 productOptionValueRepository.findAllByOptionGroup_Product(product);
 
-        return ProductDto.from(product, optionValues, discount);
+        return productMapper.toDto(product, optionValues, discount);
     }
 
     // 옵션 ID를 가지고 상품, 옵션(전체), 할인 조회
@@ -66,7 +68,7 @@ public class ProductInternalService {
         List<ProductOptionValue> options =
                 productOptionValueRepository.findAllByOptionGroup(optionValue.getOptionGroup());
 
-        return ProductDto.from(product, options, discount);
+        return productMapper.toDto(product, options, discount);
     }
 
     /** storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회 */
