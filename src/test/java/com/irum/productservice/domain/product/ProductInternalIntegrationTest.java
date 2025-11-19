@@ -1,11 +1,11 @@
-package com.irum.productservice.product;
+package com.irum.productservice.domain.product;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.irum.global.advice.exception.CommonException;
+import com.irum.openfeign.product.dto.request.ProductInternalRequest;
 import com.irum.openfeign.product.dto.request.RollbackStockRequest;
-import com.irum.openfeign.product.dto.request.UpdateStockRequest;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.category.domain.repository.CategoryRepository;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
@@ -130,9 +130,11 @@ public class ProductInternalIntegrationTest {
         AtomicInteger outOfStockCount = new AtomicInteger();
         AtomicInteger recoverCount = new AtomicInteger();
 
-        UpdateStockRequest.OptionValueRequest optionRequest =
-                new UpdateStockRequest.OptionValueRequest(optionValueId, 1);
-        UpdateStockRequest request = new UpdateStockRequest(List.of(optionRequest), storeId);
+        // 요청
+        ProductInternalRequest.OptionValueRequest optionRequest =
+                new ProductInternalRequest.OptionValueRequest(optionValueId, 1); // 1개씩 주문
+        ProductInternalRequest request =
+                new ProductInternalRequest(List.of(optionRequest), storeId);
 
         for (int i = 0; i < USER_COUNT; i++) {
             try {
@@ -180,9 +182,11 @@ public class ProductInternalIntegrationTest {
         AtomicInteger outOfStockCount = new AtomicInteger();
         AtomicInteger recoverCount = new AtomicInteger();
 
-        UpdateStockRequest.OptionValueRequest optionRequest =
-                new UpdateStockRequest.OptionValueRequest(optionValueId, 1);
-        UpdateStockRequest request = new UpdateStockRequest(List.of(optionRequest), storeId);
+        // 요청
+        ProductInternalRequest.OptionValueRequest optionRequest =
+                new ProductInternalRequest.OptionValueRequest(optionValueId, 1); // 1개씩 주문
+        ProductInternalRequest request =
+                new ProductInternalRequest(List.of(optionRequest), storeId);
 
         for (int i = 0; i < USER_COUNT; i++) {
             executorService.submit(

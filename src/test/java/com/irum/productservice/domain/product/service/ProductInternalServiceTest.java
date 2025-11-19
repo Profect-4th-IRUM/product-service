@@ -1,4 +1,4 @@
-package com.irum.productservice.product.service;
+package com.irum.productservice.domain.product.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -6,8 +6,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import com.irum.openfeign.product.dto.request.UpdateStockRequest;
-import com.irum.openfeign.product.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.ProductInternalRequest;
+import com.irum.openfeign.product.dto.response.ProductInternalResponse;
 import com.irum.productservice.domain.product.Internal.service.ProductInternalService;
 import com.irum.productservice.domain.product.Internal.service.ProductStockService;
 import java.util.List;
@@ -34,22 +34,23 @@ class ProductInternalServiceTest {
         UUID optionValueId1 = UUID.randomUUID();
         UUID optionValueId2 = UUID.randomUUID();
 
-        UpdateStockRequest.OptionValueRequest reqOption1 =
-                new UpdateStockRequest.OptionValueRequest(optionValueId1, 5);
-        UpdateStockRequest.OptionValueRequest reqOption2 =
-                new UpdateStockRequest.OptionValueRequest(optionValueId2, 10);
+        ProductInternalRequest.OptionValueRequest reqOption1 =
+                new ProductInternalRequest.OptionValueRequest(optionValueId1, 5);
+        ProductInternalRequest.OptionValueRequest reqOption2 =
+                new ProductInternalRequest.OptionValueRequest(optionValueId2, 10);
 
-        UpdateStockRequest request =
-                new UpdateStockRequest(List.of(reqOption1, reqOption2), storeId);
+        ProductInternalRequest request =
+                new ProductInternalRequest(List.of(reqOption1, reqOption2), storeId);
 
         // ProductStockService가 반환할 DTO
-        UpdateStockDto expectedDto = org.mockito.Mockito.mock(UpdateStockDto.class);
+        ProductInternalResponse expectedDto =
+                org.mockito.Mockito.mock(ProductInternalResponse.class);
 
-        given(productStockService.updateStockInTransaction(any(UpdateStockRequest.class)))
+        given(productStockService.updateStockInTransaction(any(ProductInternalRequest.class)))
                 .willReturn(expectedDto);
 
         // when
-        UpdateStockDto result = productInternalService.updateStock(request);
+        ProductInternalResponse result = productInternalService.updateStock(request);
 
         // then
         assertThat(result).isSameAs(expectedDto);

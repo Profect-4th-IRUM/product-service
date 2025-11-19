@@ -1,13 +1,11 @@
 package com.irum.productservice.domain.product.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.lenient;
 
-import com.irum.openfeign.product.dto.request.UpdateStockRequest;
-import com.irum.openfeign.product.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.ProductInternalRequest;
+import com.irum.openfeign.product.dto.response.ProductInternalResponse;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
@@ -61,14 +59,14 @@ class ProductStockServiceTest {
     @Test
     @DisplayName("재고 업데이트 성공 - 옵션 재고가 요청 수량만큼 감소")
     void updateStockInTransaction_success() {
-
-        UpdateStockRequest.OptionValueRequest reqOption1 =
-                new UpdateStockRequest.OptionValueRequest(optionValueId1, 5);
-        UpdateStockRequest.OptionValueRequest reqOption2 =
-                new UpdateStockRequest.OptionValueRequest(optionValueId2, 10);
-
-        UpdateStockRequest request =
-                new UpdateStockRequest(List.of(reqOption1, reqOption2), storeId);
+        // given
+        // 1) 요청 DTO
+        ProductInternalRequest.OptionValueRequest reqOption1 =
+                new ProductInternalRequest.OptionValueRequest(optionValueId1, 5);
+        ProductInternalRequest.OptionValueRequest reqOption2 =
+                new ProductInternalRequest.OptionValueRequest(optionValueId2, 10);
+        ProductInternalRequest request =
+                new ProductInternalRequest(List.of(reqOption1, reqOption2), storeId);
 
         // Store
         Store mockStore =
@@ -112,20 +110,8 @@ class ProductStockServiceTest {
 
         lenient().when(discountRepository.findAllByProductIds(anyList())).thenReturn(List.of());
 
-        // Mapper stubbing
-        UpdateStockDto mockDto =
-                UpdateStockDto.builder()
-                        .defaultDeliveryFee(3000)
-                        .minAmount(0)
-                        .minQuantity(0)
-                        .storeId(mockStore.getId())
-                        .productList(List.of())
-                        .build();
-
-        lenient().when(updateStockMapper.toDto(any(), anyList(), anyMap())).thenReturn(mockDto);
-
-        // 실행
-        UpdateStockDto result = productStockService.updateStockInTransaction(request);
+        // when
+        ProductInternalResponse result = productStockService.updateStockInTransaction(request);
 
         assertThat(result).isNotNull();
         assertThat(pov1.getStockQuantity()).isEqualTo(95);
