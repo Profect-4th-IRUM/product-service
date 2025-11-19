@@ -188,7 +188,6 @@ public class ProductInternalIntegrationTest {
         ProductInternalRequest request =
                 new ProductInternalRequest(List.of(optionRequest), storeId);
 
-
         for (int i = 0; i < USER_COUNT; i++) {
             executorService.submit(
                     () -> {

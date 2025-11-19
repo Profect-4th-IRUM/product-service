@@ -1,13 +1,10 @@
 package com.irum.productservice.domain.product.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.lenient;
 
 import com.irum.openfeign.product.dto.request.ProductInternalRequest;
-import com.irum.openfeign.product.dto.request.UpdateStockRequest;
 import com.irum.openfeign.product.dto.response.ProductInternalResponse;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
