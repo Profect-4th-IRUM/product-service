@@ -49,7 +49,7 @@ SELECT
         )::uuid AS option_value_id,
         option_group_id,
     'M' AS name,
-    100 AS stock_quantity,
+    1000000 AS stock_quantity,
     0 AS extra_price,
     0 AS version,
     CURRENT_TIMESTAMP,
