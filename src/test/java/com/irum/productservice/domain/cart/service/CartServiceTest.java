@@ -8,8 +8,8 @@ import static org.mockito.Mockito.*;
 import com.irum.global.advice.exception.CommonException;
 import com.irum.openfeign.member.dto.response.MemberDto;
 import com.irum.openfeign.member.enums.Role;
-import com.irum.productservice.domain.cart.domain.entity.CartRedis;
-import com.irum.productservice.domain.cart.domain.repository.CartRedisRepository;
+import com.irum.productservice.domain.cart.domain.entity.CartItem;
+import com.irum.productservice.domain.cart.domain.repository.CartItemRepository;
 import com.irum.productservice.domain.cart.dto.request.CartCreateRequest;
 import com.irum.productservice.domain.cart.dto.request.CartUpdateRequest;
 import com.irum.productservice.domain.cart.dto.response.CartResponse;
@@ -39,7 +39,7 @@ class CartServiceTest {
 
     @InjectMocks private CartService cartService;
 
-    @Mock private CartRedisRepository cartRedisRepository;
+    @Mock private CartItemRepository cartItemRepository;
     @Mock private ProductOptionValueRepository productOptionValueRepository;
     @Mock private DiscountRepository discountRepository;
     @Mock private CartMapper cartMapper;
@@ -48,7 +48,7 @@ class CartServiceTest {
     private MemberDto member;
     private UUID optionValueId;
     private UUID productId;
-    private UUID cartId;
+    private String cartItemId;
 
     @BeforeEach
     void setUp() {
@@ -56,7 +56,7 @@ class CartServiceTest {
 
         optionValueId = UUID.randomUUID();
         productId = UUID.randomUUID();
-        cartId = UUID.randomUUID();
+        cartItemId = UUID.randomUUID().toString();
     }
 
     /** createCart 내부에서 optionValue.getId() 까지만 쓰는 최소 stub */
@@ -78,20 +78,20 @@ class CartServiceTest {
         when(productOptionValueRepository.findById(optionValueId))
                 .thenReturn(Optional.of(optionValue));
 
-        when(cartRedisRepository.findByMemberIdAndOptionValueId(member.memberId(), optionValueId))
+        when(cartItemRepository.findByMemberIdAndOptionValueId(member.memberId(), optionValueId))
                 .thenReturn(Optional.empty());
 
-        when(cartRedisRepository.save(any(CartRedis.class)))
+        when(cartItemRepository.save(any(CartItem.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        CartRedis result = cartService.createCart(request);
+        CartItem result = cartService.createCart(request);
 
         // then
         assertThat(result.getMemberId()).isEqualTo(member.memberId());
         assertThat(result.getOptionValueId()).isEqualTo(optionValueId);
         assertThat(result.getQuantity()).isEqualTo(2);
-        verify(cartRedisRepository).save(any(CartRedis.class));
+        verify(cartItemRepository).save(any(CartItem.class));
     }
 
     @Test
@@ -106,19 +106,19 @@ class CartServiceTest {
         when(productOptionValueRepository.findById(optionValueId))
                 .thenReturn(Optional.of(optionValue));
 
-        CartRedis existing = CartRedis.of(member.memberId(), cartId, optionValueId, 2, 60L);
-        when(cartRedisRepository.findByMemberIdAndOptionValueId(member.memberId(), optionValueId))
+        CartItem existing = CartItem.of(member.memberId(), optionValueId, 2, 60L);
+        when(cartItemRepository.findByMemberIdAndOptionValueId(member.memberId(), optionValueId))
                 .thenReturn(Optional.of(existing));
 
-        when(cartRedisRepository.save(any(CartRedis.class)))
+        when(cartItemRepository.save(any(CartItem.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        CartRedis result = cartService.createCart(request);
+        CartItem result = cartService.createCart(request);
 
         // then
         assertThat(result.getQuantity()).isEqualTo(5);
-        verify(cartRedisRepository).save(existing);
+        verify(cartItemRepository).save(existing);
     }
 
     @Test
@@ -135,7 +135,7 @@ class CartServiceTest {
         // then
         assertThat(ex.getErrorCode()).isEqualTo(CartErrorCode.INVALID_QUANTITY);
         verify(productOptionValueRepository, never()).findById(any());
-        verify(cartRedisRepository, never()).save(any());
+        verify(cartItemRepository, never()).save(any());
     }
 
     @Test
@@ -152,7 +152,7 @@ class CartServiceTest {
 
         // then
         assertThat(ex.getErrorCode()).isEqualTo(ProductErrorCode.OPTION_VALUE_NOT_FOUND);
-        verify(cartRedisRepository, never()).save(any());
+        verify(cartItemRepository, never()).save(any());
     }
 
     @Test
@@ -175,15 +175,14 @@ class CartServiceTest {
         ProductOptionValue optionValueForMapping = mock(ProductOptionValue.class);
         when(optionValueForMapping.getOptionGroup()).thenReturn(group);
 
-        // 같은 findById(...) 호출이 두 번 일어나므로 순차 반환
         when(productOptionValueRepository.findById(optionValueId))
                 .thenReturn(Optional.of(optionValueForCreate))
                 .thenReturn(Optional.of(optionValueForMapping));
 
-        CartRedis cart = CartRedis.of(member.memberId(), cartId, optionValueId, 2, 60L);
-        when(cartRedisRepository.findByMemberIdAndOptionValueId(member.memberId(), optionValueId))
+        CartItem cartItem = CartItem.of(member.memberId(), optionValueId, 2, 60L);
+        when(cartItemRepository.findByMemberIdAndOptionValueId(member.memberId(), optionValueId))
                 .thenReturn(Optional.empty());
-        when(cartRedisRepository.save(any(CartRedis.class))).thenReturn(cart);
+        when(cartItemRepository.save(any(CartItem.class))).thenReturn(cartItem);
 
         Discount discount = mock(Discount.class);
         when(discount.getAmount()).thenReturn(1_000);
@@ -191,7 +190,7 @@ class CartServiceTest {
 
         CartResponse mapped =
                 CartResponse.builder()
-                        .cartId(cartId)
+                        .cartItemId(cartItem.getCartItemId())
                         .optionValueId(optionValueId)
                         .productName("테스트 상품")
                         .optionValueName("옵션A")
@@ -205,16 +204,16 @@ class CartServiceTest {
                         .stockQuantity(5)
                         .build();
 
-        when(cartMapper.toResponse(cart, optionValueForMapping, 1_000)).thenReturn(mapped);
+        when(cartMapper.toResponse(cartItem, optionValueForMapping, 1_000)).thenReturn(mapped);
 
         // when
         CartResponse result = cartService.createCartWithResponse(request);
 
         // then
-        assertThat(result.cartId()).isEqualTo(cartId);
+        assertThat(result.cartItemId()).isEqualTo(cartItem.getCartItemId());
         assertThat(result.discountAmount()).isEqualTo(1_000);
         verify(discountRepository).findByProductId(productId);
-        verify(cartMapper).toResponse(cart, optionValueForMapping, 1_000);
+        verify(cartMapper).toResponse(cartItem, optionValueForMapping, 1_000);
     }
 
     @Test
@@ -224,19 +223,19 @@ class CartServiceTest {
         when(memberUtil.getCurrentMember()).thenReturn(member);
 
         CartUpdateRequest request = new CartUpdateRequest(5);
-        CartRedis existing = CartRedis.of(member.memberId(), cartId, optionValueId, 2, 60L);
+        CartItem existing = CartItem.of(member.memberId(), optionValueId, 2, 60L);
 
-        when(cartRedisRepository.findByMemberIdAndCartId(member.memberId(), cartId))
+        when(cartItemRepository.findByMemberIdAndCartItemId(member.memberId(), cartItemId))
                 .thenReturn(Optional.of(existing));
-        when(cartRedisRepository.save(any(CartRedis.class)))
+        when(cartItemRepository.save(any(CartItem.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        CartRedis updated = cartService.updateCart(cartId, request);
+        CartItem updated = cartService.updateCart(cartItemId, request);
 
         // then
         assertThat(updated.getQuantity()).isEqualTo(5);
-        verify(cartRedisRepository).save(existing);
+        verify(cartItemRepository).save(existing);
     }
 
     @Test
@@ -248,11 +247,12 @@ class CartServiceTest {
 
         // when
         CommonException ex =
-                assertThrows(CommonException.class, () -> cartService.updateCart(cartId, request));
+                assertThrows(
+                        CommonException.class, () -> cartService.updateCart(cartItemId, request));
 
         // then
         assertThat(ex.getErrorCode()).isEqualTo(CartErrorCode.INVALID_QUANTITY);
-        verify(cartRedisRepository, never()).findByMemberIdAndCartId(anyLong(), any());
+        verify(cartItemRepository, never()).findByMemberIdAndCartItemId(anyLong(), anyString());
     }
 
     @Test
@@ -261,16 +261,17 @@ class CartServiceTest {
         // given
         when(memberUtil.getCurrentMember()).thenReturn(member);
         CartUpdateRequest request = new CartUpdateRequest(3);
-        when(cartRedisRepository.findByMemberIdAndCartId(member.memberId(), cartId))
+        when(cartItemRepository.findByMemberIdAndCartItemId(member.memberId(), cartItemId))
                 .thenReturn(Optional.empty());
 
         // when
         CommonException ex =
-                assertThrows(CommonException.class, () -> cartService.updateCart(cartId, request));
+                assertThrows(
+                        CommonException.class, () -> cartService.updateCart(cartItemId, request));
 
         // then
         assertThat(ex.getErrorCode()).isEqualTo(CartErrorCode.CART_EXPIRED);
-        verify(cartRedisRepository, never()).save(any());
+        verify(cartItemRepository, never()).save(any());
     }
 
     @Test
@@ -279,8 +280,8 @@ class CartServiceTest {
         // given
         when(memberUtil.getCurrentMember()).thenReturn(member);
 
-        CartRedis cart = CartRedis.of(member.memberId(), cartId, optionValueId, 2, 60L);
-        when(cartRedisRepository.findByMemberId(member.memberId())).thenReturn(List.of(cart));
+        CartItem cartItem = CartItem.of(member.memberId(), optionValueId, 2, 60L);
+        when(cartItemRepository.findByMemberId(member.memberId())).thenReturn(List.of(cartItem));
 
         Product product = mock(Product.class);
         when(product.getId()).thenReturn(productId);
@@ -300,7 +301,7 @@ class CartServiceTest {
 
         CartResponse mapped =
                 CartResponse.builder()
-                        .cartId(cartId)
+                        .cartItemId(cartItem.getCartItemId())
                         .optionValueId(optionValueId)
                         .productName("테스트 상품")
                         .optionValueName("옵션A")
@@ -314,15 +315,15 @@ class CartServiceTest {
                         .stockQuantity(5)
                         .build();
 
-        when(cartMapper.toResponse(cart, optionValue, 1_000)).thenReturn(mapped);
+        when(cartMapper.toResponse(cartItem, optionValue, 1_000)).thenReturn(mapped);
 
         // when
         List<CartResponse> result = cartService.getCartListByMember();
 
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).cartId()).isEqualTo(cartId);
-        verify(cartRedisRepository).findByMemberId(member.memberId());
+        assertThat(result.get(0).cartItemId()).isEqualTo(cartItem.getCartItemId());
+        verify(cartItemRepository).findByMemberId(member.memberId());
     }
 
     @Test
@@ -331,14 +332,14 @@ class CartServiceTest {
         // given
         when(memberUtil.getCurrentMember()).thenReturn(member);
 
-        CartRedis cart = CartRedis.of(member.memberId(), cartId, optionValueId, 2, 60L);
-        when(cartRedisRepository.findByMemberIdAndCartId(member.memberId(), cartId))
-                .thenReturn(Optional.of(cart));
+        CartItem cartItem = CartItem.of(member.memberId(), optionValueId, 2, 60L);
+        when(cartItemRepository.findByMemberIdAndCartItemId(member.memberId(), cartItemId))
+                .thenReturn(Optional.of(cartItem));
 
         // when
-        cartService.deleteCart(cartId);
+        cartService.deleteCart(cartItemId);
 
         // then
-        verify(cartRedisRepository).deleteById(cart.getId());
+        verify(cartItemRepository).deleteById(cartItem.getCartItemId());
     }
 }

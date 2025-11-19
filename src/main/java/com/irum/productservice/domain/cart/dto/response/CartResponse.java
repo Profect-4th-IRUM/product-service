@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record CartResponse(
-        UUID cartId,
+        String cartItemId,
         UUID optionValueId,
         String productName,
         String optionValueName,

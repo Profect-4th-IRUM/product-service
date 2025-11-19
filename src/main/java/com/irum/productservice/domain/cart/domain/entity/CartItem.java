@@ -13,26 +13,22 @@ import org.springframework.data.redis.core.index.Indexed;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CartRedis implements Serializable {
+public class CartItem implements Serializable {
 
-    @Id private String id; // Redis 내부 키 (UUID 문자열)
+    @Id private String cartItemId;
 
     @Indexed private Long memberId;
 
     @Indexed private UUID optionValueId;
 
-    @Indexed private UUID cartId; // 장바구니 개별 아이템 식별용 인덱스
-
     private Integer quantity;
 
     @TimeToLive private Long ttlSeconds;
 
-    public static CartRedis of(
-            Long memberId, UUID cartId, UUID optionValueId, int quantity, long ttlSeconds) {
-        return CartRedis.builder()
-                .id(UUID.randomUUID().toString())
+    public static CartItem of(Long memberId, UUID optionValueId, int quantity, long ttlSeconds) {
+        return CartItem.builder()
+                .cartItemId(UUID.randomUUID().toString())
                 .memberId(memberId)
-                .cartId(cartId)
                 .optionValueId(optionValueId)
                 .quantity(quantity)
                 .ttlSeconds(ttlSeconds)
