@@ -1,70 +1,54 @@
 databaseChangeLog:
   - include:
-      file: changes/001-create-store-table.yaml
+      file: changes/ddl/001-create-table-store.yaml
       relativeToChangelogFile: true
   - include:
-      file: changes/002-insert-default-store.yaml
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/003-create-category-table.yaml
+      file: changes/legacy/002-insert-default-store.yaml
       relativeToChangelogFile: true
   - include:
-      file: changes/004-insert-default-category.yaml
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/005-create-product-table.yaml
+      file: changes/ddl/002-create-table-category.yaml
       relativeToChangelogFile: true
   - include:
-      file: changes/006-insert-default-product.yaml
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/007-create-product-option-group-table.yaml
+      file: changes/legacy/004-insert-default-category.yaml
       relativeToChangelogFile: true
   - include:
-      file: changes/008-insert-default-product-option-group.yaml
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/009-create-product-option-value-table.yaml
+      file: changes/ddl/003-create-table-product.yaml
       relativeToChangelogFile: true
   - include:
-      file: changes/010-insert-defalut-product-option-value.yaml
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/011-create-product-image-table.yaml
+      file: changes/ddl/004-create-table-product-option-group.yaml
       relativeToChangelogFile: true
   - include:
-      file: changes/012-insert-defalut-product-image.yaml
+      file: changes/ddl/005-create-table-product-option-value.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/ddl/006-create-table-product-image.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/ddl/007-create-table-delivery-policy.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/ddl/008-create-table-discount.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/ddl/009-create-table-review.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/ddl/010-create-table-review-image.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/ddl/011-create-index-category-depth.yaml
       relativeToChangelogFile: true
 
+### 테스트 데이터 ###
   - include:
-      file: changes/013-create-delivery-policy-table.yaml
+      file: changes/dml/021-insert-default-stores.sql
       relativeToChangelogFile: true
   - include:
-      file: changes/014-insert-defalut-delivery-policy.yaml
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/015-create-discount-table.yaml
+      file: changes/dml/022-insert-default-categories.sql
       relativeToChangelogFile: true
   - include:
-      file: changes/016-insert-defalut-discount.yaml
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/017-create-review-table.yaml
+      file: changes/dml/023-insert-default-products.sql
       relativeToChangelogFile: true
   - include:
-      file: changes/018-insert-defalut-review.yaml
-      relativeToChangelogFile: true
-
-  - include:
-      file: changes/019-create-review-image-table.yaml
-      relativeToChangelogFile: true
-  - include:
-      file: changes/020-insert-defalut-review-image.yaml
+      file: changes/dml/024-insert-default-product_option_groups_and_values.sql
       relativeToChangelogFile: true
