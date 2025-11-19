@@ -9,6 +9,7 @@ import com.irum.productservice.domain.discount.domain.repository.DiscountReposit
 import com.irum.productservice.domain.product.Internal.service.converter.ProductInternalResponseMapper;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
+import com.irum.productservice.domain.product.mapper.UpdateStockMapper;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
@@ -29,6 +30,7 @@ public class ProductStockService {
     private final ProductOptionValueRepository productOptionValueRepository;
     private final DiscountRepository discountRepository;
     private final StoreRepository storeRepository;
+    private final UpdateStockMapper updateStockMapper;
 
     @Transactional
     public ProductInternalResponse updateStockInTransaction(ProductInternalRequest request) {

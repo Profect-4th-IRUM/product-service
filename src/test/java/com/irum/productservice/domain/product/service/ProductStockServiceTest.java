@@ -1,11 +1,13 @@
 package com.irum.productservice.domain.product.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.lenient;
 
 import com.irum.openfeign.product.dto.request.ProductInternalRequest;
+import com.irum.openfeign.product.dto.request.UpdateStockRequest;
 import com.irum.openfeign.product.dto.response.ProductInternalResponse;
 import com.irum.productservice.domain.category.domain.entity.Category;
 import com.irum.productservice.domain.deliverypolicy.domain.entity.DeliveryPolicy;
@@ -15,6 +17,7 @@ import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionGroup;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
+import com.irum.productservice.domain.product.mapper.UpdateStockMapper;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
 import java.util.List;
@@ -24,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -32,13 +34,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(MockitoExtension.class)
 class ProductStockServiceTest {
 
-    @InjectMocks private ProductStockService productStockService;
+    private ProductStockService productStockService;
 
     @Mock private StoreRepository storeRepository;
-
     @Mock private ProductOptionValueRepository productOptionValueRepository;
-
     @Mock private DiscountRepository discountRepository;
+    @Mock private UpdateStockMapper updateStockMapper;
 
     private UUID storeId;
     private UUID optionValueId1;
@@ -49,6 +50,13 @@ class ProductStockServiceTest {
         storeId = UUID.randomUUID();
         optionValueId1 = UUID.randomUUID();
         optionValueId2 = UUID.randomUUID();
+
+        productStockService =
+                new ProductStockService(
+                        productOptionValueRepository,
+                        discountRepository,
+                        storeRepository,
+                        updateStockMapper);
     }
 
     @Test
@@ -63,56 +71,53 @@ class ProductStockServiceTest {
         ProductInternalRequest request =
                 new ProductInternalRequest(List.of(reqOption1, reqOption2), storeId);
 
-        // 2) 상점
+        // Store
         Store mockStore =
                 Store.createStore(
                         "테스트 상점", "010-1234-5678", "서울시 강남구", "1234567890", "2025123456", 1L);
         ReflectionTestUtils.setField(mockStore, "id", storeId);
 
-        // 3) 카테고리 (깊이 3짜리 카테고리)
+        // Category
         Category testCategory = org.mockito.Mockito.mock(Category.class);
-        given(testCategory.getDepth()).willReturn(3);
+        lenient().when(testCategory.getDepth()).thenReturn(3); // 🔥 꼭 필요
 
-        // 4) 배송 정책
+        // Delivery Policy
         DeliveryPolicy mockPolicy = org.mockito.Mockito.mock(DeliveryPolicy.class);
-        given(mockPolicy.getDefaultDeliveryFee()).willReturn(3000);
+        lenient().when(mockPolicy.getDefaultDeliveryFee()).thenReturn(3000);
+        lenient().when(mockPolicy.getMinAmount()).thenReturn(0);
+        lenient().when(mockPolicy.getMinQuantity()).thenReturn(0);
         ReflectionTestUtils.setField(mockStore, "deliveryPolicy", mockPolicy);
 
-        // 5) 상품 / 옵션 그룹 / 옵션 값들
+        // Product 구조 생성
         Product mockProduct =
                 Product.createProduct(
-                        mockStore, testCategory, "테스트 상품", "상품 설명", "상품 상세 설명", 10_000, true);
+                        mockStore, testCategory, "테스트 상품", "상품 설명", "상품 상세", 10000, true);
 
-        ProductOptionGroup mockOptionGroup =
-                ProductOptionGroup.createOptionGroup(mockProduct, "색상");
+        ProductOptionGroup mockGroup = ProductOptionGroup.createOptionGroup(mockProduct, "색상");
 
-        ProductOptionValue pov1 =
-                ProductOptionValue.createOptionValue(mockOptionGroup, "빨강", 100, 0);
-        ProductOptionValue pov2 =
-                ProductOptionValue.createOptionValue(mockOptionGroup, "파랑", 50, 0);
+        ProductOptionValue pov1 = ProductOptionValue.createOptionValue(mockGroup, "빨강", 100, 0);
+
+        ProductOptionValue pov2 = ProductOptionValue.createOptionValue(mockGroup, "파랑", 50, 0);
 
         ReflectionTestUtils.setField(pov1, "id", optionValueId1);
         ReflectionTestUtils.setField(pov2, "id", optionValueId2);
 
-        // 6) Repository stubbing
-        given(storeRepository.findByIdWithDeliveryPolicy(storeId))
-                .willReturn(Optional.of(mockStore));
+        // Repo stubbing
+        lenient()
+                .when(storeRepository.findByIdWithDeliveryPolicy(storeId))
+                .thenReturn(Optional.of(mockStore));
 
-        given(productOptionValueRepository.findAllByIdWithFetchJoin(anyList()))
-                .willReturn(List.of(pov1, pov2));
+        lenient()
+                .when(productOptionValueRepository.findAllByIdWithFetchJoin(anyList()))
+                .thenReturn(List.of(pov1, pov2));
 
-        // 할인 로직이 내부에서 호출될 수도 있으므로 lenient 로 처리
         lenient().when(discountRepository.findAllByProductIds(anyList())).thenReturn(List.of());
 
         // when
         ProductInternalResponse result = productStockService.updateStockInTransaction(request);
 
-        // then
-        // 1) 반환 DTO는 null 이 아니어야 함 (세부 필드는 서비스 구현에 따라 다를 수 있으므로 여기서는 존재 여부만 검증)
         assertThat(result).isNotNull();
-
-        // 2) 재고가 정확히 감소했는지 검증
-        assertThat(pov1.getStockQuantity()).isEqualTo(95); // 100 - 5
-        assertThat(pov2.getStockQuantity()).isEqualTo(40); // 50 - 10
+        assertThat(pov1.getStockQuantity()).isEqualTo(95);
+        assertThat(pov2.getStockQuantity()).isEqualTo(40);
     }
 }
