@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: create-index-1
+      id: create-index-product-1
       author: willjsw
       comment: p_category 테이블의 depth 컬럼 B-tree 인덱스 생성
 

@@ -1,7 +1,7 @@
 
 databaseChangeLog:
   - changeSet:
-      id: create-table-2
+      id: create-table-product-2
       author: isak-kang
       comment: "p_category 테이블 생성 및 기본 컬럼 정의"
 

@@ -1,4 +1,4 @@
--- changeset willjsw:insert-data-4
+-- changeset willjsw:insert-data-product-4
 -- comment: 각 상품마다 1개의 옵션 그룹 & 옵션 값 생성
 
 INSERT INTO p_product_option_group (

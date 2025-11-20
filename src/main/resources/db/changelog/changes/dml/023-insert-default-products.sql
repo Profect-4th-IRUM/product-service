@@ -1,4 +1,4 @@
--- changeset willjsw:insert-data-3
+-- changeset willjsw:insert-data-product-3
 -- comment: 테스트 상품 데이터 init
 
 INSERT INTO p_product (

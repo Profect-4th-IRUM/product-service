@@ -1,4 +1,4 @@
--- changeset willjsw:insert-data-2
+-- changeset willjsw:insert-data-product-2
 -- comment: 테스트 카테고리 데이터 init
 
 
