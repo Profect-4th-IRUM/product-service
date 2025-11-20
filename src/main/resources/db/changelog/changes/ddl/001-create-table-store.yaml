@@ -1,7 +1,7 @@
 
 databaseChangeLog:
         - changeSet:
-                  id: create-table-1
+                  id: create-table-product-1
                   author: isak-kang
                   comment: "p_store 테이블 생성 및 기본 컬럼 정의"
 

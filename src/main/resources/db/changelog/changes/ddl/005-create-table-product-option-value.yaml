@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: create-table-5
+      id: create-table-product-5
       author: isak-kang
       comment: "p_product_option_value 테이블 생성"
 

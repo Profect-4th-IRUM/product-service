@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: create-table-10
+      id: create-table-product-10
       author: isak-kang
       comment: "p_review_image 테이블 생성"
 
