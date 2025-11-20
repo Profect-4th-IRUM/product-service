@@ -4,6 +4,12 @@ FROM gradle:8.7-jdk21 AS build
 
 WORKDIR /app
 
+ARG GIT_USERNAME
+ARG GIT_TOKEN
+
+ENV GIT_USERNAME=${GIT_USERNAME}
+ENV GIT_TOKEN=${GIT_TOKEN}
+
 COPY gradlew build.gradle settings.gradle ./
 COPY gradle ./gradle
 RUN chmod +x gradlew && ./gradlew --version
