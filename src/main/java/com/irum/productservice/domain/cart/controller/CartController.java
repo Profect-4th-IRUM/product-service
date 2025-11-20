@@ -6,7 +6,6 @@ import com.irum.productservice.domain.cart.dto.response.CartResponse;
 import com.irum.productservice.domain.cart.service.CartService;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,16 +32,16 @@ public class CartController {
         return ResponseEntity.ok(responses);
     }
 
-    @PatchMapping(value = "/{cartId}", consumes = "application/json")
+    @PatchMapping(value = "/{cartItemId}", consumes = "application/json")
     public ResponseEntity<Void> updateCart(
-            @PathVariable UUID cartId, @RequestBody @Valid CartUpdateRequest request) {
-        cartService.updateCart(cartId, request);
+            @PathVariable String cartItemId, @RequestBody @Valid CartUpdateRequest request) {
+        cartService.updateCart(cartItemId, request);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{cartId}")
-    public ResponseEntity<Void> deleteCart(@PathVariable UUID cartId) {
-        cartService.deleteCart(cartId);
+    @DeleteMapping("/{cartItemId}")
+    public ResponseEntity<Void> deleteCart(@PathVariable String cartItemId) {
+        cartService.deleteCart(cartItemId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -6,20 +6,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.global.advice.exception.GlobalExceptionHandler;
-import com.irum.global.advice.response.CommonResponseAdvice;
 import com.irum.productservice.domain.discount.dto.request.DiscountInfoUpdateRequest;
 import com.irum.productservice.domain.discount.dto.request.DiscountRegisterRequest;
 import com.irum.productservice.domain.discount.dto.response.DiscountInfoListResponse;
@@ -40,8 +39,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(DiscountController.class)
 @AutoConfigureRestDocs
-@Import({CommonResponseAdvice.class, GlobalExceptionHandler.class, TestConfig.class})
-public class DiscountControllerTest {
+@Import(TestConfig.class)
+class DiscountControllerTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private DiscountService discountService;
@@ -58,11 +57,13 @@ public class DiscountControllerTest {
     @Test
     @DisplayName("할인 등록 API")
     void registerDiscountApiTest() throws Exception {
+        // given
         DiscountRegisterRequest request = new DiscountRegisterRequest("할인1", 5000, mockProductId);
         String requestJson = objectMapper.writeValueAsString(request);
 
         doNothing().when(discountService).createDiscount(any(DiscountRegisterRequest.class));
 
+        // when & then
         mockMvc.perform(
                         post("/discounts")
                                 .with(csrf())
@@ -78,23 +79,31 @@ public class DiscountControllerTest {
                                 requestFields(
                                         fieldWithPath("name").description("할인 이름"),
                                         fieldWithPath("amount").description("할인 금액"),
-                                        fieldWithPath("productId").description("할인 적용 대상 상품 ID"))));
+                                        fieldWithPath("productId").description("할인 적용 대상 상품 ID")),
+                                responseFields(
+                                        fieldWithPath("success").description("요청 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 201"),
+                                        fieldWithPath("timestamp").description("응답 시간"),
+                                        fieldWithPath("data").description("null 또는 응답 데이터 없음"))));
     }
 
     @Test
     @DisplayName("상품별 할인 정보 조회 API")
     void getDiscountInfoByProductApiTest() throws Exception {
+        // given
         DiscountInfoResponse response =
                 new DiscountInfoResponse(mockDiscountId, "할인1", 10000, mockProductId);
 
         when(discountService.findDiscountInfoByProduct(eq(mockProductId))).thenReturn(response);
 
+        // when & then
         mockMvc.perform(
                         get("/products/{productId}/discounts", mockProductId)
                                 .with(csrf())
                                 .with(user("1").roles("CUSTOMER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.data.discountId").value(mockDiscountId.toString()))
                 .andExpect(jsonPath("$.data.name").value(response.name()))
                 .andExpect(jsonPath("$.data.amount").value(10000))
@@ -118,6 +127,7 @@ public class DiscountControllerTest {
     @Test
     @DisplayName("상점별 할인 목록 조회 API")
     void getDiscountListInfoByStoreApiTest() throws Exception {
+        // given
         List<DiscountInfoResponse> discountInfoList =
                 List.of(
                         new DiscountInfoResponse(mockDiscountId2, "할인2", 10000, mockProductId1),
@@ -129,6 +139,7 @@ public class DiscountControllerTest {
         when(discountService.findDiscountInfoListByStore(eq(mockStoreId), any(), anyInt()))
                 .thenReturn(response);
 
+        // when & then
         mockMvc.perform(
                         get("/stores/{storeId}/discounts", mockStoreId)
                                 .param("size", "10")
@@ -136,6 +147,7 @@ public class DiscountControllerTest {
                                 .with(user("1").roles("CUSTOMER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andExpect(
                         jsonPath("$.data.discountInfoList[0].discountId")
                                 .value(mockDiscountId2.toString()))
@@ -176,6 +188,7 @@ public class DiscountControllerTest {
     @Test
     @DisplayName("할인 정보 수정 API (사장님 권한)")
     void updateDiscountInfoApiTest() throws Exception {
+        // given
         DiscountInfoUpdateRequest request = new DiscountInfoUpdateRequest("수정된 할인 이름", 7500);
         String requestJson = objectMapper.writeValueAsString(request);
 
@@ -183,6 +196,7 @@ public class DiscountControllerTest {
                 .when(discountService)
                 .changeDiscountInfo(eq(mockDiscountId), any(DiscountInfoUpdateRequest.class));
 
+        // when & then
         mockMvc.perform(
                         patch("/discounts/{discountId}", mockDiscountId)
                                 .with(csrf())
@@ -199,14 +213,21 @@ public class DiscountControllerTest {
                                         parameterWithName("discountId").description("수정할 할인 ID")),
                                 requestFields(
                                         fieldWithPath("name").description("변경할 할인 이름").optional(),
-                                        fieldWithPath("amount").description("변경할 할인 금액"))));
+                                        fieldWithPath("amount").description("변경할 할인 금액")),
+                                responseFields(
+                                        fieldWithPath("success").description("true"),
+                                        fieldWithPath("status").description("204"),
+                                        fieldWithPath("timestamp").description("응답 시간"),
+                                        fieldWithPath("data").description("null 또는 응답 데이터 없음"))));
     }
 
     @Test
     @DisplayName("할인 정보 삭제 API (사장님 권한)")
     void deleteDiscountApiTest() throws Exception {
+        // given
         doNothing().when(discountService).removeDiscount(eq(mockDiscountId));
 
+        // when & then
         mockMvc.perform(
                         delete("/discounts/{discountId}", mockDiscountId)
                                 .with(csrf())
@@ -218,6 +239,11 @@ public class DiscountControllerTest {
                         document(
                                 "discount-delete",
                                 pathParameters(
-                                        parameterWithName("discountId").description("삭제할 할인 ID"))));
+                                        parameterWithName("discountId").description("삭제할 할인 ID")),
+                                responseFields(
+                                        fieldWithPath("success").description("true"),
+                                        fieldWithPath("status").description("204"),
+                                        fieldWithPath("timestamp").description("응답 시간"),
+                                        fieldWithPath("data").description("null 또는 응답 데이터 없음"))));
     }
 }

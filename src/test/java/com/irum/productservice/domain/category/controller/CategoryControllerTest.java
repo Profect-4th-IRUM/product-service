@@ -5,16 +5,18 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.irum.global.advice.exception.GlobalExceptionHandler;
-import com.irum.global.advice.response.CommonResponseAdvice;
 import com.irum.productservice.domain.category.dto.request.CategoryCreateRequest;
 import com.irum.productservice.domain.category.dto.request.CategoryUpdateRequest;
 import com.irum.productservice.domain.category.dto.response.CategoryInfoResponse;
@@ -29,22 +31,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(CategoryController.class)
 @AutoConfigureRestDocs
-@Import({CommonResponseAdvice.class, GlobalExceptionHandler.class, TestConfig.class})
-public class CategoryControllerTest {
-    //
-    //    private static final Logger log = LoggerFactory.getLogger(CategoryControllerTest.class);
+@Import(TestConfig.class)
+class CategoryControllerTest {
+
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private CategoryService categoryService;
 
-    //
-
-    //
     @Test
     @DisplayName("루트 카테고리 조회 API")
     void getAllRootCategories() throws Exception {
@@ -60,6 +59,7 @@ public class CategoryControllerTest {
         mockMvc.perform(get("/categories").with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.data[0].name").value("식품"))
                 .andExpect(jsonPath("$.data[1].name").value("가전"))
                 .andDo(
@@ -67,7 +67,7 @@ public class CategoryControllerTest {
                                 "categories/get-roots",
                                 responseFields(
                                         fieldWithPath("success").description("요청 성공 여부"),
-                                        fieldWithPath("status").description("200"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시간"),
                                         fieldWithPath("data[].categoryId").description("카테고리 ID"),
                                         fieldWithPath("data[].name").description("카테고리명"),
@@ -93,6 +93,7 @@ public class CategoryControllerTest {
                                 .with(csrf().asHeader()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.data[1].name").value("과자"))
                 .andDo(
                         document(
@@ -101,7 +102,7 @@ public class CategoryControllerTest {
                                         parameterWithName("parentId").description("부모 카테고리 ID")),
                                 responseFields(
                                         fieldWithPath("success").description("요청 성공 여부"),
-                                        fieldWithPath("status").description("200"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시간"),
                                         fieldWithPath("data[].categoryId").description("카테고리 ID"),
                                         fieldWithPath("data[].name").description("카테고리명"),
@@ -121,13 +122,16 @@ public class CategoryControllerTest {
         // When & Then
         mockMvc.perform(get("/categories/{id}", categoryId).with(csrf()))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.data.categoryId").value(categoryId.toString()))
                 .andDo(
                         document(
                                 "categories/get-by-id",
                                 pathParameters(parameterWithName("id").description("카테고리 ID")),
                                 responseFields(
                                         fieldWithPath("success").description("요청 성공 여부"),
-                                        fieldWithPath("status").description("200"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시간"),
                                         fieldWithPath("data.categoryId").description("카테고리 ID"),
                                         fieldWithPath("data.name").description("카테고리명"),
@@ -169,34 +173,35 @@ public class CategoryControllerTest {
         // When & Then
         mockMvc.perform(get("/categories/tree").with(csrf()))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andDo(
                         document(
                                 "categories/get-tree",
                                 responseFields(
                                         fieldWithPath("success").description("요청 성공 여부"),
-                                        fieldWithPath("status").description("200"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시간"),
-                                        fieldWithPath("data.[].categoryId").description("카테고리 ID"),
-                                        fieldWithPath("data.[].name").description("카테고리명"),
-                                        fieldWithPath("data.[].depth").description("카테고리 깊이"),
-                                        fieldWithPath("data.[].parentId")
+                                        fieldWithPath("data[].categoryId").description("카테고리 ID"),
+                                        fieldWithPath("data[].name").description("카테고리명"),
+                                        fieldWithPath("data[].depth").description("카테고리 깊이"),
+                                        fieldWithPath("data[].parentId")
                                                 .description("부모 카테고리 ID")
                                                 .optional(),
-                                        fieldWithPath("data.[].children")
-                                                .description("하위 카테고리 리스트"),
-                                        fieldWithPath("data.[].children[].categoryId")
+                                        fieldWithPath("data[].children").description("하위 카테고리 리스트"),
+                                        fieldWithPath("data[].children[].categoryId")
                                                 .description("하위 카테고리 ID")
                                                 .optional(),
-                                        fieldWithPath("data.[].children[].name")
+                                        fieldWithPath("data[].children[].name")
                                                 .description("하위 카테고리명")
                                                 .optional(),
-                                        fieldWithPath("data.[].children[].depth")
+                                        fieldWithPath("data[].children[].depth")
                                                 .description("하위 카테고리 깊이")
                                                 .optional(),
-                                        fieldWithPath("data.[].children[].parentId")
+                                        fieldWithPath("data[].children[].parentId")
                                                 .description("하위 카테고리의 부모 ID")
                                                 .optional(),
-                                        fieldWithPath("data.[].children[].children")
+                                        fieldWithPath("data[].children[].children")
                                                 .description("하위의 하위 카테고리")
                                                 .optional())));
     }
@@ -222,6 +227,8 @@ public class CategoryControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andDo(
                         document(
                                 "categories/create",
@@ -232,7 +239,7 @@ public class CategoryControllerTest {
                                                 .optional()),
                                 responseFields(
                                         fieldWithPath("success").description("요청 성공 여부"),
-                                        fieldWithPath("status").description("200"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시간"),
                                         fieldWithPath("data.categoryId").description("생성된 카테고리 ID"),
                                         fieldWithPath("data.name").description("카테고리명"),
@@ -266,6 +273,8 @@ public class CategoryControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andDo(
                         document(
                                 "categories/update",
@@ -273,7 +282,7 @@ public class CategoryControllerTest {
                                 requestFields(fieldWithPath("name").description("변경할 카테고리명")),
                                 responseFields(
                                         fieldWithPath("success").description("요청 성공 여부"),
-                                        fieldWithPath("status").description("200"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시간"),
                                         fieldWithPath("data.categoryId").description("카테고리 ID"),
                                         fieldWithPath("data.name").description("변경된 카테고리명"),
@@ -295,11 +304,17 @@ public class CategoryControllerTest {
         // When & Then
         mockMvc.perform(delete("/categories/{id}", categoryId).with(csrf()))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andDo(
                         document(
                                 "categories/delete",
-                                pathParameters(
-                                        parameterWithName("id").description("삭제할 카테고리 ID"))));
+                                pathParameters(parameterWithName("id").description("삭제할 카테고리 ID")),
+                                responseFields(
+                                        fieldWithPath("success").description("요청 성공 여부"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
+                                        fieldWithPath("timestamp").description("응답 시간"),
+                                        fieldWithPath("data").description("null 또는 응답 데이터 없음"))));
     }
 
     @Test
@@ -315,7 +330,9 @@ public class CategoryControllerTest {
                                 .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()));
     }
 
     @Test
@@ -333,15 +350,16 @@ public class CategoryControllerTest {
                                 .content(requestJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.data.message").exists())
                 .andDo(
                         document(
                                 "categories/create-fail",
                                 responseFields(
-                                        fieldWithPath("success").description("요청 성공 여부"),
-                                        fieldWithPath("status").description("200"),
-                                        fieldWithPath("timestamp").description("응답 시간"),
-                                        fieldWithPath("data.errorClassName").description("에러 코드"),
+                                        fieldWithPath("success").description("요청 성공 여부 (false)"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 400"),
+                                        fieldWithPath("timestamp").description("에러 발생 시간"),
+                                        fieldWithPath("data.errorClassName").description("에러 종류"),
                                         fieldWithPath("data.message").description("에러 메세지"))));
     }
 
@@ -365,6 +383,8 @@ public class CategoryControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
                 .andDo(
                         document(
                                 "categories/create-root",
@@ -375,7 +395,7 @@ public class CategoryControllerTest {
                                                 .optional()),
                                 responseFields(
                                         fieldWithPath("success").description("요청 성공 여부"),
-                                        fieldWithPath("status").description("200"),
+                                        fieldWithPath("status").description("HTTP 상태 코드 ex) 200"),
                                         fieldWithPath("timestamp").description("응답 시간"),
                                         fieldWithPath("data.categoryId").description("생성된 카테고리 ID"),
                                         fieldWithPath("data.name").description("카테고리명"),

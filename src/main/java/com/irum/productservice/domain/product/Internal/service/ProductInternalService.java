@@ -1,16 +1,17 @@
 package com.irum.productservice.domain.product.Internal.service;
 
 import com.irum.global.advice.exception.CommonException;
-import com.irum.openfeign.dto.request.RollbackStockRequest;
-import com.irum.openfeign.dto.request.UpdateStockRequest;
-import com.irum.openfeign.dto.response.ProductDto;
-import com.irum.openfeign.dto.response.UpdateStockDto;
+import com.irum.openfeign.product.dto.request.ProductInternalRequest;
+import com.irum.openfeign.product.dto.request.RollbackStockRequest;
+import com.irum.openfeign.product.dto.response.ProductDto;
+import com.irum.openfeign.product.dto.response.ProductInternalResponse;
 import com.irum.productservice.domain.discount.domain.entity.Discount;
 import com.irum.productservice.domain.discount.domain.repository.DiscountRepository;
 import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
+import com.irum.productservice.domain.product.mapper.ProductMapper;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import jakarta.persistence.OptimisticLockException;
 import java.util.List;
@@ -34,6 +35,7 @@ public class ProductInternalService {
     private final ProductOptionValueRepository productOptionValueRepository;
     private final DiscountRepository discountRepository;
     private final ProductStockService productStockService;
+    private final ProductMapper productMapper;
 
     // 상품 ID를 가지고 상품, 옵션(전체), 할인 조회
     @Transactional(readOnly = true)
@@ -47,7 +49,7 @@ public class ProductInternalService {
         List<ProductOptionValue> optionValues =
                 productOptionValueRepository.findAllByOptionGroup_Product(product);
 
-        return ProductDto.from(product, optionValues, discount);
+        return productMapper.toDto(product, optionValues, discount);
     }
 
     // 옵션 ID를 가지고 상품, 옵션(전체), 할인 조회
@@ -66,7 +68,7 @@ public class ProductInternalService {
         List<ProductOptionValue> options =
                 productOptionValueRepository.findAllByOptionGroup(optionValue.getOptionGroup());
 
-        return ProductDto.from(product, options, discount);
+        return productMapper.toDto(product, options, discount);
     }
 
     /** storeId, optionValueIdList -> 재고 감소 및 배송 정책, 상품 정보 조회 */
@@ -77,17 +79,17 @@ public class ProductInternalService {
                 ObjectOptimisticLockingFailureException.class
             },
             noRetryFor = {CommonException.class},
-            notRecoverable = { CommonException.class },
+            notRecoverable = {CommonException.class},
             maxAttempts = 3, // 최대 3번 재시도
             backoff = @Backoff(delay = 50, maxDelay = 500, multiplier = 1.5, random = true),
             recover = "recoverUpdateStock")
-    public UpdateStockDto updateStock(UpdateStockRequest request) {
+    public ProductInternalResponse updateStock(ProductInternalRequest request) {
         return productStockService.updateStockInTransaction(request);
     }
 
     /** updateStock 낙관적 락 충돌 재시도 횟수 초과시 처리 */
     @Recover
-    public UpdateStockDto recoverUpdateStock(Throwable e, UpdateStockRequest request) {
+    public ProductInternalResponse recoverUpdateStock(Throwable e, ProductInternalRequest request) {
         log.error(
                 "재고 차감 최종 실패, 3번의 재시도 모두 실패. 발생한 예외 {},  Request : {}",
                 e.getClass().getSimpleName(),
@@ -103,7 +105,7 @@ public class ProductInternalService {
                 ObjectOptimisticLockingFailureException.class
             },
             noRetryFor = {CommonException.class},
-            notRecoverable = { CommonException.class },
+            notRecoverable = {CommonException.class},
             maxAttempts = 10,
             backoff = @Backoff(delay = 100, maxDelay = 1000, multiplier = 1.5, random = true),
             recover = "recoverRollbackStock")
