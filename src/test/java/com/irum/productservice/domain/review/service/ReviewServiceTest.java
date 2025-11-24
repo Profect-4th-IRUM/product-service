@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +41,7 @@ class ReviewServiceTest {
     private ReviewImageRepository reviewImageRepository;
     private ProductRepository productRepository;
     private OrderClient orderClient;
-
+    private ApplicationEventPublisher eventPublisher;
     private ReviewService reviewService;
 
     private UUID productId;
@@ -53,10 +54,10 @@ class ReviewServiceTest {
         reviewImageRepository = Mockito.mock(ReviewImageRepository.class);
         productRepository = Mockito.mock(ProductRepository.class);
         orderClient = Mockito.mock(OrderClient.class);
-
+        eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
         reviewService =
                 new ReviewService(
-                        reviewRepository, reviewImageRepository, productRepository, orderClient);
+                        reviewRepository, reviewImageRepository, productRepository, orderClient,eventPublisher);
 
         productId = UUID.randomUUID();
         orderDetailId = UUID.randomUUID();

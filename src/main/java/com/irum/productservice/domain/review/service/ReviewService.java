@@ -6,6 +6,7 @@ import com.irum.openfeign.order.client.OrderClient;
 import com.irum.openfeign.order.dto.response.OrderDetailDto;
 import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
+import com.irum.productservice.domain.product.event.ProductDeletedEvent;
 import com.irum.productservice.domain.review.domain.entity.Review;
 import com.irum.productservice.domain.review.domain.entity.ReviewImage;
 import com.irum.productservice.domain.review.domain.repository.ReviewImageRepository;
@@ -13,12 +14,17 @@ import com.irum.productservice.domain.review.domain.repository.ReviewRepository;
 import com.irum.productservice.domain.review.dto.request.ReviewCreateRequest;
 import com.irum.productservice.domain.review.dto.request.ReviewUpdateRequest;
 import com.irum.productservice.domain.review.dto.response.ReviewResponse;
+import com.irum.productservice.domain.review.event.ReviewCreatedEvent;
+import com.irum.productservice.domain.review.event.ReviewDeletedEvent;
+import com.irum.productservice.domain.review.event.ReviewUpdatedEvent;
+
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import com.irum.productservice.global.exception.errorcode.ReviewErrorCode;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,7 +40,7 @@ public class ReviewService {
     private final ReviewImageRepository reviewImageRepository;
     private final ProductRepository productRepository;
     private final OrderClient orderClient;
-
+    private final ApplicationEventPublisher eventPublisher;
     /** 리뷰 생성 */
     public ReviewResponse createReview(ReviewCreateRequest request) {
         Long currentMemberId = MemberAuthContext.getMemberId();
@@ -77,13 +83,15 @@ public class ReviewService {
 
         reviewImageRepository.saveAll(images);
 
-        updateProductRating(product);
-
         log.info(
                 "리뷰 생성 완료: memberId={}, orderDetailId={}, productId={}",
                 currentMemberId,
                 orderDetail.orderDetailId(),
                 product.getId());
+
+        eventPublisher.publishEvent(
+                new ReviewCreatedEvent(product.getId(), request.rate())
+        );
 
         return ReviewResponse.from(saved, images.stream().map(ReviewImage::getImageUrl).toList());
     }
@@ -128,7 +136,7 @@ public class ReviewService {
                         .toList();
 
         if (request.rate() != null) {
-            updateProductRating(review.getProduct());
+            eventPublisher.publishEvent(new ReviewUpdatedEvent(review.getProduct().getId()));
         }
 
         return ReviewResponse.from(review, imageUrls);
@@ -183,8 +191,9 @@ public class ReviewService {
 
         review.softDelete(MemberAuthContext.getMemberId());
 
-        updateProductRating(review.getProduct());
-
+        eventPublisher.publishEvent(
+                new ReviewDeletedEvent(review.getProduct().getId())
+        );
         log.info("리뷰 삭제 완료: reviewId={}", reviewId);
     }
 
