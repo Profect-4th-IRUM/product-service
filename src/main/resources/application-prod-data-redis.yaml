@@ -1,0 +1,9 @@
+spring:
+  config:
+    activate:
+      on-profile: "prod-data-redis"
+  data:
+    redis:
+      host: ${DATA_REDIS_HOST}
+      port: ${DATA_REDIS_PORT}
+      password: ${DATA_REDIS_PASSWORD}

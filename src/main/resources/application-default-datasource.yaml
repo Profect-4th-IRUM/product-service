@@ -1,0 +1,26 @@
+spring:
+  config:
+    activate:
+      on-profile: "default-datasource"
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/${DB_NAME:come2us}
+    username: ${POSTGRESQL_USERNAME:developer}
+    password: ${POSTGRESQL_PASSWORD:1234}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        hibernate.format_sql: true
+        hibernate.highlight_sql: true
+        hibernate.session.events.log.LOG_QUERIES_SLOWER_THAN_MS: 200
+        default_batch_fetch_size: 100
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: false
+  sql:
+    init:
+      mode: never
+      encoding: UTF-8
