@@ -12,6 +12,7 @@ import com.irum.productservice.domain.product.domain.repository.ProductOptionVal
 import com.irum.productservice.domain.product.mapper.UpdateStockMapper;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
+import com.irum.productservice.global.exception.errorcode.DiscountErrorCode;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import com.irum.productservice.global.exception.errorcode.StoreErrorCode;
 import java.util.List;
@@ -35,11 +36,12 @@ public class ProductStockService {
     @Transactional
     public ProductInternalResponse updateStockInTransaction(ProductInternalRequest request) {
         // 상점 + 배송정책 조회
-        log.warn("updateStockInTransaction {}", request);
+        log.info("updateStockInTransaction {}", request);
         Store store =
                 storeRepository
                         .findByIdWithDeliveryPolicy(request.storeId())
                         .orElseThrow(() -> new CommonException(StoreErrorCode.STORE_NOT_FOUND));
+        log.info("[DB] 상점 조회 성공 {}", store.getId());
         // 옵션 id 모으기
         List<UUID> productOptionValueIdList =
                 request.optionValueList().stream()
@@ -55,9 +57,11 @@ public class ProductStockService {
                                 Collectors.toMap(
                                         ProductOptionValue::getId,
                                         productOptionValue -> productOptionValue));
+        log.info("[DB] 옵션 조회 성공 {}", povMap);
 
         // 정합 점검 : 존재하지 않는 옵션이 섞여 있는지
         validateAllOptionValuesExist(request, productOptionValueList);
+        log.info("[검증] 정합 점검 완료");
 
         // 재고 감소
         for (ProductInternalRequest.OptionValueRequest optionValueRequest :
@@ -69,13 +73,23 @@ public class ProductStockService {
 
             pov.decreaseStock(optionValueRequest.quantity());
         }
+        log.info("[DB] 재고 감소 완료");
 
         // 할인 조회
-        List<UUID> productIdList =
-                productOptionValueList.stream()
-                        .map(pov -> pov.getOptionGroup().getProduct().getId())
-                        .toList();
-        List<Discount> discountList = discountRepository.findAllByProductIds(productIdList);
+        List<Discount> discountList = List.of();
+        List<UUID> productIdList = List.of();
+        try {
+            productIdList =
+                    productOptionValueList.stream()
+                            .map(pov -> pov.getOptionGroup().getProduct().getId())
+                            .distinct()
+                            .toList();
+            discountList = discountRepository.findAllByProductIds(productIdList);
+        } catch (Exception e){
+            log.warn("[DB] 사품 할인 조회 실패 {}, {}", e.getMessage(), e.getClass());
+            throw new CommonException(DiscountErrorCode.DISCOUNT_NOT_FOUND);
+        }
+        log.info("[DB] 할인 조회 완료 productIdList : {} discountList : {}", productIdList, discountList);
 
         // productId 기준으로 할인 맵핑
         Map<UUID, Integer> discountMap =
