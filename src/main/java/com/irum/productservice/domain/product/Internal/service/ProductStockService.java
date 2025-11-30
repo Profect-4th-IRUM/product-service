@@ -9,6 +9,7 @@ import com.irum.productservice.domain.discount.domain.repository.DiscountReposit
 import com.irum.productservice.domain.product.Internal.service.converter.ProductInternalResponseMapper;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
+import com.irum.productservice.domain.product.event.OrderFailedEvent;
 import com.irum.productservice.domain.product.mapper.UpdateStockMapper;
 import com.irum.productservice.domain.store.domain.entity.Store;
 import com.irum.productservice.domain.store.domain.repository.StoreRepository;
@@ -141,6 +142,7 @@ public class ProductStockService {
         }
     }
 
+    /** RESTAPI - rollback */
     @Transactional
     public void rollbackStockInTransactional(RollbackStockRequest request) {
 
@@ -159,6 +161,36 @@ public class ProductStockService {
 
         // 재고 되돌리기
         for (RollbackStockRequest.OptionValueRequest opr : request.optionValueList()) {
+            ProductOptionValue option = optionMap.get(opr.optionValueId());
+
+            // 옵션 존재 여부 체크
+            validateOptionExist(option);
+
+            // 재고 되돌리기
+            option.increaseStock(opr.quantity());
+        }
+    }
+
+
+    /**EDA - rollback*/
+    @Transactional
+    public void rollbackStockInTransactional(OrderFailedEvent event) {
+
+        // 재고를 되돌릴 ProductOptionValue ID 목록 추출
+        List<UUID> optionIds =
+                event.optionValueList().stream()
+                        .map(OrderFailedEvent.OptionValueRequest::optionValueId)
+                        .distinct()
+                        .toList();
+
+        List<ProductOptionValue> options = productOptionValueRepository.findAllByIds(optionIds);
+
+        // <productOptionValueId , ProductOptionValue> 형태의 Map
+        Map<UUID, ProductOptionValue> optionMap =
+                options.stream().collect(Collectors.toMap(ProductOptionValue::getId, pov -> pov));
+
+        // 재고 되돌리기
+        for (OrderFailedEvent.OptionValueRequest opr : event.optionValueList()) {
             ProductOptionValue option = optionMap.get(opr.optionValueId());
 
             // 옵션 존재 여부 체크

@@ -23,6 +23,6 @@ public class ProductEventConsumer {
     public void handleOrderPrepared( OrderFailedEvent event) {
         log.info("[외부] Order Failed event 수신 완료 {}", event);
 
-        productInternalService.stockDeduction(event);
+        productInternalService.rollbackStock(event);
     }
 }

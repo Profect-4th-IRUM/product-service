@@ -37,7 +37,7 @@ out/
 
 ### VS Code ###
 .vscode/
-.env
+src/main/resources/.env
 gradle.properties
 
 ### logs ###
