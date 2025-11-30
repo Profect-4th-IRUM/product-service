@@ -1,0 +1,31 @@
+spring:
+  config:
+    activate:
+      on-profile: "kafka"
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
+    consumer:
+      group-id: ${PRODUCT_GROUP_ID}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json:
+          trusted.packages: "com.irum.orderservice.domain.order.event.*"
+          type.mapping: |
+            orderFailedEvent: com.irum.productservice.domain.product.event.OrderFailedEvent
+
+
+    partition: ${NUM_OF_PARTITION}
+    replica: ${NUM_OF_REPLICA}
+    topics:
+      payment-paid: ${PAYMENT_PAID_TOPIC_NAME}
+      payment-failed: ${PAYMENT_FAILED_TOPIC_NAME}
+      order-failed: ${ORDER_FAILED_TOPIC_NAME}
+
+logging:
+  level:
+    com.adjh.springbootkafka: DEBUG
+    org:
+      apache.kafka: INFO
+      springframework.kafka: INFO

@@ -33,16 +33,16 @@ databaseChangeLog:
       file: changes/ddl/011-create-index-category-depth.yaml
       relativeToChangelogFile: true
 
-### 테스트 데이터 ###
- - include:
+  ### 테스트 데이터 ###
+  - include:
      file: changes/dml/021-insert-default-stores.sql
      relativeToChangelogFile: true
- - include:
+  - include:
      file: changes/dml/022-insert-default-categories.sql
      relativeToChangelogFile: true
- - include:
+  - include:
      file: changes/dml/023-insert-default-products.sql
      relativeToChangelogFile: true
- - include:
+  - include:
      file: changes/dml/024-insert-default-product_option_groups_and_values.sql
      relativeToChangelogFile: true
