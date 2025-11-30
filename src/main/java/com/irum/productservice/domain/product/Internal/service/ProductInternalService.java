@@ -11,6 +11,7 @@ import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
+import com.irum.productservice.domain.product.event.OrderFailedEvent;
 import com.irum.productservice.domain.product.mapper.ProductMapper;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import jakarta.persistence.OptimisticLockException;
@@ -120,5 +121,9 @@ public class ProductInternalService {
                 e.getClass().getSimpleName(),
                 request);
         throw new CommonException(ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED);
+    }
+
+    public void stockDeduction(OrderFailedEvent event) {
+        return;
     }
 }
