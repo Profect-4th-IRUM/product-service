@@ -117,9 +117,9 @@ public class ProductInternalService {
     /** EDA-주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
             retryFor = {
-                    OptimisticLockException.class,
-                    StaleObjectStateException.class,
-                    ObjectOptimisticLockingFailureException.class
+                OptimisticLockException.class,
+                StaleObjectStateException.class,
+                ObjectOptimisticLockingFailureException.class
             },
             noRetryFor = {CommonException.class},
             notRecoverable = {CommonException.class},
@@ -130,7 +130,6 @@ public class ProductInternalService {
         productStockService.rollbackStockInTransactional(event);
     }
 
-
     @Recover
     public void recoverRollbackStock(Throwable e, RollbackStockRequest request) {
         log.error(
@@ -139,5 +138,4 @@ public class ProductInternalService {
                 request);
         throw new CommonException(ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED);
     }
-
 }

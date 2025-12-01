@@ -86,7 +86,7 @@ public class ProductStockService {
                             .distinct()
                             .toList();
             discountList = discountRepository.findAllByProductIds(productIdList);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.warn("[DB] 사품 할인 조회 실패 {}, {}", e.getMessage(), e.getClass());
             throw new CommonException(DiscountErrorCode.DISCOUNT_NOT_FOUND);
         }
@@ -171,8 +171,7 @@ public class ProductStockService {
         }
     }
 
-
-    /**EDA - rollback*/
+    /** EDA - rollback */
     @Transactional
     public void rollbackStockInTransactional(OrderFailedEvent event) {
 
