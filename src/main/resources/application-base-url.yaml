@@ -5,6 +5,8 @@ spring:
 service:
   member:
     base-url: ${MEMBER-SERVICE-URL:member-service}:${MEMBER_PORT:8081}
+  product:
+    base-url: ${PRODUCT-SERVICE-URL:product-service}:${PRODUCT_PORT:8082}
   order:
     base-url: ${ORDER-SERVICE-URL:order-service}:${ORDER_PORT:8083}
   payment:
