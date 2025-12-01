@@ -15,3 +15,10 @@ spring:
     type: redis
   liquibase:
     enabled: false
+
+
+  kafka:
+    consumer:
+      group-id: ${ORDER_GROUP_ID:order-service-group}
+    topics:
+      order-failed: ${ORDER_FAILED_TOPIC_NAME:order-failed}
