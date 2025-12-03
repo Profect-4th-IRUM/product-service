@@ -66,7 +66,7 @@ public class ProductController {
     public ProductDetailResponse getProduct(@PathVariable UUID productId) {
         ProductDetailResponse response = productService.getProductById(productId);
         log.info("상품 상세 조회 요청: productId={}", productId);
-        return response ;
+        return response;
     }
 
     @DeleteMapping("/{productId}")
