@@ -98,7 +98,7 @@ public class ProductInternalService {
         throw new CommonException(ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED);
     }
 
-    /** RESTAPI - 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
+    /** 1. RESTAPI - 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
             retryFor = {
                 OptimisticLockException.class,
@@ -114,7 +114,7 @@ public class ProductInternalService {
         productStockService.rollbackStockInTransactional(request);
     }
 
-    /** EDA-주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
+    /** 2. EDA-주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
             retryFor = {
                 OptimisticLockException.class,
