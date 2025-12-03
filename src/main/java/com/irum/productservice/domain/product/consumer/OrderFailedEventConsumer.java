@@ -46,7 +46,7 @@ public class OrderFailedEventConsumer {
             @Header(KafkaHeaders.OFFSET) long offset,
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
             @Header(KafkaHeaders.EXCEPTION_MESSAGE) String exception,
-            @Header(KafkaHeaders.EXCEPTION_FQCN) String exceptionFQCN) {
+            @Header(KafkaHeaders.EXCEPTION_CAUSE_FQCN) String exceptionFQCN) {
         log.error(
                 "원본 토픽 : {} \t 원본 오프셋 : {} \t 원본 파티션 : {} \t 원본 컨슈머 그룹 : {}",
                 originalTopic,
