@@ -123,6 +123,14 @@ dependencies {
 
     implementation 'org.liquibase:liquibase-core'
 
+    //actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-core'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // logback
+    implementation 'net.logstash.logback:logstash-logback-encoder:8.0'
+
     // Embedded Redis
     testImplementation('it.ozimov:embedded-redis:0.7.3') {
         exclude group: 'org.slf4j', module: 'slf4j-simple'
