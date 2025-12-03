@@ -58,8 +58,8 @@ public class StoreController {
 
     @GetMapping("/{storeId}")
     public ResponseEntity<StoreInfoResponse> getStoreDetail(@PathVariable UUID storeId) {
-        log.info("상점 상세 조회 요청: storeId={}", storeId);
         StoreInfoResponse response = storeService.findStoreInfo(storeId);
+        log.info("상점 상세 조회 요청: storeId={}", storeId);
         return ResponseEntity.ok(response);
     }
 
