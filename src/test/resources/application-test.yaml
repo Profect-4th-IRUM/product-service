@@ -22,3 +22,15 @@ spring:
       group-id: ${ORDER_GROUP_ID:order-service-group}
     topics:
       order-failed: ${ORDER_FAILED_TOPIC_NAME:order-failed}
+
+service:
+  member:
+    base_url: localhost:8081
+  product:
+    base_url: localhost:8082
+  order:
+    base_url: localhost:8083
+  payment:
+    base_url: localhost:8084
+  ai:
+    base-url: localhost:8085
