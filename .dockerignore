@@ -1,0 +1,53 @@
+# === Source Control ===
+.git
+.gitignore
+
+# === IDE ===
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+.DS_Store
+
+# === OS / Editor ===
+Thumbs.db
+*.tmp
+*.swp
+*.swo
+
+# === Build Outputs ===
+build/
+out/
+target/
+
+# === Gradle ===
+.gradle/
+**/.gradle/
+gradle/
+!gradle/wrapper/
+
+# === Logs ===
+*.log
+*.trace
+
+# === Node / Frontend (혹시 있을 경우) ===
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# === Tests ===
+coverage/
+test-output/
+
+# === Docker ===
+Dockerfile*
+docker-compose.yml
+
+# === Misc ===
+*.jar
+*.war
+*.zip
+*.tar
+*.gz
+*.class
