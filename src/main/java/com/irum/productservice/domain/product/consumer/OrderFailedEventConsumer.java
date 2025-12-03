@@ -34,7 +34,6 @@ public class OrderFailedEventConsumer {
         productInternalService.rollbackStock(event);
     }
 
-
     @DltHandler // 재시도 기회를 모두 소진한 메시지가 DLQ에 도착하면, DLQ에서 메시지를 꺼내서 처리
     public void processDlt(
             @Payload OrderFailedEvent event,
