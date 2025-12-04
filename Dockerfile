@@ -36,4 +36,3 @@ ENV TZ=Asia/Seoul
 
 ENTRYPOINT ["java","-javaagent:/app/opentelemetry-javaagent.jar","-Dotel.service.name=product-service","-Dotel.propagators=tracecontext,baggage,b3,b3multi","-Dotel.traces.exporter=otlp","-Dotel.logs.exporter=none","-Dotel.metrics.exporter=none","-Dotel.exporter.otlp.endpoint=http://otel-collector.istio-system.svc.cluster.local:4317","-Dotel.exporter.otlp.protocol=grpc","-jar", "/app/app.jar"]
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
