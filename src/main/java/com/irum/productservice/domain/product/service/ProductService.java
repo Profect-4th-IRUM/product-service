@@ -233,13 +233,18 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductDetailResponse getProductById(UUID productId) {
-        Product product =
-                productRepository
-                        .findById(productId)
-                        .orElseThrow(() -> new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND));
-        MDC.put("productId", productId.toString());
-        MDC.put("storeId", product.getStore().getId().toString());
-        return ProductDetailResponse.from(product);
+        try {
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+            MDC.put("productId", productId.toString());
+            MDC.put("storeId", product.getStore().getId().toString());
+
+            return ProductDetailResponse.from(product);
+
+        } finally {
+            MDC.clear();
+        }
     }
 
     public void deleteProduct(UUID productId) {
