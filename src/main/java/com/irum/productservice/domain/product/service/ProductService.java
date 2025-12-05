@@ -234,8 +234,11 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductDetailResponse getProductById(UUID productId) {
         try {
-            Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND));
+            Product product =
+                    productRepository
+                            .findById(productId)
+                            .orElseThrow(
+                                    () -> new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
             MDC.put("productId", productId.toString());
             MDC.put("storeId", product.getStore().getId().toString());

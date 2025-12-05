@@ -90,7 +90,6 @@ public class StoreService {
         }
     }
 
-
     public ProductCursorResponse getMyStoreProducts(UUID cursor, Integer size) {
         MemberDto member = memberUtil.getCurrentMember();
         Store store =
