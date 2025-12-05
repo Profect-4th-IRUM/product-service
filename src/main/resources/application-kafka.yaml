@@ -8,12 +8,12 @@ spring:
       group-id: ${PRODUCT_GROUP_ID}
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json:
-          trusted.packages: "com.irum.orderservice.domain.order.event.*"
-          type.mapping: |
-            orderFailedEvent: com.irum.productservice.domain.product.event.OrderFailedEvent
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      properties:
+#        spring.json:
+#          trusted.packages: "com.irum.orderservice.domain.order.event.*"
+#          type.mapping: |
+#            orderFailedEvent: com.irum.productservice.domain.product.event.OrderFailedEvent
 
 
     partition: ${NUM_OF_PARTITION}
