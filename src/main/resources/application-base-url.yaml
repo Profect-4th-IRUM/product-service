@@ -1,0 +1,15 @@
+spring:
+  config:
+    activate:
+      on-profile: "base-url"
+service:
+  member:
+    base-url: ${MEMBER-SERVICE-URL:member-service}:${MEMBER_PORT:8081}
+  product:
+    base-url: ${PRODUCT-SERVICE-URL:product-service}:${PRODUCT_PORT:8082}
+  order:
+    base-url: ${ORDER-SERVICE-URL:order-service}:${ORDER_PORT:8083}
+  payment:
+    base-url: ${PAYMENT-SERVICE-URL:payment-service}:${PAYMENT_PORT:8084}
+  ai:
+    base-url: ${AI-SERVICE-URL:ai-service}:${AI_PORT:8085}

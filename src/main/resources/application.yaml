@@ -3,11 +3,10 @@ spring:
     name: product-service
   profiles:
     group:
-      "local": "local, default-datasource, default-db-management, default-redis, eureka, openfeign, actuator, kafka"
-      "docker": "docker, default-datasource, default-db-management, default-redis, eureka, openfeign, actuator, kafka"
-      "prod": "prod, prod-datasource, prod-db-management, prod-data-redis, prod-cache-redis, eureka, openfeign, actuator, kafka"
+      "local": "local, default-datasource, default-db-management, default-redis, openfeign, actuator, base-url, kafka"
+      "docker": "docker, default-datasource, default-db-management, default-redis, openfeign, actuator, base-url, kafka"
+      "prod": "prod, prod-datasource, prod-db-management, prod-data-redis, prod-cache-redis, openfeign, actuator, base-url, kafka"
     active: ${PROFILE_ACTIVE:local}
 
-  config:
-    import:
-      - optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
+#  config:
+#    import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
