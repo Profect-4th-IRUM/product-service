@@ -11,6 +11,7 @@ import com.irum.productservice.domain.product.domain.entity.Product;
 import com.irum.productservice.domain.product.domain.entity.ProductOptionValue;
 import com.irum.productservice.domain.product.domain.repository.ProductOptionValueRepository;
 import com.irum.productservice.domain.product.domain.repository.ProductRepository;
+import com.irum.productservice.domain.product.event.OrderFailedEvent;
 import com.irum.productservice.domain.product.mapper.ProductMapper;
 import com.irum.productservice.global.exception.errorcode.ProductErrorCode;
 import jakarta.persistence.OptimisticLockException;
@@ -97,7 +98,7 @@ public class ProductInternalService {
         throw new CommonException(ProductErrorCode.PRODUCT_RETRY_LIMIT_EXCEEDED);
     }
 
-    /** 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
+    /** 1. RESTAPI - 주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
     @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
             retryFor = {
                 OptimisticLockException.class,
@@ -111,6 +112,22 @@ public class ProductInternalService {
             recover = "recoverRollbackStock")
     public void rollbackStock(RollbackStockRequest request) {
         productStockService.rollbackStockInTransactional(request);
+    }
+
+    /** 2. EDA-주문에 포함된 모든 상품의 재고를 다시 늘립니다. */
+    @Retryable( // TODO : 낙관적 락 예외처리에 대한 재시도 횟수, 간격 : 정책 설정 필요
+            retryFor = {
+                OptimisticLockException.class,
+                StaleObjectStateException.class,
+                ObjectOptimisticLockingFailureException.class
+            },
+            noRetryFor = {CommonException.class},
+            notRecoverable = {CommonException.class},
+            maxAttempts = 10,
+            backoff = @Backoff(delay = 100, maxDelay = 1000, multiplier = 1.5, random = true),
+            recover = "recoverRollbackStock")
+    public void rollbackStock(OrderFailedEvent event) {
+        productStockService.rollbackStockInTransactional(event);
     }
 
     @Recover
