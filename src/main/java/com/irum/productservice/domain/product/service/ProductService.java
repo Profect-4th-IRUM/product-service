@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -232,12 +233,21 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductDetailResponse getProductById(UUID productId) {
-        Product product =
-                productRepository
-                        .findById(productId)
-                        .orElseThrow(() -> new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        try {
+            Product product =
+                    productRepository
+                            .findById(productId)
+                            .orElseThrow(
+                                    () -> new CommonException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
-        return ProductDetailResponse.from(product);
+            MDC.put("productId", productId.toString());
+            MDC.put("storeId", product.getStore().getId().toString());
+
+            return ProductDetailResponse.from(product);
+
+        } finally {
+            MDC.clear();
+        }
     }
 
     public void deleteProduct(UUID productId) {

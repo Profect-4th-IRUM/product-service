@@ -18,6 +18,7 @@ import com.irum.productservice.global.util.MemberUtil;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,8 +81,13 @@ public class StoreService {
 
     @Transactional(readOnly = true)
     public StoreInfoResponse findStoreInfo(UUID storeId) {
-        Store store = getStoreById(storeId);
-        return StoreInfoResponse.from(store);
+        try {
+            Store store = getStoreById(storeId);
+            MDC.put("storeId", storeId.toString());
+            return StoreInfoResponse.from(store);
+        } finally {
+            MDC.clear();
+        }
     }
 
     public ProductCursorResponse getMyStoreProducts(UUID cursor, Integer size) {
