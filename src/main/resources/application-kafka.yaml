@@ -4,6 +4,8 @@ spring:
       on-profile: "kafka"
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    properties:
+      security.protocol: SSL
     consumer:
       group-id: ${PRODUCT_GROUP_ID}
       auto-offset-reset: earliest
